@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="description" content="Chat"/>
+        <meta name="keywords" content="Chat"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1"/>
+        <meta name="author" content="Kris1992">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        
+        <title>{% block title %}Chat{% endblock %}</title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+            <link rel="stylesheet" type="text/css" href="{{ asset('css/_styles.css') }}">
+            <link rel="stylesheet" type="text/css" href="{{ asset('css/all.css') }}">
+        {% endblock %}
+    </head>
+    <body>
+        <div class="main-container">
+            <nav id="sidebar">
+                <div class="sidebar-header text-uppercase">
+                    <h4><span class="fas fa-comments"></span>Chat</h4>
+                    <strong><span class="fas fa-comments"></span></strong>
+                </div>
+                {% if is_granted('ROLE_USER') %}
+                    <ul class="list-unstyled menu-wrapper text-uppercase">
+                        <li>
+                            <a href="" class="menu-item active">
+                                <span class="fas fa-home"></span>
+                                Rooms
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="menu-item">
+                                <span class="fas fa-briefcase"></span>
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="menu-item">
+                                <span class="fas fa-user-friends"></span>
+                                Friends
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="menu-item">
+                                <span class="fas fa-tools"></span>
+                                Dashboard
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="list-unstyled sidebar-footer">
+                        <li>
+                            <a href="{{ path('app_logout') }}" class="btn btn-white">
+                                <span class="fas fa-sign-out-alt"></span>
+                                <span>Logout</span>
+                            </a>
+                        </li>
+                    </ul>
+                {% else %}
+                    <ul class="list-unstyled menu-wrapper text-uppercase">
+                        <li>
+                            <a href="" class="menu-item active">
+                                <span class="fas fa-home"></span>
+                                Home
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" class="menu-item">
+                                <span class="fas fa-user-plus"></span>
+                                Sign up
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_login') }}" class="menu-item">
+                                <span class="fas fa-sign-in-alt"></span>
+                                Sign in
+                            </a>
+                        </li>
+                    </ul>
+                {% endif %}
+            </nav>
+            <div class="container-fluid">
+                <nav class="navbar navbar-dark bg-primary navbar-expand-sm">
+                    <button type="button" id="sidebarCollapse" class="btn btn-white">
+                        <span class="fas fa-align-left"></span>
+                        <span>Toggle Menu</span>
+                    </button>
+                    <ul class="navbar-nav m-auto text-uppercase">
+                        <li class="nav-item">
+                            <span>
+                                <a class="nav-link" href="">Welcome!!</a>
+                            </span>
+                        </li>
+                    </ul>
+                </nav>
+                <main>
+                    <section class="{% block section_class %}{% endblock %}">
+                        <div class="row {% block content_class %}{% endblock %}">
+                            {% block content %}{% endblock %}
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+        {% block javascripts %}
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+                });
+            });
+        </script>
+        {% endblock %}
+    </body>
+</html>

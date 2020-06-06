@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Sign in!{% endblock %}
+
+{% block section_class %}Login{% endblock %} 
+{% block content_class %}viewh-75{% endblock %}
+{% block content %}
+<div class="col-sm-12 text-center my-auto">
+    <form method="POST">
+        {% if error %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        <h1 class="h3 mb-3 font-weight-normal text-uppercase text-purple">Please sign in</h1>
+        <div class="form-group col-md-6 mt-4 mx-auto" >
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text input-icon">
+                        <span class="fas fa-user"></span>
+                    </div>
+                </div>
+                <label class="sr-only" for="inputEmail">E-mail</label>
+                <input type="email" name="email" class="form-control" value="{{ last_username }}" id="inputEmail" placeholder="E-mail" required autofocus/>
+            </div>
+        </div>
+        <div class="form-group col-md-6 mt-4 mx-auto">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text input-icon">
+                        <span class="fas fa-key"></span>
+                    </div>
+                </div>
+                <label class="sr-only" for="inputPassword">Password</label>
+                <input type="password" name="plainPassword" class="form-control" id="inputPassword" placeholder="Password" required/>
+            </div>
+        </div>
+            
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+
+        <button class="btn btn-lg btn-primary text-uppercase" type="submit">
+            Sign in
+        </button>
+    </form>
+</div>
+{% endblock %}
