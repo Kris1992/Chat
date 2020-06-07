@@ -1,0 +1,18 @@
+{% use "bootstrap_4_layout.html.twig" %}
+
+{% block form_widget_simple -%}
+    {%- if attr.icon is defined and attr.icon is not null -%}
+        {% set aria_describedby = 'icon-' ~ random() %}
+        {%- set attr = attr|merge({'aria-describedby': aria_describedby}) -%}
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text input-icon" id="{{ aria_describedby }}">
+                    <span class="{{ attr.icon }}"></span>
+                </div>
+            </div>
+    {% endif %}
+        {{- parent() -}}
+    {%- if attr.icon is defined and attr.icon is not null -%}
+        </div>
+    {%- endif -%}
+{%- endblock form_widget_simple %}

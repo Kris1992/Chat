@@ -1,0 +1,72 @@
+{% block user_form %}
+<h4 class="mb-3 font-weight-normal text-uppercase text-purple">{{ header_text }}</h4>
+    
+    {{ form_start(userForm, {
+            attr: { class: 'align-items-center justify-content-center' }
+        }) 
+    }}
+        {% if userForm.id is defined %}
+            {{ form_row(userForm.id, {
+                label: 'ID: ',
+                attr: { class: 'form-id-js' }
+            }) }}
+        {% endif %}
+
+        {{ form_row(userForm.email, {
+            label : false,
+            attr: { placeholder: 'E-mail' }
+        }) }}
+
+        {%  if userForm.role is defined %}
+            {{ form_row(userForm.role, {
+                label : 'Role: '
+            }) }}
+        {% endif %}
+
+        {{ form_row(userForm.login, {
+            label : false,
+            attr: { placeholder: 'Login' }
+        }) }}
+        
+        {{ form_row(userForm.gender, {
+            label : 'Gender: ',
+            attr: { class: 'form-check-inline'}
+        }) }}
+
+        {% if userForm.plainPassword is defined %}
+            {{ form_row(userForm.plainPassword.first, {
+                label : false,
+                attr: { placeholder: 'Password' }
+            }) }}
+
+            {{ form_row(userForm.plainPassword.second, {
+                label : false,
+                attr: { placeholder: 'Repeat password' }
+            }) }}
+        {% endif %}
+
+        {% if userForm.agreeTerms is defined %}
+            {{ form_row(userForm.agreeTerms) }}
+            <a class="text-uppercase" href="#">Terms page</a>
+        {% endif %}
+
+        {% if button_text is same as('Register') %}
+            <div class="form-group text-center">
+                <div class="g-recaptcha my-3" data-sitekey="{{ public_key }}"></div>
+                {% if ReCaptchaError is defined %}
+                    <span class="invalid-feedback d-block">
+                        <span class="d-block">
+                            <span class="form-error-icon badge badge-danger text-uppercase">Error</span> 
+                            <span class="form-error-message">{{ ReCaptchaError }}</span>
+                        </span>
+                    </span>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <button class="btn btn-lg btn-primary text-uppercase" type="submit">{{ button_text }}</button>
+        
+    {{ form_end(userForm) }}
+
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Sign up!{% endblock %}
+
+{% block section_class %}Registration{% endblock %} 
+{% block content_class %}justify-content-center align-items-center{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+    <script type="module" src="{{ asset('js/helpers/_errorHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/helpers/_validationHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_registrationApi.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var $wrapper = $('.js-registration-form');
+            var registrationApi = new RegistrationApi($wrapper);
+        });
+    </script>
+    <script type="text/template" id="js-invalid-template">
+        <div class="invalid-feedback">
+            <strong><%= message %></strong>
+        </div>
+    </script>
+    <script type="text/template" id="js-valid-template">
+        <div class="valid-feedback">
+            <strong><%= message %></strong>
+        </div>
+    </script>
+{% endblock %}
+
+{% block _user_form_agreeTerms_row %}
+    <div class="checkbox my-3">
+        {{ form_errors(form) }}
+        <label>
+            <input type="checkbox" name="{{ full_name }}" required> Agree to terms
+        </label>
+    </div>
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-6 text-center my-3 js-registration-form">
+    {{ include('forms/user_form.html.twig', {
+        header_text: 'Registration',
+        button_text: 'Register'
+    }) }}
+</div>
+{% endblock %}
