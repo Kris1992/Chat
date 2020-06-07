@@ -15,14 +15,11 @@ export function isStrongPassword(fieldValue) {
     if(fieldValue.length >= 5) {
         const hasUpperCase = /[A-Z]/.test(fieldValue);
         const hasLowerCase = /[a-z]/.test(fieldValue);
-        const countLetters = fieldValue.match(new RegExp(/[a-zA-Z]/, "g") || []).length;
+        const countLetters = (fieldValue.match(new RegExp(/[a-zA-Z]/, "g")) || []).length;
         const hasNumbers = /[0-9]/.test(fieldValue);
-        const countNumbers = fieldValue.match(new RegExp(/[0-9]/, "g") || []).length;
-        
-        console.log(countLetters);
-        console.log(countNumbers);
+        const countNumbers = (fieldValue.match(new RegExp(/[0-9]/, "g")) || []).length;
 
-        if((hasUpperCase+hasLowerCase+hasNumbers) === 3) {
+        if((hasUpperCase+hasLowerCase+hasNumbers) === 3 && countLetters >= 3 && countNumbers >= 2) {
             return true;
         }
         return false;

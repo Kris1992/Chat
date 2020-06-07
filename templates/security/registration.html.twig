@@ -41,7 +41,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-sm-6 text-center my-3 js-registration-form">
+<div class="col-sm-6 text-center my-3 js-registration-form" data-url="{{ path('api_isUserUnique') }}">
     {{ include('forms/user_form.html.twig', {
         header_text: 'Registration',
         button_text: 'Register'

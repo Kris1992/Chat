@@ -10,6 +10,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Services\UserRegistration\UserRegistrationInterface;
 use App\Services\Checker\CheckerInterface;
+use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use App\Security\LoginFormAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
