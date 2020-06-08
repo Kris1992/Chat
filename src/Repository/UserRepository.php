@@ -1,10 +1,12 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,32 +21,35 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
+    /**
+     * findAllQuery Find all Users or if searchTerms are not empty find all users with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function findAllQuery(string $searchTerms): Query
+    {   
+        if ($searchTerms) {
+            return $this->searchByTermsQuery($searchTerms);
+        }
         return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
             ->getQuery()
-            ->getResult()
         ;
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?User
+    /**
+     * searchByTermsQuery Find all users with following data
+     * @param  string $searchTerms Search word
+     * @return Query
+     */
+    public function searchByTermsQuery(string $searchTerms): Query
     {
         return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
+            ->where('u.email LIKE :searchTerms OR u.login LIKE :searchTerms')
+            ->setParameters([
+                'searchTerms' => '%'.$searchTerms.'%'
+            ])
             ->getQuery()
-            ->getOneOrNullResult()
         ;
     }
-    */
+
 }

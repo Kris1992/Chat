@@ -101,7 +101,7 @@ import { isEmptyField, isEmail, isStrongPassword } from './helpers/_validationHe
             } else {
                 this.setValid($input);
             }
-
+            
         }
 
         setInvalid(message, $target) {

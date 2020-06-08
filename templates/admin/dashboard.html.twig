@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Dashboard{% endblock %}
+
+{% block section_class %}Dashboard{% endblock %} 
+{% block content_class %}viewh-75{% endblock %}
+{% block content %}
+<div class="col-sm-12 text-center my-auto">
+    <div class="col-sm-12">
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Management</h2>
+    </div>
+    <div class="col-sm-12 col-md-5 p-3 mx-auto my-3 link-card">
+        <a href="{{ path('admin_account') }}" class="stretched-link"><h4 class="text-green">Accounts</h4></a>
+    </div>
+</div>
+{% endblock %}
+

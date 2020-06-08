@@ -25,7 +25,7 @@
                 {% if is_granted('ROLE_USER') %}
                     <ul class="list-unstyled menu-wrapper text-uppercase">
                         <li>
-                            <a href="" class="menu-item active">
+                            <a href="" class="menu-item">
                                 <span class="fas fa-home"></span>
                                 Rooms
                             </a>
@@ -42,12 +42,14 @@
                                 Friends
                             </a>
                         </li>
-                        <li>
-                            <a href="" class="menu-item">
-                                <span class="fas fa-tools"></span>
-                                Dashboard
-                            </a>
-                        </li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li>
+                                <a href="{{ path('admin_dashboard') }}" class="menu-item {{ app.request.get('_route') starts with 'admin' ? 'active' }}">
+                                    <span class="fas fa-tools"></span>
+                                    Dashboard
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                     <ul class="list-unstyled sidebar-footer">
                         <li>
@@ -60,7 +62,7 @@
                 {% else %}
                     <ul class="list-unstyled menu-wrapper text-uppercase">
                         <li>
-                            <a href="" class="menu-item active">
+                            <a href="path('app_homepage')" class="menu-item {{ app.request.get('_route') == 'app_homepage' ? 'active' }}">
                                 <span class="fas fa-home"></span>
                                 Home
                             </a>
@@ -95,6 +97,11 @@
                     </ul>
                 </nav>
                 <main>
+                    <div class="row">
+                        <div class="col-sm-12" id="flash-message">
+                            {% include 'flash_messages.html.twig' %} 
+                        </div>
+                    </div>
                     <section class="{% block section_class %}{% endblock %}">
                         <div class="row {% block content_class %}{% endblock %}">
                             {% block content %}{% endblock %}

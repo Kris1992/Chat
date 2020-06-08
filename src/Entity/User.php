@@ -58,6 +58,11 @@ class User implements UserInterface
      */
     private $failedAttempts = 0;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $banTo;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -103,6 +108,15 @@ class User implements UserInterface
 
         return $this;
     }
+
+    public function isAdmin(): bool
+    {
+        if (in_array('ROLE_ADMIN', $this->getRoles())) {
+            return true;
+        }
+        
+        return false;
+    } 
 
     /**
      * @see UserInterface
@@ -192,6 +206,18 @@ class User implements UserInterface
     public function resetFailedAttempts(): self
     {
         $this->failedAttempts = 0;
+
+        return $this;
+    }
+
+    public function getBanTo(): ?\DateTimeInterface
+    {
+        return $this->banTo;
+    }
+
+    public function setBanTo(?\DateTimeInterface $banTo): self
+    {
+        $this->banTo = $banTo;
 
         return $this;
     }
