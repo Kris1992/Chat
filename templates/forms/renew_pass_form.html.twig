@@ -1,0 +1,21 @@
+{% block renew_pass_form %}             
+<h2 class="mb-3 font-weight-normal text-uppercase text-purple">{{ header_text }}</h2>
+
+{{ form_start(renewPasswordForm, {
+    attr: { class: 'align-items-center justify-content-center' }
+}) }}
+    {{ form_row(renewPasswordForm.plainPassword.first, {
+        label: false,
+        attr: { placeholder: 'New password' }
+    }) }}
+    {{ form_row(renewPasswordForm.plainPassword.second, {
+        label: false,
+        attr: { placeholder: 'Repeat new password' }
+    }) }}
+
+    <button class="btn btn-lg btn-primary text-uppercase" type="submit">{{ button_text }}</button>
+            
+{{ form_end(renewPasswordForm) }}
+{% endblock %}
+
+

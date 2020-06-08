@@ -1,0 +1,26 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f3f3f3;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 17px;
+}
+.bg-primary {
+    background: linear-gradient(150deg, rgb(40, 20, 131) 15%, rgb(143, 110, 213) 70%, rgb(215, 130, 217) 94%);
+}
+.text-white {
+    color: #ffffff;
+    font-size: 1.25em;
+}
+.text-uppercase {
+    text-transform: uppercase;
+}
+.brand-icon {
+    display: inline-block;
+    vertical-align: bottom;
+    margin: 5px;
+}
+.invert-color {
+    filter: invert(100%);
+    -webkit-filter: invert(100%);
+}

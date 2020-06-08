@@ -1,0 +1,35 @@
+{% apply inky_to_html|inline_css(source('@styles/foundation-emails.css'), source('@styles/_email.css')) %}
+
+<container>
+    <row class="collapse bg-primary">
+        <columns>
+            <a href="{{ url('app_homepage') }}">
+                <img class="brand-icon invert-color" src="{{ absolute_url(asset('img/chat.png')) }}" width="30" height="30">
+                <span class="text-uppercase text-white">Chat</span>
+            </a>
+        </columns>
+    </row>
+</container>
+<container>
+    {% block content %}
+    {% endblock %}
+    <row>
+        <columns>
+                <p>See You on the chat,</p>
+                <p>
+                    <strong>
+                        The Chat Team
+                    </strong>
+                </p>
+        </columns>
+    </row>
+    <hr/>
+    <row class="footer">
+        <columns>
+            <p class="text-center">
+                <small>Problems or questions??<a href="#">Contact us</a></small>
+            </p>
+        </columns>
+    </row>
+</container>
+{% endapply %}

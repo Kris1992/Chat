@@ -2,7 +2,7 @@
 
 {% block title %}Chat - Sign in!{% endblock %}
 
-{% block section_class %}Login{% endblock %} 
+{% block section_class %}login{% endblock %} 
 {% block content_class %}viewh-75{% endblock %}
 {% block content %}
 <div class="col-sm-12 text-center my-auto">
@@ -11,7 +11,7 @@
             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
 
-        <h1 class="mb-3 font-weight-normal text-uppercase text-purple">Please sign in</h1>
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Please sign in</h2>
         <div class="form-group col-md-6 mt-4 mx-auto" >
             <div class="input-group">
                 <div class="input-group-prepend">
@@ -36,6 +36,7 @@
         </div>
             
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+        <span class="d-block mb-3"><a href="{{ path('app_reset_password') }}">Forgot Password?</a></span>
 
         <button class="btn btn-lg btn-primary text-uppercase" type="submit">
             Sign in

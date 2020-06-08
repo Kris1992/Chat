@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -29,7 +30,7 @@ class User implements UserInterface
     private $roles = [];
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private $login;
 
@@ -62,6 +63,11 @@ class User implements UserInterface
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $banTo;
+
+    /**
+     * @ORM\OneToOne(targetEntity=PasswordToken::class, inversedBy="user", cascade={"persist", "remove"})
+     */
+    private $passwordToken;
 
     public function getId(): ?int
     {
@@ -218,6 +224,18 @@ class User implements UserInterface
     public function setBanTo(?\DateTimeInterface $banTo): self
     {
         $this->banTo = $banTo;
+
+        return $this;
+    }
+
+    public function getPasswordToken(): ?PasswordToken
+    {
+        return $this->passwordToken;
+    }
+
+    public function setPasswordToken(?PasswordToken $passwordToken): self
+    {
+        $this->passwordToken = $passwordToken;
 
         return $this;
     }

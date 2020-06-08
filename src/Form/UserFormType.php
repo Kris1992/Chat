@@ -45,7 +45,6 @@ class UserFormType extends AbstractType
                 'second_options' => [
                     'icon' => 'fas fa-key', 
                 ]
-                
             ])
             ->add('agreeTerms', CheckboxType::class);
         } else {

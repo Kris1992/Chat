@@ -3,3 +3,6 @@ twig:
     form_themes:
       #- bootstrap_4_layout.html.twig
       - forms/custom_form.html.twig
+    paths:
+      'public/css/emails': styles
+      'public/css': basic_styles
