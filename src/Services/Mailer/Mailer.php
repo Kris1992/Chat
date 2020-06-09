@@ -6,7 +6,6 @@ namespace App\Services\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use Twig\Environment;
 use App\Entity\User;
 
 /**
@@ -17,13 +16,9 @@ class Mailer implements MailingSystemInterface
     /** @var MailerInterface */
     private $mailer;
 
-    /** @var Environment */
-    private $twig;
-
-    public function __construct(MailerInterface $mailer, Environment $twig)
+    public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
-        $this->twig = $twig;
     }
 
     public function sendResetPasswordMessage(User $user): TemplatedEmail

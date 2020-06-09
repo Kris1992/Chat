@@ -1,0 +1,6 @@
+./vendor/bin/phpspec run  spec/Services/ModelValidator
+./vendor/bin/phpspec describe App/Services/ModelValidator/ModelValidatorChooser
+
+./vendor/bin/phpspec run
+java -jar selenium-server-standalone-3.0.0.jar
+./vendor/bin/behat --tags=new

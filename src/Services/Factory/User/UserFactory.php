@@ -26,10 +26,10 @@ class UserFactory implements UserFactoryInterface
         /*$this->imagesManager = $imagesManager;*/
     }
     
-    public function create(UserModel $userModel, ?string $role, ?File $uploadedImage): User
+    public function create(UserModel $userModel, ?array $roles, ?File $uploadedImage): User
     {
-        if (!$role) {
-            $role = 'ROLE_USER';
+        if (!$roles) {
+            $roles = ['ROLE_USER'];
         }
         
         $user = new User();
@@ -37,7 +37,7 @@ class UserFactory implements UserFactoryInterface
             ->setEmail($userModel->getEmail())
             ->setLogin($userModel->getLogin())
             ->setGender($userModel->getGender())
-            ->setRoles([$role])
+            ->setRoles($roles)
             ->setLastActivity(new \DateTime())
             ;
 
