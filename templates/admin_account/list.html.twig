@@ -11,7 +11,7 @@
         </a>
         <h2 class="mb-3 font-weight-normal text-uppercase text-purple">All Accounts ({{ pagination.getTotalItemCount }})</h2>
         <div class="col-sm-4 mx-auto mb-2">
-                    {{ knp_pagination_filter(pagination, {}) }}
+            {{ knp_pagination_filter(pagination, {}) }}
         </div>
         <div class="table-responsive">
             <form action="{{ path('admin_account_ban_selected') }}" method="POST">
@@ -56,14 +56,24 @@
                                 <td>{{ user.id }}</td>
                                 <td>{{ user.email }}</td>
                                 <td>{{ user.login }}</td>
-                                <td>{{ user.roles[0] }}</td>
+                                <td>
+                                    {% for role in user.roles %}
+                                        <div class="role-wrapper">
+                                            <span>{{ role }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </td>
                                 <td>{{ user.gender }}</td>
                                 <td>{{ user.lastActivity | date('m/d/Y') }}</td>
                                 <td>
                                     {% if user.isAdmin %}
                                         <span class="text-primary fas fa-user-shield"></span>
                                     {% elseif date(user.banTo) > date() %}
-                                        <span class="text-danger fas fa-ban"></span>
+                                        <div class="link-wrapper">
+                                            <a href="{{ path('admin_account_ban', { id : user.id } ) }}" class="unban-user" data-name="user" data-id="{{ user.id }}" title="Unban">
+                                                <span class="text-danger fas fa-ban"></span>
+                                            </a>
+                                        </div>
                                         {{ user.banTo | date('m/d/Y') }}
                                     {% else %}
                                         <div class="link-wrapper">
@@ -75,7 +85,7 @@
                                 </td>
                                 <td class="links-table">
                                     <div class="link-wrapper">
-                                        <a href="" title="Edit">
+                                        <a href="{{ path('admin_account_edit', {id:user.id}) }}" title="Edit">
                                             <span class="fa fa-pencil-alt"></span>
                                         </a>
                                     </div>

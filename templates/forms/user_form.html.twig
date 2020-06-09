@@ -17,12 +17,6 @@
         attr: { placeholder: 'E-mail' }
     }) }}
 
-    {%  if userForm.role is defined %}
-        {{ form_row(userForm.role, {
-            label : 'Role: '
-        }) }}
-    {% endif %}
-
     {{ form_row(userForm.login, {
         label : false,
         attr: { placeholder: 'Login' }
@@ -32,6 +26,12 @@
         label : 'Gender: ',
         attr: { class: 'form-check-inline'}
     }) }}
+
+    {%  if userForm.roles is defined %}
+        {{ form_row(userForm.roles, {
+            label : 'Roles: '
+        }) }}
+    {% endif %}
 
     {% if userForm.plainPassword is defined %}
         {{ form_row(userForm.plainPassword.first, {

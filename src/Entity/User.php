@@ -228,6 +228,15 @@ class User implements UserInterface
         return $this;
     }
 
+    public function isBanned(): bool
+    {
+        if ($this->getBanTo() > new \DateTime()) {
+            return true;
+        }
+        
+        return false;
+    } 
+
     public function getPasswordToken(): ?PasswordToken
     {
         return $this->passwordToken;

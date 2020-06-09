@@ -6,9 +6,13 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{Response, Request};
 use Symfony\Component\Routing\Annotation\Route;
+use App\Services\Factory\UserModel\UserModelFactoryInterface;
+use App\Services\Updater\User\UserUpdaterInterface;
+use App\Services\BanManager\BanManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Repository\UserRepository;
+use App\Form\UserFormType;
 use App\Entity\User;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -37,15 +41,52 @@ class AdminAccountController extends AbstractController
     }
 
     /**
-     * @Route("/admin/account/{id}/ban", name="admin_account_ban",  methods={"POST"})
+     * @Route("/admin/account/{id}/edit", name="admin_account_edit", methods={"POST", "GET"})
      */
-    public function ban(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function edit(User $user, Request $request, EntityManagerInterface $entityManager, UserModelFactoryInterface $userModelFactory, UserUpdaterInterface $userUpdater)
     {
-        if ($user->isAdmin()) {
-            return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
+        /** @var UserModel $userModel */
+        $userModel = $userModelFactory->create($user);
+          
+        $form = $this->createForm(UserFormType::class, $userModel, [
+            'is_admin' => true
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            $user = $userUpdater->update($userModel, $user, null);
+            
+            $entityManager->flush();
+            $this->addFlash('success', 'User is updated!');
+
+            return $this->redirectToRoute('admin_account_edit', [
+                'id' => $user->getId(),
+            ]);
         }
 
-        $user->setBanTo(new \DateTime('now +7 days'));
+        return $this->render('admin_account/edit.html.twig', [
+            'userForm' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route("/admin/account/{id}/ban", name="admin_account_ban",  methods={"POST"})
+     */
+    public function banManage(Request $request, User $user, EntityManagerInterface $entityManager, BanManagerInterface $banManager): Response
+    {
+        $option = json_decode($request->getContent(), true);
+
+        try {
+            if ($option !== null && $option !== '') {
+                $user = $banManager->ban($user, intval($option));
+            } else {
+                $user = $banManager->unBan($user);
+            }
+        } catch (\Exception $e) {
+            return new Response(null, Response::HTTP_METHOD_NOT_ALLOWED);
+        }
+        
         $entityManager->flush();
 
         return new Response();

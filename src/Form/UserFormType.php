@@ -15,6 +15,7 @@ class UserFormType extends AbstractType
     {
         $user = $options['data'] ?? null;
         $isEdit = $user && $user->getId();
+        $isAdmin = $user && $user->isAdmin();
 
         $builder
             ->add('email', EmailType::class, [
@@ -53,14 +54,17 @@ class UserFormType extends AbstractType
                 ;
         }
 
-        if($options['is_admin']) {
+        if($options['is_admin'] && !$isAdmin) {
             $builder
-            ->add('role', ChoiceType::class, [
-                'choices'  => [
-                    'User' => 'ROLE_USER',
-                    'Admin' => 'ROLE_ADMIN'
-                ],
-            ]);
+                ->add('roles', ChoiceType::class, [
+                    'multiple' => true,
+                    'choices'  => [
+                        'User' => 'ROLE_USER',
+                        'Moderator' => 'ROLE_MODERATOR',
+                        'Admin' => 'ROLE_ADMIN'
+                    ],
+                    'help' => 'Remember user role is required, so even if you take it off it will be applied to accout'
+                ]);
         } 
     }
 

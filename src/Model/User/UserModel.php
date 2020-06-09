@@ -38,7 +38,8 @@ class UserModel
      */
     private $plainPassword;
 
-    private $role;
+    /* Always it is atleast one role (ROLE_USER), so we don't need asserts here*/
+    private $roles = [];
 
     /**
      * @Assert\NotNull(message="Please choose a gender")
@@ -98,17 +99,30 @@ class UserModel
         return $this->plainPassword;
     }
 
-    public function setRole(?string $role): self
+    public function getRoles(): array
     {
-        $this->role = $role;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }
 
-    public function getRole(): ?string
+    public function isAdmin(): bool
     {
-        return $this->role;
-    }
+        if (in_array('ROLE_ADMIN', $this->getRoles())) {
+            return true;
+        }
+        
+        return false;
+    } 
 
     public function getGender(): ?string
     {
