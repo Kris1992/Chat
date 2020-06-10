@@ -34,7 +34,6 @@ class UserUpdaterSpec extends ObjectBehavior
         $userModel = new UserModel();
         $userModel
             ->setEmail('newuser@example.com')
-            ->setLogin('NewLogin')
             ->setGender('Male')
             ->setRoles(['ROLE_USER'])
             ;
@@ -42,7 +41,7 @@ class UserUpdaterSpec extends ObjectBehavior
         $user = $this->update($userModel, $user, null);
         $user->shouldBeAnInstanceOf(User::class);
         $user->getEmail()->shouldReturn('newuser@example.com');
-        $user->getLogin()->shouldReturn('NewLogin');
+        $user->getLogin()->shouldReturn('PrevLogin');
         $user->getGender()->shouldReturn('Male');
         $user->isAdmin()->shouldReturn(false);
 

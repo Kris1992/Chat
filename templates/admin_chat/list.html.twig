@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Dashboard{% endblock %}
+
+{% block section_class %}dashboard{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content %}
+<div class="col-sm-12 text-center mt-5">
+    <a href="" class="btn btn-primary float-right">
+            Create <span class="fa fa-plus-circle"></span>
+        </a>
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">All Public Rooms ({{ pagination.getTotalItemCount }})</h2>
+        <div class="col-sm-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        <div class="table-responsive">
+            <form action="" method="POST">
+                <table class="table table-hover" id="list">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th></th>
+                            <th {% if pagination.isSorted('c.id') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, '#', 'c.id') }}
+                            </th>
+                            <th {% if pagination.isSorted('c.title') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Title', 'c.title') }}
+                            </th>
+                            <th {% if pagination.isSorted('c.isPublic') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Public', 'c.isPublic') }}
+                            </th>      
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room in pagination %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="deleteId[]" value="{{ room.id }}">
+                                </td>
+                                <td>{{ room.id }}</td>
+                                <td>{{ room.title }}</td>
+                                <td>
+                                    <span class="fa fa-{{ room.isPublic ? 'check text-success' : 'times text-danger' }}"></span>
+                                </td>
+                                <td class="links-table">
+                                    <div class="link-wrapper">
+                                        <a href="" title="Edit">
+                                            <span class="fa fa-pencil-alt"></span>
+                                        </a>
+                                    </div>
+                                </td>           
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <input type="hidden" name="token" value="{{ csrf_token('delete_multiple') }}"/>
+                <button type="submit" class="btn btn-danger float-left">Delete checked</button>
+            </form>
+        </div>
+        <div class="navigation">
+            {{ knp_pagination_render(pagination, null, {}, {
+                'align': 'center'
+            }) }}
+            {% include 'paginator/per_page.html.twig' %}
+        </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+{% endblock %}

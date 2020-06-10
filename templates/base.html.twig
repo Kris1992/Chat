@@ -39,9 +39,15 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ path('account_edit') }}" class="menu-item {{ app.request.get('_route') == 'account_edit' ? 'active' }}">
+                                <span class="fas fa-user-cog"></span>
+                                Settings
+                            </a>
+                        </li>
+                        <li>
                             <a href="" class="menu-item">
                                 <span class="fas fa-user-friends"></span>
-                                Friends
+                                Contacts
                             </a>
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}
@@ -55,9 +61,9 @@
                     </ul>
                     <ul class="list-unstyled sidebar-footer">
                         <li>
-                            <a href="{{ path('app_logout') }}" class="btn btn-white">
+                            <a href="{{ path('app_logout') }}" class="btn btn-white btn-lg">
                                 <span class="fas fa-sign-out-alt"></span>
-                                <span>Logout</span>
+                                <span class="text-uppercase"><strong>Logout</strong></span>
                             </a>
                         </li>
                     </ul>

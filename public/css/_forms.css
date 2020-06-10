@@ -1,0 +1,32 @@
+.imageForm-container {
+    width: 120px;
+    height: 100%;
+}
+.custom-file-label {
+    height: auto;
+}
+.custom-file-label.uploaded:after {
+    content: 'change' !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.image-toolbar .link-show {
+    right: 0px;
+    top: 0px;
+}
+.image-toolbar .link-delete {
+    right: 0px;
+    bottom: 0px;
+}
+.image-toolbar .link-delete:hover {
+    color: #f48159;
+}
+.imageForm {
+    width: 100px;
+    height: 100%;
+}
+.image-toolbar a.disabled {
+    color: #dddddd;
+}

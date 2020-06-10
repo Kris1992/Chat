@@ -5,6 +5,7 @@ namespace App\Model\User;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\{UniqueUser, ContainsAlphanumeric};
+use App\Services\ImagesManager\ImagesConstants;
 
 /**
 * @UniqueUser(
@@ -50,6 +51,8 @@ class UserModel
      * @Assert\IsTrue(message="You must agree to our terms")
      */
     private $agreeTerms;
+
+    private $imageFilename;
 
     public function getId(): ?int
     {
@@ -146,6 +149,29 @@ class UserModel
         $this->agreeTerms = $agreeTerms;
 
         return $this;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    
+    public function getImagePath(): ?string
+    {
+        return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.$this->getImageFilename();
+    }
+
+    public function getThumbImagePath(): ?string
+    {
+        return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

@@ -1,4 +1,7 @@
 {
+    "behat/transliterator": {
+        "version": "v1.3.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -99,6 +102,9 @@
     "fzaninotto/faker": {
         "version": "v1.9.1"
     },
+    "gedmo/doctrine-extensions": {
+        "version": "v2.4.41"
+    },
     "google/recaptcha": {
         "version": "1.1",
         "recipe": {
@@ -117,6 +123,9 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v5.2.0"
     },
+    "league/flysystem": {
+        "version": "1.0.69"
+    },
     "lorenzo/pinky": {
         "version": "1.0.5"
     },
@@ -131,6 +140,18 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.2.3"
+    },
+    "oneup/flysystem-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "0eb87bba411c227da027fe5f7c1dc7954b02f242"
+        },
+        "files": [
+            "config/packages/oneup_flysystem.yaml"
+        ]
     },
     "php": {
         "version": "7.2"
@@ -199,6 +220,18 @@
         },
         "files": [
             "config/packages/security_checker.yaml"
+        ]
+    },
+    "stof/doctrine-extensions-bundle": {
+        "version": "1.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.2",
+            "ref": "6c1ceb662f8997085f739cd089bfbef67f245983"
+        },
+        "files": [
+            "config/packages/stof_doctrine_extensions.yaml"
         ]
     },
     "symfony/asset": {

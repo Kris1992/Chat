@@ -22,6 +22,41 @@
         attr: { placeholder: 'Login' }
     }) }}
     
+    {% if userForm.imageFile is defined %}
+        {{ form_row(userForm.imageFile, {
+            'label' : 'Your image: ',
+            attr: {
+                'placeholder': 'Select an account image',
+            }
+        }) }}
+
+        {% if userForm.vars.data.imageFilename is defined and userForm.vars.data.imageFilename is not null %}
+            <div id="uploaded_image">
+                <p>Already uploaded:</p>
+                <div class="imageForm-container position-relative">
+                    <img class="imageForm rounded" src="" alt="User image">
+                    <div class="image-toolbar">
+                        <a href="" target="_blank">
+                            <span class="fa fa-search-plus position-absolute link-show"></span>
+                        </a>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a 
+                                href=""
+                                id="delete-image"
+                            >
+                                <span class="fa fa-trash position-absolute link-delete"></span>
+                            </a> 
+                        {% else %}
+                            <a href="" id="delete-image">
+                                <span class="fa fa-trash position-absolute link-delete"></span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    
     {{ form_row(userForm.gender, {
         label : 'Gender: ',
         attr: { class: 'form-check-inline'}
