@@ -19,6 +19,7 @@ class UserModelFactory implements UserModelFactoryInterface
             ->setLogin($user->getLogin())
             ->setGender($user->getGender())
             ->setRoles($user->getRoles())
+            ->setImageFilename($user->getImageFilename())
             ;
 
         return $userModel;

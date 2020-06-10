@@ -36,3 +36,6 @@ services:
     
     App\Services\Checker\CheckerInterface $isUserUniqueChecker: '@App\Services\Checker\User\UserUniqueChecker'
     Symfony\Component\Asset\Context\RequestStackContext: '@assets.context'
+
+    App\Services\ImagesManager\UsersImagesManager: ~
+    App\Services\ImagesManager\ImagesManagerInterface: '@App\Services\ImagesManager\UsersImagesManager'

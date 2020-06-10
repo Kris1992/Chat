@@ -33,10 +33,10 @@
         {% if userForm.vars.data.imageFilename is defined and userForm.vars.data.imageFilename is not null %}
             <div id="uploaded_image">
                 <p>Already uploaded:</p>
-                <div class="imageForm-container position-relative">
-                    <img class="imageForm rounded" src="" alt="User image">
+                <div class="imageForm-container position-relative mx-auto">
+                    <img class="imageForm rounded" src="{{ uploaded_asset(userForm.vars.data.thumbImagePath) }}" alt="User image">
                     <div class="image-toolbar">
-                        <a href="" target="_blank">
+                        <a href="{{ uploaded_asset(userForm.vars.data.imagePath) }}" target="_blank">
                             <span class="fa fa-search-plus position-absolute link-show"></span>
                         </a>
                         {% if is_granted('ROLE_ADMIN') %}

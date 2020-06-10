@@ -28,6 +28,7 @@ class UserModelFactorySpec extends ObjectBehavior
             ->setLogin('exampleUser')
             ->setGender('Male')
             ->setRoles(['ROLE_USER'])
+            ->setImageFilename('fakename.png')
             ;
 
         $userModel = $this->create($user);
@@ -36,6 +37,7 @@ class UserModelFactorySpec extends ObjectBehavior
         $userModel->getLogin()->shouldReturn('exampleUser');
         $userModel->getGender()->shouldReturn('Male');
         $userModel->isAdmin()->shouldReturn(false);
+        $userModel->getImageFilename()->shouldReturn('fakename.png');
         $userModel->getRoles()->shouldBeArray();
         $userModel->getRoles()[0]->shouldReturn('ROLE_USER');
 

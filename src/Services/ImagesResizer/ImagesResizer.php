@@ -67,12 +67,14 @@ class ImagesResizer implements ImagesResizerInterface
                     $gifDecoder = new GIFDecoder(fread(fopen($absoluteSource, "rb"), filesize($absoluteSource)));
                     $delays = $gifDecoder->GIFGetDelays();
                     $tempPath = $filePath.'/'.ImagesConstants::TEMP_GIF.'/';
+                    $absoluteTempPath = $this->uploadsDirectory.'/'.$tempPath;
                     $this->publicFilesystem->createDir($tempPath);
-            
+                    
+
                     $iterator = 1;
 
                     foreach ($gifDecoder->GIFGetFrames() as $frame) {
-                        $tempImagePath = $tempPath.'image'.$iterator.'.gif';
+                        $tempImagePath = $absoluteTempPath.'image'.$iterator.'.gif';
                         fwrite(fopen($tempImagePath, 'wb'), $frame);
                         $this->resizeFrame($tempImagePath, $newWidth);
                         $iterator++;
@@ -80,10 +82,10 @@ class ImagesResizer implements ImagesResizerInterface
 
                     $iterator = 1;
 
-                    if ($tempDir = opendir($tempPath)){
+                    if ($tempDir = opendir($absoluteTempPath)){
                         while (false !== ($data = readdir($tempDir))){
                             if ($data != "." && $data != ".." ) {
-                                $framesTemp[] = $tempPath.'image'.$iterator.'.gif';
+                                $framesTemp[] = $absoluteTempPath.'image'.$iterator.'.gif';
                                 $iterator++;
                             }
                         }
@@ -139,7 +141,6 @@ class ImagesResizer implements ImagesResizerInterface
 
         $newImage = imagecreatetruecolor($newWidth, $newHeight);
 
-        //dump($imageInfo);
         if(($imageInfo === 1) || ($imageInfo === 3)) {
             imagealphablending($newImage, false);
             imagesavealpha($newImage,true);
