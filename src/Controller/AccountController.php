@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\{Response, Request};
+use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
+use App\Exception\Api\ApiBadRequestHttpException;
+use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\{CsrfTokenManagerInterface, CsrfToken};
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
@@ -12,6 +14,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Security\LoginFormAuthenticator;
 use App\Services\Mailer\MailingSystemInterface;
 use App\Repository\{UserRepository, PasswordTokenRepository};
@@ -153,6 +156,38 @@ class AccountController extends AbstractController
         return $this->render('account/renew_password.html.twig', [
             'renewPasswordForm' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/api/account/delete_image", name="api_delete_user_image", methods={"DELETE"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function deleteImageAction(Request $request, JsonErrorResponseFactory $jsonErrorFactory, ImagesManagerInterface $userImagesManager, EntityManagerInterface $entityManager): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $data = json_decode($request->getContent(), true);
+        
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        $userId = $user->getId();
+
+        if($userId === intval($data['id'])) {
+            $imageFilename = $user->getImageFilename();
+            if(!empty($imageFilename)) {
+                $result = $userImagesManager->deleteImage($imageFilename, $user->getLogin());
+                if ($result) {
+                    $user->setImageFilename(null);
+                    $entityManager->flush();
+                    return new JsonResponse(Response::HTTP_OK);    
+                }
+            }
+        }
+        
+        return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Image not found.');
     }
 
 }

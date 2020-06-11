@@ -12,6 +12,11 @@ class ChatModel
 
 	/**
      * @Assert\NotBlank(message="Please enter a title")
+     * @Assert\Length(
+     *      max = 100,
+     *      maxMessage = "Title cannot be longer than {{ limit }} characters",
+     *      allowEmptyString = false
+     * )
      */
     private $title;
 
@@ -19,7 +24,6 @@ class ChatModel
 
     /* if is private 2 users needed*/
     private $users;
-
 
     private $isPublic;
 

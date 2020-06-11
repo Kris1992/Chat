@@ -1,0 +1,28 @@
+{% block chat_form %}
+<h2 class="mb-3 font-weight-normal text-uppercase text-purple">{{ header_text }}</h2>
+    
+{{ form_start(chatForm, {
+        attr: { class: 'align-items-center justify-content-center' }
+    }) 
+}}
+    {% if chatForm.id is defined %}
+        {{ form_row(chatForm.id, {
+            label: false,
+        }) }}
+    {% endif %}
+
+    {{ form_row(chatForm.title, {
+        label : false,
+        attr: { placeholder: 'Title' }
+    }) }}
+
+    {{ form_row(chatForm.description, {
+        label : false,
+        attr: { placeholder: 'Description' }
+    }) }}
+
+    <button class="btn btn-lg btn-primary text-uppercase" type="submit">{{ button_text }}</button>
+    
+{{ form_end(chatForm) }}
+
+{% endblock %}

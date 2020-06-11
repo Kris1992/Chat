@@ -25,6 +25,7 @@ class ChatFixtures extends BaseFixture implements DependentFixtureInterface
             $chat = new Chat();
             $chat
                 ->setTitle($this->faker->sentence(6))
+                ->setDescription($this->faker->text())
                 ->setIsPublic(true)
                 ; 
 

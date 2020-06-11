@@ -16,18 +16,16 @@ class ChatFormType extends AbstractType
         $isEdit = $chat && $chat->getId();
 
         $builder
-            ->add('title', TextType::class, [
-                'icon' => 'fas fa-envelope'
-            ])
+            ->add('title', TextType::class)
             ->add('description', TextType::class, [
-                'icon' => 'fas fa-envelope'
+                'help' => 'Add short description about this chat room'
             ])
             ;
 
         /* From admin area you can create just public rooms */
-        if ($options['is_admin']) {
-            $chat->setIsPublic(true);
-        }
+        //if ($options['is_admin']) {
+            //$chat->setIsPublic(true);
+        //}
 
     }
 

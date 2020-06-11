@@ -4,10 +4,13 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\{Response, Request};
+use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
+use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
+use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Services\BanManager\BanManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -43,7 +46,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/{id}/edit", name="admin_account_edit", methods={"POST", "GET"})
      */
-    public function edit(User $user, Request $request, EntityManagerInterface $entityManager, UserModelFactoryInterface $userModelFactory, UserUpdaterInterface $userUpdater)
+    public function edit(User $user, Request $request, EntityManagerInterface $entityManager, UserModelFactoryInterface $userModelFactory, UserUpdaterInterface $userUpdater): Response
     {
         /** @var UserModel $userModel */
         $userModel = $userModelFactory->create($user);
@@ -55,7 +58,7 @@ class AdminAccountController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             
-            $user = $userUpdater->update($userModel, $user, null);
+            $user = $userUpdater->update($userModel, $user, $form['imageFile']->getData());
             
             $entityManager->flush();
             $this->addFlash('success', 'User is updated!');
@@ -95,7 +98,7 @@ class AdminAccountController extends AbstractController
     /**
      * @Route("/admin/account/ban_selected", name="admin_account_ban_selected",  methods={"POST"})
      */
-    public function banSelected(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository)
+    public function banSelected(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
     {
         $submittedToken = $request->request->get('token');
         if($request->request->has('banId')) {
@@ -122,6 +125,37 @@ class AdminAccountController extends AbstractController
 
         $this->addFlash('warning','Nothing to do.');
         return $this->redirectToRoute('admin_account');
+    }
+
+    /**
+     * @Route("/api/admin/account/{id}/delete_image", name="api_admin_delete_user_image",
+     * methods={"DELETE"})
+     */
+    public function deleteUserImageAction(Request $request, User $user, JsonErrorResponseFactory $jsonErrorFactory, ImagesManagerInterface $userImagesManager, EntityManagerInterface $entityManager): Response
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+        
+        $userId = $user->getId();
+        
+        //double check that everything is ok
+        if($userId === intval($data['id'])) {
+            $imageFilename = $user->getImageFilename();
+            if(!empty($imageFilename)) {
+                $result = $userImagesManager->deleteImage($imageFilename, $user->getLogin());
+                if ($result) {
+                    $user->setImageFilename(null);
+                    $entityManager->flush();
+                    return new JsonResponse(Response::HTTP_OK);    
+                }
+            }
+        }
+
+        return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Image not found.');
     }
 
 }

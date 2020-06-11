@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Dashboard{% endblock %}
+
+{% block section_class %}addChat{% endblock %} 
+{% block content_class %}justify-content-center align-items-center{% endblock %}
+{% block content %}
+<div class="col-sm-6 text-center my-3">
+    {{ include('forms/chat_form.html.twig', {
+        header_text: 'New chat room',
+        button_text: 'Create'
+    }) }}
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

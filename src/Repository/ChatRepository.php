@@ -56,4 +56,21 @@ class ChatRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * findAllPublicByIds Find public chats with given ids
+     * @param  array  $arrayIds Array with at least one id
+     * @return Chat[]
+     */
+    public function findAllPublicByIds(array $arrayIds)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.id IN(:ids) AND c.isPublic = :isPublic')
+            ->setParameters([
+                'ids' => $arrayIds,
+                'isPublic' => true
+            ])
+            ->getQuery()
+            ->getResult();
+    }
+
 }

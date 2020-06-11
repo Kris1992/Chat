@@ -24,18 +24,33 @@ class UserModel
 
 	/**
      * @Assert\NotBlank(message="Please enter an email")
+     * @Assert\Length(
+     *      max = 180,
+     *      maxMessage = "Your email address cannot be longer than {{ limit }} characters",
+     *      allowEmptyString = false
+     * )
      * @Assert\Email()
      */
     private $email;
 
     /**
      * @Assert\NotBlank(message="Please enter a login")
+     * @Assert\Length(
+     *      max = 50,
+     *      maxMessage = "Your login cannot be longer than {{ limit }} characters",
+     *      allowEmptyString = false
+     * )
      */
     private $login;
 
     /**
      * @Assert\NotBlank(message="Please enter password", groups={"registration"})
      * @ContainsAlphanumeric()
+     * @Assert\Length(
+     *      max = 100,
+     *      maxMessage = "Your password cannot be longer than {{ limit }} characters",
+     *      allowEmptyString = false
+     * )
      */
     private $plainPassword;
 

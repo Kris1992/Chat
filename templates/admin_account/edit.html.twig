@@ -4,7 +4,10 @@
 
 {% block section_class %}editUser{% endblock %} 
 {% block content_class %}justify-content-center align-items-center{% endblock %}
-
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/_forms.css') }}">
+{% endblock %}
 {% block content %}
 <div class="col-sm-6 text-center my-3">
     {{ include('forms/user_form.html.twig', {
@@ -12,4 +15,9 @@
         button_text: 'Edit'
     }) }}
 </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="module" src="{{ asset('js/helpers/_errorHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_uploadImageForm.js') }}"></script>
 {% endblock %}
