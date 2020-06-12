@@ -128,7 +128,7 @@ class AdminAccountController extends AbstractController
     }
 
     /**
-     * @Route("/api/admin/account/{id}/delete_image", name="api_admin_delete_user_image",
+     * @Route("/api/admin/account/{id}/delete_image", name="api_admin_delete_account_image",
      * methods={"DELETE"})
      */
     public function deleteUserImageAction(Request $request, User $user, JsonErrorResponseFactory $jsonErrorFactory, ImagesManagerInterface $userImagesManager, EntityManagerInterface $entityManager): Response
@@ -150,7 +150,7 @@ class AdminAccountController extends AbstractController
                 if ($result) {
                     $user->setImageFilename(null);
                     $entityManager->flush();
-                    return new JsonResponse(Response::HTTP_OK);    
+                    return new JsonResponse(null, Response::HTTP_OK);    
                 }
             }
         }

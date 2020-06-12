@@ -159,7 +159,7 @@ class AccountController extends AbstractController
     }
 
     /**
-     * @Route("/api/account/delete_image", name="api_delete_user_image", methods={"DELETE"})
+     * @Route("/api/account/delete_image", name="api_delete_account_image", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      */
     public function deleteImageAction(Request $request, JsonErrorResponseFactory $jsonErrorFactory, ImagesManagerInterface $userImagesManager, EntityManagerInterface $entityManager): Response
@@ -182,12 +182,27 @@ class AccountController extends AbstractController
                 if ($result) {
                     $user->setImageFilename(null);
                     $entityManager->flush();
-                    return new JsonResponse(Response::HTTP_OK);    
+                    return new JsonResponse(null, Response::HTTP_OK);    
                 }
             }
         }
         
         return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Image not found.');
+    }
+
+    /**
+     * @Route("/api/account/update_last_activity", name="api_account_last_activity", methods={"POST"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function updateLastActivity(Request $request, EntityManagerInterface $entityManager): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $user->updateLastActivity();
+        $entityManager->flush();        
+        
+        return new JsonResponse(null, Response::HTTP_OK);
     }
 
 }

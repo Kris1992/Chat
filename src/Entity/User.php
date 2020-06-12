@@ -72,19 +72,9 @@ class User implements UserInterface
     private $passwordToken;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Chat::class, mappedBy="users")
-     */
-    private $chats;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $imageFilename;
-
-    public function __construct()
-    {
-        $this->chats = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -214,6 +204,22 @@ class User implements UserInterface
         return $this;
     }
 
+    public function updateLastActivity(): self
+    {
+        $this->lastActivity = new \DateTime();
+
+        return $this;
+    }
+
+    public function isActiv()
+    {
+        if ($this->getLastActivity() < new \DateTime('now -30 seconds')) {
+            return false;
+        }
+        
+        return true;
+    }
+
     public function getFailedAttempts(): ?int
     {
         return $this->failedAttempts;
@@ -262,34 +268,6 @@ class User implements UserInterface
     public function setPasswordToken(?PasswordToken $passwordToken): self
     {
         $this->passwordToken = $passwordToken;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Chat[]
-     */
-    public function getChats(): Collection
-    {
-        return $this->chats;
-    }
-
-    public function addChat(Chat $chat): self
-    {
-        if (!$this->chats->contains($chat)) {
-            $this->chats[] = $chat;
-            $chat->addUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeChat(Chat $chat): self
-    {
-        if ($this->chats->contains($chat)) {
-            $this->chats->removeElement($chat);
-            $chat->removeUser($this);
-        }
 
         return $this;
     }

@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Public Room{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/_chat.css') }}">
+{% endblock %}
+{% block section_class %}publicRoom{% endblock %} 
+{% block content %}
+<div class="col-sm-12 text-center my-3">
+    <div class="row">
+        <div class="col-sm-12">
+            <h4 class="mb-3 font-weight-normal text-uppercase text-purple">{{ chat.title }}</h4>
+        </div>
+        <div class="col-sm-12 mx-auto js-chat-wrapper">
+            <div class="row">
+                <div class="col-sm-12 col-md-8 bg-white messages-container p-0">
+                    <div class="col-12 bg-primary text-center text-uppercase">
+                        Messages
+                    </div>
+                    <div class="col-12">
+                        message  
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-4 bg-white users-container">
+                    <div class="row">
+                        <div class="col-12 bg-primary text-center text-uppercase">
+                            Participants
+                        </div>
+                        <div class="col-12">
+                            users list
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 bg-white textarea-container">
+                    <form action="{{ path('api_chat_message', { id: chat.id }) }}" method="POST" id="js-form">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="form-group my-2">
+                                    <label class="sr-only" for="js-message-text">Write message</label>
+                                    <textarea name="inputMessage" class="form-control bg-dark" id="js-message-text" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-2 my-auto">
+                                <button type="submit" class="btn btn-block btn-primary" id="js-send-message">Send</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+    <script type="module" src="{{ asset('js/helpers/_errorHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/helpers/_validationHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_chatApi.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var $wrapper = $('.js-chat-wrapper');
+            var chatApi = new ChatApi($wrapper);
+        });
+    </script>
+{% endblock %}

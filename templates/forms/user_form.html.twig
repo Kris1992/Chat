@@ -41,13 +41,13 @@
                         </a>
                         {% if is_granted('ROLE_ADMIN') %}
                             <a 
-                                href="{{ path('api_admin_delete_user_image', { id: userForm.vars.data.id }) }}"
+                                href="{{ path('api_admin_delete_account_image', { id: userForm.vars.data.id }) }}"
                                 id="delete-image"
                             >
                                 <span class="fa fa-trash position-absolute link-delete"></span>
                             </a> 
                         {% else %}
-                            <a href="{{ path('api_delete_user_image') }}" id="delete-image">
+                            <a href="{{ path('api_delete_account_image') }}" id="delete-image">
                                 <span class="fa fa-trash position-absolute link-delete"></span>
                             </a>
                         {% endif %}

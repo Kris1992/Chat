@@ -20,6 +20,12 @@ class Message
     private $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $owner;
+
+    /**
      * @ORM\Column(type="text")
      */
     private $content;
@@ -33,6 +39,18 @@ class Message
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
     }
 
     public function getContent(): ?string

@@ -27,17 +27,19 @@
                 {% if is_granted('ROLE_USER') %}
                     <ul class="list-unstyled menu-wrapper text-uppercase">
                         <li>
-                            <a href="" class="menu-item">
+                            <a href="{{ path('chat_dashboard') }}" class="menu-item {{ app.request.get('_route') starts with 'chat' ? 'active' }}">
                                 <span class="fas fa-home"></span>
                                 Rooms
                             </a>
                         </li>
+                        <!--
                         <li>
                             <a href="" class="menu-item">
                                 <span class="fas fa-briefcase"></span>
                                 Profile
                             </a>
                         </li>
+                        -->
                         <li>
                             <a href="{{ path('account_edit') }}" class="menu-item {{ app.request.get('_route') == 'account_edit' ? 'active' }}">
                                 <span class="fas fa-user-cog"></span>
@@ -91,7 +93,7 @@
                 {% endif %}
             </nav>
             <div class="container-fluid">
-                <nav class="navbar navbar-dark bg-primary navbar-expand-sm">
+                <nav class="navbar navbar-dark bg-primary navbar-expand-sm rounded-bottom">
                     <button type="button" id="sidebarCollapse" class="btn btn-white">
                         <span class="fas fa-align-left"></span>
                         <span>Toggle Menu</span>
@@ -127,8 +129,12 @@
                 $('#sidebarCollapse').on('click', function () {
                 $('#sidebar').toggleClass('active');
                 });
+
             });
         </script>
+        {% if is_granted('ROLE_USER') %}
+            <script type="text/javascript" src="{{ asset('js/_userActivity.js') }}"></script>
+        {% endif %}
         {% endblock %}
     </body>
 </html>

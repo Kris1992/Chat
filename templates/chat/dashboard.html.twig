@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Rooms{% endblock %}
+
+{% block section_class %}selectRooms{% endblock %} 
+{% block content_class %}viewh-75{% endblock %}
+{% block content %}
+<div class="col-sm-12 text-center my-auto">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Rooms type</h2>
+        </div>
+        <div class="col-sm-12 col-md-8 p-3 mx-auto my-3 link-card">
+            <a href="{{ path('chat_public') }}" class="stretched-link">
+                <div class="card bg-transparent border-0">
+                    <div class="row no-gutters">
+                        <div class="col-auto">
+                            <img src="//placehold.it/100" class="img-fluid" alt="">
+                        </div>
+                        <div class="col">
+                            <div class="card-block px-2">
+                                <h4 class="card-title text-left text-uppercase title-style">Public Rooms</h4>
+                                <p class="card-text text-left"><small>Choose this option if you wanna join to public chat. Public chat room allow to join into all registered users.</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-12 col-md-8 p-3 mx-auto my-3 link-card">
+            <a href="" class="stretched-link">
+                <div class="card bg-transparent border-0">
+                    <div class="row no-gutters">
+                        <div class="col-auto">
+                            <img src="//placehold.it/100" class="img-fluid" alt="">
+                        </div>
+                        <div class="col">
+                            <div class="card-block px-2">
+                                <h4 class="card-title text-left text-uppercase title-style">Private Rooms</h4>
+                                <p class="card-text text-left"><small>Choose this option if you wanna join or create private chat room. Private chat room gives owner possibility to invite into just friends from contacts lists. So if You wanna talk about something with only one or more Your contacts just create private chat room.</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

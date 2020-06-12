@@ -152,6 +152,10 @@ ul.sidebar-footer a {
     text-decoration: none;
 }
 
+.chat-card:hover {
+    background-color: rgba(255,255,255,.35);
+}
+
 .text-purple {
     color: var(--color-purple);
 }

@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace App\Services\Factory\Chat;
 
 use App\Model\Chat\ChatModel;
-use App\Entity\Chat;
+use App\Entity\{Chat, User};
 
 class ChatFactory implements ChatFactoryInterface 
 {
     
-    public function create(ChatModel $chatModel): Chat
+    public function create(ChatModel $chatModel, User $owner): Chat
     {
 
         /* From admin area only public chat rooms */
@@ -22,6 +22,7 @@ class ChatFactory implements ChatFactoryInterface
             ->setTitle($chatModel->getTitle())
             ->setDescription($chatModel->getDescription())
             ->setIsPublic($chatModel->getIsPublic())
+            ->setOwner($owner)
             ;
             //add users if is not public
         return $chat;

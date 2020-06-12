@@ -46,18 +46,20 @@ class AdminChatController extends AbstractController
      */
     public function add(Request $request, EntityManagerInterface $entityManager, ChatFactoryInterface $chatFactory): Response
     {
-          
+
         $form = $this->createForm(ChatFormType::class, null , [
             'is_admin' => true
         ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            
+                
             /** @var ChatModel $chatModel */
             $chatModel = $form->getData();
 
-            $chat = $chatFactory->create($chatModel);
+            /** @var User $user */
+            $user = $this->getUser();
+            $chat = $chatFactory->create($chatModel, $user);
             
             $entityManager->persist($chat);
             $entityManager->flush();
@@ -125,7 +127,7 @@ class AdminChatController extends AbstractController
                 /* Admin can delete only public chat rooms */
                 $chats = $chatRepository->findAllPublicByIds($ids);
                 if($chats) {
-                    
+
                     foreach ($chats as $chat) {
                         $entityManager->remove($chat);
                     }
