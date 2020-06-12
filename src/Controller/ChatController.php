@@ -8,12 +8,17 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ChatRepository;
 use App\Entity\Chat;
 
 
 //
 use App\Exception\Api\ApiBadRequestHttpException;
+use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
+use App\Services\ModelValidator\ModelValidatorInterface;
+use App\Services\Factory\Message\MessageFactoryInterface;
+//przeniesc do facade
 
 /**
 * @IsGranted("ROLE_USER")
@@ -64,17 +69,25 @@ class ChatController extends AbstractController
     /**
      * @Route("api/chat/{id}/message", name="api_chat_message", methods={"POST"})
      */
-    public function addMessage(Chat $chat, Request $request): Response
+    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
     {
 
-        /** @var User $user */
-        $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
         
         if ($data === null) {
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
-        dump($data);
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $messageModel = $messageModelFactory->createFromData($data['content'], $user, $chat);
+        $isValid = $modelValidator->isValid($messageModel);
+        if ($isValid) {
+            $message = $messageFactory->create($messageModel);
+            $chat->addMessage($message);
+            $entityManager->flush();
+        }
+
         return new JsonResponse(null, Response::HTTP_OK); 
 
 
