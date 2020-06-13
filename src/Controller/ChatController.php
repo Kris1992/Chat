@@ -19,8 +19,9 @@ use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\Factory\Message\MessageFactoryInterface;
 use Symfony\Component\WebLink\Link;
-use Symfony\Component\Mercure\PublisherInterface;
-use Symfony\Component\Mercure\Update;
+use Symfony\Component\Mercure\{PublisherInterface, Update};
+use Symfony\Component\Serializer\SerializerInterface;
+
 //przeniesc do facade
 
 /**
@@ -74,7 +75,7 @@ class ChatController extends AbstractController
     /**
      * @Route("api/chat/{id}/message", name="api_chat_message", methods={"POST"})
      */
-    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
+    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, SerializerInterface $serializer, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
     {
 
         $data = json_decode($request->getContent(), true);
@@ -91,23 +92,27 @@ class ChatController extends AbstractController
             $message = $messageFactory->create($messageModel);
             $chat->addMessage($message);
             $entityManager->flush();
+
+            $serializedMessage = $serializer->serialize(
+                $message,
+                'json', ['groups' => 'chat:message']
+            );
             $update = new Update(
                 [
                     sprintf('/chat/public/%d', $chat->getId())
                 ],
-                'message here',
+                $serializedMessage,
                 false //true
             );
         
             $publisher->__invoke($update);
-            return $this->json($message, Response::HTTP_CREATED, [], []); 
+            
+            return new JsonResponse($serializedMessage, Response::HTTP_OK); 
+            //return $this->json($message, Response::HTTP_CREATED, [], []); 
         }
 
-
-
-        
         //json error response here
-        new JsonResponse(null, Response::HTTP_OK); 
+        return new JsonResponse(null, Response::HTTP_OK); 
 
 
     }

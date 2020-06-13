@@ -3,15 +3,17 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+use Gedmo\Mapping\Annotation as Gedmo;
 use App\Repository\MessageRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity(repositoryClass=MessageRepository::class)
  */
 class Message
 {
+    
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -22,23 +24,27 @@ class Message
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"chat:message"})
      */
     private $owner;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"chat:message"})
      */
     private $content;
 
     /**
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
+     * @Groups({"chat:message"})
      */
     private $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=Chat::class, inversedBy="messages")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"chat:message"})
      */
     private $chat;
 

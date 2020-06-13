@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\{ArrayCollection, Collection};
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -18,6 +18,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"chat:message"})
      */
     private $id;
 
@@ -33,6 +34,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
+     * @Groups({"chat:message"})
      */
     private $login;
 
@@ -73,6 +75,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"chat:message"})
      */
     private $imageFilename;
 

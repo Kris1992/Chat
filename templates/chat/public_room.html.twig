@@ -19,9 +19,7 @@
                     <div class="col-12 bg-primary text-center text-uppercase">
                         Messages
                     </div>
-                    <div class="col-12">
-                        message  
-                    </div>
+                    <div class="col-12" id="js-messages-container"></div>
                 </div>
                 <div class="col-sm-12 col-md-4 bg-white users-container">
                     <div class="row">
@@ -34,7 +32,7 @@
                     </div>
                 </div>
                 <div class="col-12 bg-white textarea-container">
-                    <form action="{{ path('api_chat_message', { id: chat.id }) }}" method="POST" id="js-form">
+                    <form action="{{ path('api_chat_message', { id: chat.id }) }}" data-user="{{ app.user.id }}" method="POST" id="js-form">
                         <div class="row">
                             <div class="col-8">
                                 <div class="form-group my-2">
@@ -52,10 +50,11 @@
         </div>
     </div>
 </div>
+{{ include('js_templates/messages.html.twig') }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
     <script type="module" src="{{ asset('js/helpers/_errorHelper.js') }}"></script>

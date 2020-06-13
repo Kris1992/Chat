@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\ChatRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\{ArrayCollection, Collection};
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ChatRepository;
 
 /**
  * @ORM\Entity(repositoryClass=ChatRepository::class)
@@ -17,6 +17,7 @@ class Chat
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"chat:message"})
      */
     private $id;
 
