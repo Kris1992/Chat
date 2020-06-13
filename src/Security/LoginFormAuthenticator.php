@@ -123,11 +123,12 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        /*
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
-        }
+        }*/
 
-        //zmienic app_homepage
+        /* Always redirect to app_homepage to set JWT */
         return new RedirectResponse($this->urlGenerator->generate('app_homepage'));
     }
 

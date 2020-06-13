@@ -123,6 +123,9 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v5.2.0"
     },
+    "lcobucci/jwt": {
+        "version": "3.3.2"
+    },
     "league/flysystem": {
         "version": "1.0.69"
     },
@@ -181,6 +184,9 @@
         "version": "1.0.0"
     },
     "psr/event-dispatcher": {
+        "version": "1.0.0"
+    },
+    "psr/link": {
         "version": "1.0.0"
     },
     "psr/log": {
@@ -376,6 +382,21 @@
             "ref": "fadbfe33303a76e25cb63401050439aa9b1a9c7f"
         }
     },
+    "symfony/mercure": {
+        "version": "v0.4.0"
+    },
+    "symfony/mercure-bundle": {
+        "version": "0.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "0.2",
+            "ref": "a37d3438e4bd4f9f924c516996bc29e25f66b07e"
+        },
+        "files": [
+            "config/packages/mercure.yaml"
+        ]
+    },
     "symfony/mime": {
         "version": "v5.1.0"
     },
@@ -537,6 +558,9 @@
     },
     "symfony/var-exporter": {
         "version": "v5.1.0"
+    },
+    "symfony/web-link": {
+        "version": "v5.1.1"
     },
     "symfony/web-profiler-bundle": {
         "version": "3.3",

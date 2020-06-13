@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "956e81f9cac21eea93eb465b4848bc03",
+    "content-hash": "b58652c28c8df1c85fc288af8b9f7b27",
     "packages": [
         {
             "name": "behat/transliterator",
@@ -1592,6 +1592,61 @@
             "time": "2020-04-28T06:16:13+00:00"
         },
         {
+            "name": "lcobucci/jwt",
+            "version": "3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lcobucci/jwt.git",
+                "reference": "56f10808089e38623345e28af2f2d5e4eb579455"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/56f10808089e38623345e28af2f2d5e4eb579455",
+                "reference": "56f10808089e38623345e28af2f2d5e4eb579455",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "php": "^5.6 || ^7.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "~1.5",
+                "phpmd/phpmd": "~2.2",
+                "phpunit/php-invoker": "~1.1",
+                "phpunit/phpunit": "^5.7 || ^7.3",
+                "squizlabs/php_codesniffer": "~2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lcobucci\\JWT\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Luís Otávio Cobucci Oblonczyk",
+                    "email": "lcobucci@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple library to work with JSON Web Token and JSON Web Signature",
+            "keywords": [
+                "JWS",
+                "jwt"
+            ],
+            "time": "2020-05-22T08:21:12+00:00"
+        },
+        {
             "name": "league/flysystem",
             "version": "1.0.69",
             "source": {
@@ -2417,6 +2472,55 @@
                 "psr-14"
             ],
             "time": "2019-01-08T18:20:26+00:00"
+        },
+        {
+            "name": "psr/link",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/link.git",
+                "reference": "eea8e8662d5cd3ae4517c9b864493f59fca95562"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/link/zipball/eea8e8662d5cd3ae4517c9b864493f59fca95562",
+                "reference": "eea8e8662d5cd3ae4517c9b864493f59fca95562",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Link\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interfaces for HTTP links",
+            "keywords": [
+                "http",
+                "http-link",
+                "link",
+                "psr",
+                "psr-13",
+                "rest"
+            ],
+            "time": "2016-10-28T16:06:13+00:00"
         },
         {
             "name": "psr/log",
@@ -4612,6 +4716,134 @@
             "time": "2020-05-30T20:35:19+00:00"
         },
         {
+            "name": "symfony/mercure",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/mercure.git",
+                "reference": "7cec6a0e5ac5ad5bb4ac04939ff752ccda2af4cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/mercure/zipball/7cec6a0e5ac5ad5bb4ac04939ff752ccda2af4cc",
+                "reference": "7cec6a0e5ac5ad5bb4ac04939ff752ccda2af4cc",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "symfony/http-client": "^4.3.5|^5.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^4.2.4|^5.0",
+                "symfony/stopwatch": "^4.3|^5.0"
+            },
+            "suggest": {
+                "symfony/stopwatch": "Integration with the profiler performances"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.3.x-dev"
+                },
+                "thanks": {
+                    "name": "dunglas/mercure",
+                    "url": "https://github.com/dunglas/mercure"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Mercure\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Dunglas",
+                    "email": "dunglas@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Mercure Component",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "mercure",
+                "push",
+                "sse",
+                "updates"
+            ],
+            "time": "2020-05-27T14:53:11+00:00"
+        },
+        {
+            "name": "symfony/mercure-bundle",
+            "version": "v0.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/mercure-bundle.git",
+                "reference": "d46c48f0ba074d73d0493ac5256596d9ce785ce6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/mercure-bundle/zipball/d46c48f0ba074d73d0493ac5256596d9ce785ce6",
+                "reference": "d46c48f0ba074d73d0493ac5256596d9ce785ce6",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "symfony/config": "^4.3.7|^5.0",
+                "symfony/dependency-injection": "^4.3.7|^5.0",
+                "symfony/http-kernel": "^4.3.7|^5.0",
+                "symfony/mercure": "^0.3|^0.4"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^4.3.7|^5.0",
+                "symfony/stopwatch": "^4.3.7|^5.0",
+                "symfony/var-dumper": "^4.3.7|^5.0"
+            },
+            "suggest": {
+                "symfony/messenger": "To use the Messenger integration"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Bundle\\MercureBundle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Dunglas",
+                    "email": "dunglas@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony MercureBundle",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "mercure",
+                "push",
+                "sse",
+                "updates"
+            ],
+            "time": "2020-05-27T14:57:23+00:00"
+        },
+        {
             "name": "symfony/mime",
             "version": "v5.1.0",
             "source": {
@@ -6545,6 +6777,81 @@
                 "serialize"
             ],
             "time": "2020-05-20T17:43:50+00:00"
+        },
+        {
+            "name": "symfony/web-link",
+            "version": "v5.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/web-link.git",
+                "reference": "ba2554887e34e693e3888f23f83c72d5ce04bfb2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/web-link/zipball/ba2554887e34e693e3888f23f83c72d5ce04bfb2",
+                "reference": "ba2554887e34e693e3888f23f83c72d5ce04bfb2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.5",
+                "psr/link": "^1.0"
+            },
+            "conflict": {
+                "symfony/http-kernel": "<4.4"
+            },
+            "provide": {
+                "psr/link-implementation": "1.0"
+            },
+            "require-dev": {
+                "symfony/http-foundation": "^4.4|^5.0",
+                "symfony/http-kernel": "^4.4|^5.0"
+            },
+            "suggest": {
+                "symfony/http-kernel": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\WebLink\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Dunglas",
+                    "email": "dunglas@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony WebLink Component",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "dns-prefetch",
+                "http",
+                "http2",
+                "link",
+                "performance",
+                "prefetch",
+                "preload",
+                "prerender",
+                "psr13",
+                "push"
+            ],
+            "time": "2020-05-28T08:20:44+00:00"
         },
         {
             "name": "symfony/yaml",

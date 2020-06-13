@@ -18,6 +18,9 @@ use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\Factory\Message\MessageFactoryInterface;
+use Symfony\Component\WebLink\Link;
+use Symfony\Component\Mercure\PublisherInterface;
+use Symfony\Component\Mercure\Update;
 //przeniesc do facade
 
 /**
@@ -56,8 +59,10 @@ class ChatController extends AbstractController
     /**
      * @Route("/chat/public/{id}", name="chat_public_room", methods={"GET"})
      */
-    public function publicRoom(Chat $chat): Response
+    public function publicRoom(Chat $chat, Request $request): Response
     {
+        $hubUrl = $this->getParameter('mercure.default_hub');
+        $this->addLink($request, new Link('mercure', $hubUrl));
 
         return $this->render('chat/public_room.html.twig', [
             'chat' => $chat,
@@ -69,7 +74,7 @@ class ChatController extends AbstractController
     /**
      * @Route("api/chat/{id}/message", name="api_chat_message", methods={"POST"})
      */
-    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
+    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
     {
 
         $data = json_decode($request->getContent(), true);
@@ -86,9 +91,23 @@ class ChatController extends AbstractController
             $message = $messageFactory->create($messageModel);
             $chat->addMessage($message);
             $entityManager->flush();
+            $update = new Update(
+                [
+                    sprintf('/chat/public/%d', $chat->getId())
+                ],
+                'message here',
+                false //true
+            );
+        
+            $publisher->__invoke($update);
+            return $this->json($message, Response::HTTP_CREATED, [], []); 
         }
 
-        return new JsonResponse(null, Response::HTTP_OK); 
+
+
+        
+        //json error response here
+        new JsonResponse(null, Response::HTTP_OK); 
 
 
     }
