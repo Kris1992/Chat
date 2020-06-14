@@ -6,6 +6,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\{ArrayCollection, Collection};
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Services\ImagesManager\ImagesConstants;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -286,16 +287,18 @@ class User implements UserInterface
 
         return $this;
     }
-
-    /*
+    
     public function getImagePath()
     {
         return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.$this->getImageFilename();
     }
 
+    /**
+     * @Groups({"chat:message"})
+     */
     public function getThumbImagePath()
     {
         return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
-    }*/
+    }
 
 }

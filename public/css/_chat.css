@@ -1,10 +1,16 @@
 .messages-container {
-    min-height: 60vh;
+    height: 60vh;
+    border: 1px solid #ABDACD;
+    overflow-y: scroll;
+}
+
+.chat-header {
     border: 1px solid #ABDACD;
 }
 
 .users-container {
     border: 1px solid #ABDACD;
+    overflow-y: scroll;
 }
 
 .textarea-container {
@@ -15,4 +21,17 @@
 textarea {
     resize: none;
     color: #fff !important;
+}
+
+.user-image {
+    width: 25px;
+    height: 25px;
+}
+
+.image-circle {
+    border-radius: 50%;
+}
+
+.message-rounded {
+    border-radius: 20%;
 }

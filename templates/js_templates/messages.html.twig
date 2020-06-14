@@ -1,17 +1,36 @@
 <script type="text/template" id="js-own-message-template">
-    <div class="col-12">
+    <div class="col-12 my-2">
         <div class="row">
             <div class="col-12">
-                <strong class="float-left">You</strong>
+                <% if (owner.imageFilename !== null) { %>
+                    <img class="user-image image-circle float-left" src="<%= baseAsset %><%= owner.thumbImagePath %>" alt="User image">
+                <% } else { %>
+                    <img class="user-image image-circle float-left" src="<%= defaultUserImage %>" alt="User image">
+                <% } %>
+                <strong class="ml-2 float-left">You</strong>
             </div>
-            <div class="col-12">
-                <span><%= content %></span>
+            <div class="col-9 mx-auto">
+                <p class="text-left bg-primary rounded w-100 p-2"><%= content %></p>
+                <small class="float-left text-muted"><%= createdAt %></small>
             </div>
         </div>
     </div>
 </script>
 <script type="text/template" id="js-others-massage-template">
-    <div class="">
-        <strong>others</strong>
+    <div class="col-12 my-2">
+        <div class="row">
+            <div class="col-12">
+                <% if (owner.imageFilename !== null) { %>
+                    <img class="user-image image-circle float-right" src="<%= baseAsset %><%= owner.thumbImagePath %>" alt="User image">
+                <% } else { %>
+                    <img class="user-image image-circle float-right" src="<%= defaultUserImage %>" alt="User image">
+                <% } %>
+                <strong class="mr-2 float-right"><%= owner.login %></strong>
+            </div>
+            <div class="col-9 mx-auto">
+                <p class="text-left bg-secondary rounded w-100 p-2"><%= content %></p>
+                <small class="float-right text-muted"><%= createdAt %></small>
+            </div>
+        </div>
     </div>
 </script>

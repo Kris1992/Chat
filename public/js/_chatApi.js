@@ -8,10 +8,12 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
     class ChatApi
     {
-        constructor($wrapper)
+        constructor($wrapper, defaultUserImage, baseAsset)
         {
             
             this.$wrapper = $wrapper;
+            this.defaultUserImage = defaultUserImage;
+            this.baseAsset = baseAsset;
             
             this.$wrapper.on(
                 'click', 
@@ -48,9 +50,10 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 $textareaInput.val('');
                 console.log(data);
                 if (data['owner']['id'] === $form.data('user')) {
+                    data['createdAt'] = this.formatDateTime(data['createdAt']);
                     this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
                 } else {
-                    console.log('message from others template');
+                    this.showOthersMessage(data, $(ChatApi._selectors.messagesContainer));
                 }
 
 
@@ -87,9 +90,52 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
         showOwnMessage(data, $target) {
             const tplText = $(ChatApi._selectors.ownMessageTemplate).html();
+            this.showMessage(data, $target, tplText);
+        }
+
+        showOthersMessage(data, $target) {
+            const tplText = $(ChatApi._selectors.othersMessageTemplate).html();
+            this.showMessage(data, $target, tplText);
+        }
+
+        showMessage(data, $target, tplText) {
             const tpl = _.template(tplText);
-            const html = tpl(data);
+            const html = tpl(data, {defaultUserImage:this.defaultUserImage}, {baseAsset:this.baseAsset});
             $target.append($.parseHTML(html));
+            $target.stop().animate({
+                scrollTop: $target[0].scrollHeight
+            }, 1200);
+        }
+
+        formatDateTime(date) {
+            let dateObject = new Date(date);
+        
+            let month = dateObject.getMonth();
+            let day = dateObject.getDate();
+            let year = dateObject.getFullYear();
+
+            let hours = dateObject.getHours();
+            let minutes = dateObject.getMinutes();
+            let ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+
+            if (this.isToday(dateObject)) {
+                var strTime = hours + ':' + minutes + ' ' + ampm;
+            } else {
+                var strTime = month+'/'+day+'/'+year+' '+hours + ':' + minutes + ' ' + ampm;    
+            }
+            
+            return strTime;
+        }
+
+        isToday(dateObject) {
+            const today = new Date();
+
+            return dateObject.getDate() === today.getDate() 
+                && dateObject.getMonth() === today.getMonth() 
+                && dateObject.getFullYear() === today.getFullYear();
         }
     }
 

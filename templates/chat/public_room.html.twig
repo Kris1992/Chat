@@ -15,21 +15,21 @@
         </div>
         <div class="col-sm-12 mx-auto js-chat-wrapper">
             <div class="row">
-                <div class="col-sm-12 col-md-8 bg-white messages-container p-0">
-                    <div class="col-12 bg-primary text-center text-uppercase">
-                        Messages
+                <div class="col-12 col-md-8 bg-primary chat-header text-center text-uppercase">
+                    Messages
+                </div>
+                <div class="col-12 col-md-4 bg-primary chat-header text-center text-uppercase">
+                    Participants
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 col-md-8 bg-white p-0">
+                    <div class="m-0 row">
+                        <div class="col-12 messages-container w-100" id="js-messages-container"></div>
                     </div>
-                    <div class="col-12" id="js-messages-container"></div>
                 </div>
                 <div class="col-sm-12 col-md-4 bg-white users-container">
-                    <div class="row">
-                        <div class="col-12 bg-primary text-center text-uppercase">
-                            Participants
-                        </div>
-                        <div class="col-12">
-                            users list
-                        </div>
-                    </div>
+                    
                 </div>
                 <div class="col-12 bg-white textarea-container">
                     <form action="{{ path('api_chat_message', { id: chat.id }) }}" data-user="{{ app.user.id }}" method="POST" id="js-form">
@@ -50,6 +50,10 @@
         </div>
     </div>
 </div>
+<script>
+    var defaultUserImage = "{{ asset('img/users/default.png') }}";
+    var baseAsset = "{{ uploaded_asset('') }}";
+</script>
 {{ include('js_templates/messages.html.twig') }}
 {% endblock %}
 {% block javascripts %}
@@ -63,7 +67,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var $wrapper = $('.js-chat-wrapper');
-            var chatApi = new ChatApi($wrapper);
+            var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset);
         });
     </script>
 {% endblock %}
