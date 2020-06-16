@@ -35,8 +35,7 @@ class ChatRepository extends ServiceEntityRepository
             ->andWhere('c.isPublic = :public')
             ->setParameter('public', true)
             ->getQuery()
-
-        ;
+            ;
     }
 
     /**
@@ -53,7 +52,7 @@ class ChatRepository extends ServiceEntityRepository
                 'public' => true
             ])
             ->getQuery()
-        ;
+            ;
     }
 
     /**
@@ -70,7 +69,8 @@ class ChatRepository extends ServiceEntityRepository
                 'isPublic' => true
             ])
             ->getQuery()
-            ->getResult();
+            ->getResult()
+            ;
     }
 
 }

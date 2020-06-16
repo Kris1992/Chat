@@ -45,9 +45,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 let $form = $(ChatApi._selectors.formHandler);
 
                 eventSource.onmessage = event => {
-                    const data = JSON.parse(event.data);
+                    var data = JSON.parse(event.data);
+                    data['createdAt'] = this.formatDateTime(data['createdAt']);
                     if (data['owner']['id'] === $form.data('user')) {
-                        data['createdAt'] = this.formatDateTime(data['createdAt']);
                         this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
                     } else {
                         this.showOthersMessage(data, $(ChatApi._selectors.messagesContainer));
@@ -71,8 +71,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
             this.sendMessage({content:message}, url).then((data) => {
                 $textareaInput.val('');
+                data['createdAt'] = this.formatDateTime(data['createdAt']);
                 if (data['owner']['id'] === $form.data('user')) {
-                    data['createdAt'] = this.formatDateTime(data['createdAt']);
                     this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
                 } else {
                     this.showOthersMessage(data, $(ChatApi._selectors.messagesContainer));
@@ -121,7 +121,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
         showErrorMessage(errorMessage) {
             Swal.fire({
-                type: 'error',
+                icon: 'error',
                 title: 'Oops...',
                 text: `${errorMessage}`,
             });

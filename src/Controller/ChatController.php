@@ -10,11 +10,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\ChatRepository;
+use App\Repository\{ChatRepository, ParticipantRepository};
 use App\Entity\Chat;
 
 
 //
+use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
 use App\Services\ModelValidator\ModelValidatorInterface;
@@ -65,7 +66,7 @@ class ChatController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        
+
         if (!$chat->hasParticipant($user)) {
 
             $participant = $participantFactory->create($user, $chat);
@@ -94,7 +95,7 @@ class ChatController extends AbstractController
     /**
      * @Route("api/chat/{id}/message", name="api_chat_message", methods={"POST"})
      */
-    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, SerializerInterface $serializer, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
+    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
     {
 
         $data = json_decode($request->getContent(), true);
@@ -116,12 +117,23 @@ class ChatController extends AbstractController
                 $message,
                 'json', ['groups' => 'chat:message']
             );
+
+            $topics = [
+                sprintf('/chat/public/%d', $chat->getId())
+            ];
+
+            $othersParticipants = $participantRepository->findAllOthersParticipantsByChat($user, $chat);
+            
+            if ($othersParticipants) {
+                foreach ($othersParticipants as $participant) {
+                    $topics[] = sprintf('/%s', $participant->getUser()->getLogin());
+                }
+            }
+
             $update = new Update(
-                [
-                    sprintf('/chat/public/%d', $chat->getId())
-                ],
+                $topics,
                 $serializedMessage,
-                false //true
+                true
             );
         
             $publisher->__invoke($update);
@@ -129,11 +141,7 @@ class ChatController extends AbstractController
             return new JsonResponse($serializedMessage, Response::HTTP_CREATED); 
         }
 
-        //json error response here
-        return new JsonResponse(null, Response::HTTP_OK); 
-
-
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $modelValidator->getErrorMessage());
     }
-
 
 }
