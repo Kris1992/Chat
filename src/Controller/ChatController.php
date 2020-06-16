@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Services\Factory\Participant\ParticipantFactoryInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ChatRepository;
@@ -60,16 +61,34 @@ class ChatController extends AbstractController
     /**
      * @Route("/chat/public/{id}", name="chat_public_room", methods={"GET"})
      */
-    public function publicRoom(Chat $chat, Request $request): Response
+    public function publicRoom(Chat $chat, ParticipantFactoryInterface $participantFactory, EntityManagerInterface $entityManager): Response
     {
-        $hubUrl = $this->getParameter('mercure.default_hub');
-        $this->addLink($request, new Link('mercure', $hubUrl));
+        /** @var User $user */
+        $user = $this->getUser();
+        
+        if (!$chat->hasParticipant($user)) {
+
+            $participant = $participantFactory->create($user, $chat);
+            $chat->addParticipant($participant);
+            $entityManager->flush();
+
+        }
 
         return $this->render('chat/public_room.html.twig', [
             'chat' => $chat,
         ]);
     }
 
+    /**
+     * @Route("api/chat/hub_url", name="api_hub_url", methods={"GET"})
+     */
+    public function getHubUrl(Request $request): Response
+    {
+        $hubUrl = $this->getParameter('mercure.default_hub');
+        $this->addLink($request, new Link('mercure', $hubUrl));
+
+        return new Response(null, Response::HTTP_OK);
+    }
 
             //MessageController>? For now just fast method after I will be refactor this
     /**
@@ -107,8 +126,7 @@ class ChatController extends AbstractController
         
             $publisher->__invoke($update);
             
-            return new JsonResponse($serializedMessage, Response::HTTP_OK); 
-            //return $this->json($message, Response::HTTP_CREATED, [], []); 
+            return new JsonResponse($serializedMessage, Response::HTTP_CREATED); 
         }
 
         //json error response here

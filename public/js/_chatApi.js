@@ -7,13 +7,15 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 {
 
     class ChatApi
-    {
+    {   
+
         constructor($wrapper, defaultUserImage, baseAsset)
         {
             
             this.$wrapper = $wrapper;
             this.defaultUserImage = defaultUserImage;
             this.baseAsset = baseAsset;
+            this.handleDocumentLoad();
             
             this.$wrapper.on(
                 'click', 
@@ -33,6 +35,27 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             }
         }
 
+        handleDocumentLoad() {
+            this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
+                const hub = new URL(hubUrl);
+                hub.searchParams.append('topic', '/chat/public/28');
+                const eventSource = new EventSource(hub, {
+                    withCredentials: true
+                });
+                let $form = $(ChatApi._selectors.formHandler);
+
+                eventSource.onmessage = event => {
+                    const data = JSON.parse(event.data);
+                    if (data['owner']['id'] === $form.data('user')) {
+                        data['createdAt'] = this.formatDateTime(data['createdAt']);
+                        this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
+                    } else {
+                        this.showOthersMessage(data, $(ChatApi._selectors.messagesContainer));
+                    }
+                }
+            });
+        }
+
         handleSendMessage(event) {
             event.preventDefault();
             let $textareaInput = $(ChatApi._selectors.textareaInput);
@@ -48,7 +71,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
             this.sendMessage({content:message}, url).then((data) => {
                 $textareaInput.val('');
-                console.log(data);
                 if (data['owner']['id'] === $form.data('user')) {
                     data['createdAt'] = this.formatDateTime(data['createdAt']);
                     this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
@@ -56,9 +78,26 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     this.showOthersMessage(data, $(ChatApi._selectors.messagesContainer));
                 }
 
-
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
+            });
+        }
+
+        getHubUrl(url) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'GET',
+                }).then(function(data, textStatus, jqXHR) {
+                    const hubUrl = jqXHR.getResponseHeader('link').match(/<([^>]+)>;\s+rel=(?:mercure|"[^"]*mercure[^"]*")/)[1];
+                    resolve(hubUrl);
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                });
             });
         }
 

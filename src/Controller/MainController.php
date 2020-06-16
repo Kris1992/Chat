@@ -26,14 +26,14 @@ class MainController extends AbstractController
         if ($user) {
         
             $token = (new Builder())
-                ->withClaim('mercure', ['subscribe' => [sprintf('%s', $user->getLogin())]])
+                ->withClaim('mercure', ['subscribe' => [sprintf('/%s', $user->getLogin())]])
                 ->getToken(new Sha256(), new Key($this->getParameter('mercure_secret_key')));
 
             $cookie = Cookie::create('mercureAuthorization')
                 ->withValue(strval($token))
                 ->withPath('/.well-known/mercure')
                 ->withExpires(new \DateTime('now +1 day'))
-                ->withSecure(true)
+                ->withSecure(false)//true
                 ->withHttpOnly(true)
                 ->withSameSite('strict')
             ;

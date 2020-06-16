@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\{ArrayCollection, Collection};
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
@@ -47,9 +48,15 @@ class Chat
      */
     private $messages;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Participant::class, mappedBy="chat", orphanRemoval=true, cascade={"persist"})
+     */
+    private $participants;
+
     public function __construct()
     {
         $this->messages = new ArrayCollection();
+        $this->participants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -134,6 +141,48 @@ class Chat
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Participant[]
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(Participant $participant): self
+    {
+        if (!$this->participants->contains($participant)) {
+            $this->participants[] = $participant;
+            $participant->setChat($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipant(Participant $participant): self
+    {
+        if ($this->participants->contains($participant)) {
+            $this->participants->removeElement($participant);
+            // set the owning side to null (unless already changed)
+            if ($participant->getChat() === $this) {
+                $participant->setChat(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function hasParticipant(User $user): bool
+    {
+        foreach ($this->participants as $participant) {
+            if ($participant->getUser() ===  $user) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
