@@ -9,12 +9,13 @@ import { isEmptyField } from './helpers/_validationHelper.js';
     class ChatApi
     {   
 
-        constructor($wrapper, defaultUserImage, baseAsset)
+        constructor($wrapper, defaultUserImage, baseAsset, chatId)
         {
             
             this.$wrapper = $wrapper;
             this.defaultUserImage = defaultUserImage;
             this.baseAsset = baseAsset;
+            this.chatId = chatId;
             this.handleDocumentLoad();
             
             this.$wrapper.on(
@@ -38,7 +39,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         handleDocumentLoad() {
             this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
                 const hub = new URL(hubUrl);
-                hub.searchParams.append('topic', '/chat/public/28');
+                hub.searchParams.append('topic', '/chat/public/'+this.chatId);
                 const eventSource = new EventSource(hub, {
                     withCredentials: true
                 });

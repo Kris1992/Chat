@@ -23,6 +23,7 @@ on how you installed Composer.
 
 Rename to `.env.local.dist` file to `.env.local` and make changes you need - specifically
 in `DATABASE_URL`, `MAILER_URL`, `GOOGLE_RECAPTCHA_SITE_KEY` and `GOOGLE_RECAPTCHA_SECRET`.
+To properly run chat You must fill Mercure and Messenger(take care about current participants of public chat rooms) enviroments too.
 
 **Setup the Database**
 
@@ -48,10 +49,25 @@ Then, to start the web server, open a terminal, move into the
 project, and run:
 
 ```
-symfony serve
+symfony serve --no-tls
 ```
 
 Now check out the site at `http://localhost:8000`
+
+To proper work chats you must run mercure by following command (note you should generate your own JWT_KEY before):
+
+```
+./bin/mercure --jwt-key='JWT_KEY' --addr='localhost:3000' --debug --cors-allowed-origins='http://localhost:8000'
+```
+
+Important!!
+If you run mercure with following command:
+
+```
+./bin/mercure --jwt-key='JWT_KEY' --addr='localhost:3000' --debug --cors-allowed-origins='http://localhost:8000'
+```
+
+The site must had the same domain e.g `http://localhost:8000` because otherwise it can be blocked by CORS policy
 
 Have fun!
 
@@ -69,7 +85,9 @@ php bin/phpunit\
 
 ## Used Technologies
 
-TO DO
+Mercure - I use server send event to resend messages to partcicipants of chat rooms (better solution than resend ajax calls by users to check new messages). \
+
+Messenger - take controll about active partcicipants of public chat rooms. If user go out from chat room or close window in browser messenger remove him from participants of public chat room. \
 
 ## Have Ideas, Feedback or an Issue?
 

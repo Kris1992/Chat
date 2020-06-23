@@ -8,23 +8,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
+use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
+use Symfony\Component\Messenger\Stamp\DelayStamp;
+use App\Message\Command\CheckUserActivityOnPublicChat;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\{ChatRepository, ParticipantRepository};
-use App\Entity\Chat;
-
-
-//
-use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
-use App\Exception\Api\ApiBadRequestHttpException;
-use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
-use App\Services\ModelValidator\ModelValidatorInterface;
-use App\Services\Factory\Message\MessageFactoryInterface;
+use App\Repository\ChatRepository;
 use Symfony\Component\WebLink\Link;
-use Symfony\Component\Mercure\{PublisherInterface, Update};
-use Symfony\Component\Serializer\SerializerInterface;
-
-//przeniesc do facade
+use App\Entity\Chat;
 
 /**
 * @IsGranted("ROLE_USER")
@@ -62,7 +53,7 @@ class ChatController extends AbstractController
     /**
      * @Route("/chat/public/{id}", name="chat_public_room", methods={"GET"})
      */
-    public function publicRoom(Chat $chat, ParticipantFactoryInterface $participantFactory, EntityManagerInterface $entityManager): Response
+    public function publicRoom(Chat $chat, ParticipantFactoryInterface $participantFactory, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -72,6 +63,12 @@ class ChatController extends AbstractController
             $participant = $participantFactory->create($user, $chat);
             $chat->addParticipant($participant);
             $entityManager->flush();
+
+            $message = new CheckUserActivityOnPublicChat($participant->getId());
+            $envelope = new Envelope($message, [
+                new DelayStamp(120000)//2 minutes delay 
+            ]);
+            $messageBus->dispatch($envelope);
 
         }
 
@@ -89,59 +86,6 @@ class ChatController extends AbstractController
         $this->addLink($request, new Link('mercure', $hubUrl));
 
         return new Response(null, Response::HTTP_OK);
-    }
-
-            //MessageController>? For now just fast method after I will be refactor this
-    /**
-     * @Route("api/chat/{id}/message", name="api_chat_message", methods={"POST"})
-     */
-    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
-    {
-
-        $data = json_decode($request->getContent(), true);
-        
-        if ($data === null) {
-            throw new ApiBadRequestHttpException('Invalid JSON.');    
-        }
-
-        /** @var User $user */
-        $user = $this->getUser();
-        $messageModel = $messageModelFactory->createFromData($data['content'], $user, $chat);
-        $isValid = $modelValidator->isValid($messageModel);
-        if ($isValid) {
-            $message = $messageFactory->create($messageModel);
-            $chat->addMessage($message);
-            $entityManager->flush();
-
-            $serializedMessage = $serializer->serialize(
-                $message,
-                'json', ['groups' => 'chat:message']
-            );
-
-            $topics = [
-                sprintf('/chat/public/%d', $chat->getId())
-            ];
-
-            $othersParticipants = $participantRepository->findAllOthersParticipantsByChat($user, $chat);
-            
-            if ($othersParticipants) {
-                foreach ($othersParticipants as $participant) {
-                    $topics[] = sprintf('/%s', $participant->getUser()->getLogin());
-                }
-            }
-
-            $update = new Update(
-                $topics,
-                $serializedMessage,
-                true
-            );
-        
-            $publisher->__invoke($update);
-            
-            return new JsonResponse($serializedMessage, Response::HTTP_CREATED); 
-        }
-
-        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $modelValidator->getErrorMessage());
     }
 
 }
