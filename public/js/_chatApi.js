@@ -9,13 +9,17 @@ import { isEmptyField } from './helpers/_validationHelper.js';
     class ChatApi
     {   
 
-        constructor($wrapper, defaultUserImage, baseAsset, chatId)
+        constructor($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl, isPublic = true)
         {
             
             this.$wrapper = $wrapper;
             this.defaultUserImage = defaultUserImage;
             this.baseAsset = baseAsset;
             this.chatId = chatId;
+            this.lastSeenUrl = lastSeenUrl;
+            this.isPublic = isPublic;
+            this.counterPaused = false;
+
             this.handleDocumentLoad();
             
             this.$wrapper.on(
@@ -37,6 +41,10 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         handleDocumentLoad() {
+            if(this.isPublic) {
+                this.updateLastSeen();
+            }
+
             this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
                 const hub = new URL(hubUrl);
                 hub.searchParams.append('topic', '/chat/public/'+this.chatId);
@@ -99,6 +107,39 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     }
                     reject(errorData);
                 });
+            });
+        }
+
+        updateLastSeen() {
+            const counter = setInterval(startUpdateLastSeen.bind(this), 6000);
+
+            function startUpdateLastSeen() {
+                if (!this.counterPaused) {
+                    this.sendActivity(this.lastSeenUrl).then((data) => {
+
+                    }).catch((errorData) => {
+                        console.log(errorData);
+                        this.showErrorMessage(errorData.title);
+                        this.counterPaused = true;
+                    });
+                }
+            }
+        }
+
+        sendActivity(url) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'POST',
+                }).then(function(data) {
+                    resolve(JSON.parse(data));
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                }); 
             });
         }
 

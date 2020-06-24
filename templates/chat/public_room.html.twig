@@ -59,7 +59,8 @@
 <script>
     var defaultUserImage = "{{ asset('img/users/default.png') }}";
     var baseAsset = "{{ uploaded_asset('') }}";
-    const chatId = "{{ chat.id }}"
+    const chatId = "{{ chat.id }}";
+    const lastSeenUrl = "{{ path('api_chat_update_participant', { id: chat.id }) }}";
 </script>
 {{ include('js_templates/messages.html.twig') }}
 {% endblock %}
@@ -74,7 +75,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var $wrapper = $('.js-chat-wrapper');
-            var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId);
+            var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl);
         });
     </script>
 {% endblock %}

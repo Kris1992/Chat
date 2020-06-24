@@ -7,13 +7,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
 use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use App\Message\Command\CheckUserActivityOnPublicChat;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\ChatRepository;
+use App\Repository\{ChatRepository, ParticipantRepository};
 use Symfony\Component\WebLink\Link;
 use App\Entity\Chat;
 
@@ -75,6 +76,28 @@ class ChatController extends AbstractController
         return $this->render('chat/public_room.html.twig', [
             'chat' => $chat,
         ]);
+    }
+
+    /**
+     * @Route("api/chat/{id}/update_participant", name="api_chat_update_participant", methods={"POST"})
+     */
+    public function updateParticipant(Chat $chat, Request $request, EntityManagerInterface $entityManager, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $participant = $participantRepository->findParticipantByUserAndChat($user, $chat);
+        
+        if ($participant) {
+            dump('znalazl');
+            //$entityManager->flush();
+        }
+    
+            
+            //return new JsonResponse(null, Response::HTTP_CREATED); 
+        //}
+
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot update your last activity. Please refresh this page.');
     }
 
     /**

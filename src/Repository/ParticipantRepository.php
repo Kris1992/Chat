@@ -26,7 +26,7 @@ class ParticipantRepository extends ServiceEntityRepository
      * @param  Chat     $chat   Chat object which will be looking into
      * @return Participant[]
      */
-    public function findAllOthersParticipantsByChat(User $user,Chat $chat)
+    public function findAllOthersParticipantsByChat(User $user, Chat $chat)
     {
         return $this->createQueryBuilder('p')
             ->andWhere('p.chat = :chat AND p.user != :user')
@@ -38,4 +38,26 @@ class ParticipantRepository extends ServiceEntityRepository
             ->getResult()
             ;
     }
+
+    /**
+     * findParticipantByUserAndChat Find participant of chat room by chat and user object
+     * @param  User     $user   User object which is participant of chat
+     * @param  Chat     $chat   Chat object which will be looking into
+     * @return Participant|null
+     */
+    public function findParticipantByUserAndChat(User $user, Chat $chat)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.chat = :chat AND p.user = :user')
+            ->setParameters([
+                'chat' => $chat,
+                'user' => $user
+            ])
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+            ;
+    }
+
+    
 }
