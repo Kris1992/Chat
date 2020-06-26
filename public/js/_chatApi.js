@@ -116,7 +116,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             function startUpdateLastSeen() {
                 if (!this.counterPaused) {
                     this.sendActivity(this.lastSeenUrl).then((data) => {
-
+                        console.log(data);
                     }).catch((errorData) => {
                         console.log(errorData);
                         this.showErrorMessage(errorData.title);
@@ -132,8 +132,10 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     url,
                     method: 'POST',
                 }).then(function(data) {
-                    resolve(JSON.parse(data));
+                    console.log(data);
+                    resolve(data);
                 }).catch(function(jqXHR) {
+                    console.log('tutaj');
                     let errorData = getStatusError(jqXHR);
                     if(errorData === null) {
                         errorData = JSON.parse(jqXHR.responseText);

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\MaxDepth;
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,6 +23,8 @@ class Participant
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"chat:participants"})
+     * @MaxDepth(2)
      */
     private $user;
 

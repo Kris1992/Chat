@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
 use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use App\Message\Command\CheckUserActivityOnPublicChat;
 use Knp\Component\Pager\PaginatorInterface;
@@ -89,13 +90,20 @@ class ChatController extends AbstractController
         $participant = $participantRepository->findParticipantByUserAndChat($user, $chat);
         
         if ($participant) {
-            dump('znalazl');
-            //$entityManager->flush();
+            $participant->updateLastSeenAt();
+            $entityManager->flush();
+
+            return $this->json(
+                $chat,
+                200,
+                [],
+                [   
+                    AbstractObjectNormalizer::ENABLE_MAX_DEPTH => true,
+                    AbstractObjectNormalizer::GROUPS => 'chat:participants',
+                    AbstractObjectNormalizer::CIRCULAR_REFERENCE_LIMIT => 3,
+                ]
+            );
         }
-    
-            
-            //return new JsonResponse(null, Response::HTTP_CREATED); 
-        //}
 
         return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot update your last activity. Please refresh this page.');
     }

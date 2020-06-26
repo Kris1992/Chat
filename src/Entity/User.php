@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use Doctrine\Common\Collections\{ArrayCollection, Collection};
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Services\ImagesManager\ImagesConstants;
@@ -35,7 +36,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:participants"})
      */
     private $login;
 
@@ -76,9 +77,25 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:participants"})
      */
     private $imageFilename;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Friend::class, mappedBy="inviter", orphanRemoval=true)
+     */
+    private $invitedFriends;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Friend::class, mappedBy="invitee", orphanRemoval=true)
+     */
+    private $invitedByFriends;
+
+    public function __construct()
+    {
+        $this->invitedFriends = new ArrayCollection();
+        $this->invitedByFriends = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -294,11 +311,73 @@ class User implements UserInterface
     }
 
     /**
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:participants"})
      */
     public function getThumbImagePath()
     {
         return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
+    }
+
+    /**
+     * @return Collection|Friend[]
+     */
+    public function getInvitedFriends(): Collection
+    {
+        return $this->invitedFriends;
+    }
+
+    public function addInvitedFriend(Friend $invitedFriend): self
+    {
+        if (!$this->invitedFriends->contains($invitedFriend)) {
+            $this->invitedFriends[] = $invitedFriend;
+            $invitedFriend->setInviter($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvitedFriend(Friend $invitedFriend): self
+    {
+        if ($this->invitedFriends->contains($invitedFriend)) {
+            $this->invitedFriends->removeElement($invitedFriend);
+            // set the owning side to null (unless already changed)
+            if ($invitedFriend->getInviter() === $this) {
+                $invitedFriend->setInviter(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Friend[]
+     */
+    public function getInvitedByFriends(): Collection
+    {
+        return $this->invitedByFriends;
+    }
+
+    public function addInvitedByFriend(Friend $invitedByFriend): self
+    {
+        if (!$this->invitedByFriends->contains($invitedByFriend)) {
+            $this->invitedByFriends[] = $invitedByFriend;
+            $invitedByFriend->setInvitee($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvitedByFriend(Friend $invitedByFriend): self
+    {
+        if ($this->invitedByFriends->contains($invitedByFriend)) {
+            $this->invitedByFriends->removeElement($invitedByFriend);
+            // set the owning side to null (unless already changed)
+            if ($invitedByFriend->getInvitee() === $this) {
+                $invitedByFriend->setInvitee(null);
+            }
+        }
+
+        return $this;
     }
 
 }

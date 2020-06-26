@@ -5,6 +5,7 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
@@ -50,6 +51,8 @@ class Chat
 
     /**
      * @ORM\OneToMany(targetEntity=Participant::class, mappedBy="chat", orphanRemoval=true, cascade={"persist"})
+     * @Groups({"chat:participants"})
+     * @MaxDepth(3)
      */
     private $participants;
 
