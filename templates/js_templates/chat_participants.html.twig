@@ -1,0 +1,12 @@
+<script type="text/template" id="js-participants-template">
+    <% _.each(participants, function(participant){ %>
+        <li class="list-group-item">
+            <% if (participant.user.imageFilename !== null) { %>
+                <span><img class="user-image image-circle float-left" src="<%= baseAsset %><%= participant.user.thumbImagePath %>" alt="User image"></span>
+            <% } else { %>
+                <span><img class="user-image image-circle float-left" src="<%= defaultUserImage %>" alt="User image"></span>
+            <% } %>
+            <span><strong><%= participant.user.login %></strong></span>
+        </li>
+    <% }); %>
+</script>

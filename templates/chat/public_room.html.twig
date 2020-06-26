@@ -28,14 +28,21 @@
                         <div class="col-12 messages-container w-100" id="js-messages-container"></div>
                     </div>
                 </div>
-                <div class="col-sm-12 col-md-4 bg-white users-container" id="js-participants-container">
-                    {% if chat.participants  %}
-                        {% for participant in chat.participants %}
-                            <ul class="list-group">
-                                <li class="list-group-item"><span>{{ participant.user.login }}</span></li>
-                            </ul>
-                        {% endfor %}
-                    {% endif %}
+                <div class="col-sm-12 col-md-4 bg-white users-container">
+                    <ul class="list-group" id="js-participants-container">
+                        {% if chat.participants  %}
+                            {% for participant in chat.participants %}
+                                <li class="list-group-item">
+                                    {% if participant.user.imageFilename %}
+                                    <span><img class="user-image image-circle float-left" src="{{ uploaded_asset(participant.user.thumbImagePath) }}" alt="User image"></span>
+                                    {% else %}
+                                    <span><img class="user-image image-circle float-left" src="{{asset('img/users/default.png')}}" alt="User image"></span>
+                                    {% endif %}
+                                    <span><strong>{{ participant.user.login }}</strong></span>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
                 </div>
                 <div class="col-12 bg-white textarea-container">
                     <form action="{{ path('api_chat_message', { id: chat.id }) }}" data-user="{{ app.user.id }}" method="POST" id="js-form">
@@ -63,6 +70,7 @@
     const lastSeenUrl = "{{ path('api_chat_update_participant', { id: chat.id }) }}";
 </script>
 {{ include('js_templates/messages.html.twig') }}
+{{ include('js_templates/chat_participants.html.twig') }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

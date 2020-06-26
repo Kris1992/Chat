@@ -36,7 +36,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 formHandler: '#js-form',
                 messagesContainer: '#js-messages-container',
                 ownMessageTemplate: '#js-own-message-template',
-                othersMessageTemplate: '#js-others-massage-template',
+                othersMessageTemplate: '#js-others-message-template',
+                participantsContainer: '#js-participants-container',
+                participantsTemplate: '#js-participants-template',
             }
         }
 
@@ -116,14 +118,20 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             function startUpdateLastSeen() {
                 if (!this.counterPaused) {
                     this.sendActivity(this.lastSeenUrl).then((data) => {
-                        console.log(data);
+                        this.showParticipants(data);
                     }).catch((errorData) => {
-                        console.log(errorData);
                         this.showErrorMessage(errorData.title);
                         this.counterPaused = true;
                     });
                 }
             }
+        }
+
+        showParticipants(data) {
+            const tplText = $(ChatApi._selectors.participantsTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl(data, {defaultUserImage:this.defaultUserImage}, {baseAsset:this.baseAsset});
+            $(ChatApi._selectors.participantsContainer).html($.parseHTML(html));
         }
 
         sendActivity(url) {
@@ -132,10 +140,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     url,
                     method: 'POST',
                 }).then(function(data) {
-                    console.log(data);
                     resolve(data);
                 }).catch(function(jqXHR) {
-                    console.log('tutaj');
                     let errorData = getStatusError(jqXHR);
                     if(errorData === null) {
                         errorData = JSON.parse(jqXHR.responseText);
