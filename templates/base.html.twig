@@ -47,7 +47,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="" class="menu-item">
+                            <a href="{{ path('friend_list') }}" class="menu-item {{ app.request.get('_route') starts with 'friend' ? 'active' }}">
                                 <span class="fas fa-user-friends"></span>
                                 Contacts
                             </a>

@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Contacts{% endblock %}
+
+{% block section_class %}contacts{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content %}
+    <div class="col-sm-12 text-center mt-5">
+        <div class="col-sm-12">
+            <h2 class="mb-3 d-inline-block font-weight-normal text-uppercase text-purple">Contacts</h2>
+            <a href="" class="d-inline-block btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Pending invites">
+                <span class="fas fa-envelope"></span>
+            </a>
+            <a href="{{ path('friend_search') }}" class="d-inline-block btn btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Search contacts to invite">
+                <span class="fas fa-user-plus"></span>
+            </a>
+        </div>
+        <div class="col-sm-12 search-friends my-3">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        {% if pagination is not empty%}
+            {% for friend in pagination %}
+                {% if friend.invitee is same as(app.user) %}
+                    {% set user = friend.inviter %}
+                {% else %}
+                    {% set user = friend.invitee %}
+                {% endif %}
+                <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
+                    <a href="" class="stretched-link">
+                        <div class="row">
+                            <div class="col-2">
+                                {% if user.imageFilename %}
+                                    <img class="img-fluid thumbnail" src="{{ uploaded_asset(user.thumbImagePath) }}">
+                                {% else %}
+                                    <img class="img-fluid thumbnail" src="{{ asset('img/users/default.png') }}">
+                                {% endif %}   
+                            </div>
+                            <div class="col-10 align-self-center">
+                                <h5 class="text-green">
+                                    {{ user.login }}
+                                </h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        
+            <div class="col-12 mt-3">
+                <div class="navigation">
+                    {{ knp_pagination_render(pagination, null, {}, {
+                        'align': 'center'
+                    }) }}
+                    {{ include('paginator/per_page.html.twig', {
+                        span_color: 'text-primary',
+                        per_page: [6,12,18]
+                    }) }}
+                </div>
+            </div>
+        {% else %}
+            <div class="col-11 p-3 mx-auto my-2 link-card">
+                <span class="text-center">
+                    <h5 class="text-green">No one to display here. Common let's  invite someone <a href="">now.</a></h5>
+                </span>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+{% endblock %}

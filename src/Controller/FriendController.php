@@ -8,6 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{Response, Request};
 use App\Repository\{FriendRepository, UserRepository};
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /**
 * @IsGranted("ROLE_USER")
@@ -39,4 +40,31 @@ class FriendController extends AbstractController
             'pagination' => $pagination
         ]);
     }
+
+    /**
+     * @Route("/friend/search", name="friend_search", methods={"GET"})
+     */
+    public function search(UserRepository $userRepository, PaginatorInterface $paginator, Request $request, FriendRepository $friendRepository): Response
+    {   
+        
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $searchTerms = $request->query->getAlnum('filterValue');
+        $userQuery = $userRepository->findAllQuery($searchTerms, $currentUser);
+
+        $pagination = $paginator->paginate(
+            $userQuery, /* query NOT result */
+            $request->query->getInt('page', 1)/*page number*/,
+            $request->query->getInt('perPage', 6)/*limit per page*/
+        );
+
+        $pagination->setCustomParameters([
+            'placeholder' => 'Enter here e-mail or login...'
+        ]);
+
+        return $this->render('friend/search.html.twig', [
+            'pagination' => $pagination,
+        ]);
+    }
+
 }

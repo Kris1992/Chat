@@ -5,10 +5,11 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Services\ImagesManager\ImagesConstants;
-use App\Repository\UserRepository;
+use App\Repository\{UserRepository, FriendRepository};
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -326,27 +327,16 @@ class User implements UserInterface
         return $this->invitedFriends;
     }
 
-    public function addInvitedFriend(Friend $invitedFriend): self
+    /**
+     * getInvitedFriend Get friend object if user was invited by given user 
+     * @param   User    $user     User object whose is or not invited by given one
+     * @return  Collection|Friend
+     */
+    public function getInvitedFriend(User $user): Collection
     {
-        if (!$this->invitedFriends->contains($invitedFriend)) {
-            $this->invitedFriends[] = $invitedFriend;
-            $invitedFriend->setInviter($this);
-        }
+        $criteria = FriendRepository::createNotRejectedFriendsByInviteeCriteria($user);
 
-        return $this;
-    }
-
-    public function removeInvitedFriend(Friend $invitedFriend): self
-    {
-        if ($this->invitedFriends->contains($invitedFriend)) {
-            $this->invitedFriends->removeElement($invitedFriend);
-            // set the owning side to null (unless already changed)
-            if ($invitedFriend->getInviter() === $this) {
-                $invitedFriend->setInviter(null);
-            }
-        }
-
-        return $this;
+        return $this->invitedFriends->matching($criteria);
     }
 
     /**
@@ -357,27 +347,16 @@ class User implements UserInterface
         return $this->invitedByFriends;
     }
 
-    public function addInvitedByFriend(Friend $invitedByFriend): self
+    /**
+     * getInvitedByFriend Get friend object if current user invite user 
+     * @param   User    $user   User object whose is or not invitee by current one
+     * @return  Collection|Friend
+     */
+    public function getInvitedByFriend(User $user): Collection
     {
-        if (!$this->invitedByFriends->contains($invitedByFriend)) {
-            $this->invitedByFriends[] = $invitedByFriend;
-            $invitedByFriend->setInvitee($this);
-        }
+        $criteria = FriendRepository::createNotRejectedFriendsByInviterCriteria($user);
 
-        return $this;
-    }
-
-    public function removeInvitedByFriend(Friend $invitedByFriend): self
-    {
-        if ($this->invitedByFriends->contains($invitedByFriend)) {
-            $this->invitedByFriends->removeElement($invitedByFriend);
-            // set the owning side to null (unless already changed)
-            if ($invitedByFriend->getInvitee() === $this) {
-                $invitedByFriend->setInvitee(null);
-            }
-        }
-
-        return $this;
+        return $this->invitedByFriends->matching($criteria);
     }
 
 }

@@ -6,6 +6,7 @@ namespace App\Repository;
 use App\Entity\{Friend, User};
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query;
 
 /**
@@ -19,6 +20,30 @@ class FriendRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Friend::class);
+    }
+
+    /**
+     * createFriendsByInviteeCriteria Returns Friend object where invitee is given user and status is not rejected
+     * @param  User   $user     User object whose is or not invited by current one
+     * @return Criteria
+     */
+    public static function createNotRejectedFriendsByInviteeCriteria(User $user): Criteria
+    {
+        return Criteria::create()
+            ->andWhere(Criteria::expr()->andX(Criteria::expr()->eq('invitee', $user), Criteria::expr()->neq('status', 'Rejected')))
+        ;
+    }
+
+    /**
+     * createFriendsByInviterCriteria Returns Friend object where inviter is given user and status is not rejected
+     * @param  User   $user     User object whose invite or not current one
+     * @return Criteria
+     */
+    public static function createNotRejectedFriendsByInviterCriteria(User $user): Criteria
+    {
+        return Criteria::create()
+            ->andWhere(Criteria::expr()->andX(Criteria::expr()->eq('inviter', $user), Criteria::expr()->neq('status', 'Rejected')))
+        ;
     }
 
     /**
@@ -62,7 +87,7 @@ class FriendRepository extends ServiceEntityRepository
             ->addSelect('u2')
             ->andWhere('
                 ((f.inviter = :currentUser OR f.invitee = :currentUser) 
-                AND f.status = :status) AND ((u.email LIKE :searchTerms) OR (u.firstName LIKE :searchTerms) OR (u.secondName LIKE :searchTerms) OR (u2.email LIKE :searchTerms) OR (u2.firstName LIKE :searchTerms) OR (u2.secondName LIKE :searchTerms))')
+                AND f.status = :status) AND ((u.email LIKE :searchTerms) OR (u.login LIKE :searchTerms) OR (u2.email LIKE :searchTerms) OR (u2.login LIKE :searchTerms))')
             ->setParameters([
                 'currentUser' => $currentUser,
                 'status' => $status,

@@ -1,7 +1,8 @@
 :root {
     --color-purple: #8000ff;
     --color-primary: #3586ff;
-    --btn-orange: #fb6340;
+    --color-orange: #fb6340;
+    --color-green: #00FF80;
 }
 
 * {
@@ -158,4 +159,12 @@ ul.sidebar-footer a {
 
 .text-purple {
     color: var(--color-purple);
+}
+
+.text-orange {
+    color: var(--color-orange);
+}
+
+.text-green {
+    color: var(--color-green);
 }
