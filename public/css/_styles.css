@@ -3,6 +3,7 @@
     --color-primary: #3586ff;
     --color-orange: #fb6340;
     --color-green: #00FF80;
+    --color-white: #FFFFFF;
 }
 
 * {
@@ -168,3 +169,4 @@ ul.sidebar-footer a {
 .text-green {
     color: var(--color-green);
 }
+

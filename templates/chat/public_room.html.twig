@@ -4,6 +4,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/_chat.css') }}">
 {% endblock %}
 {% block section_class %}publicRoom{% endblock %} 
@@ -50,7 +51,7 @@
                             <div class="col-8">
                                 <div class="form-group my-2">
                                     <label class="sr-only" for="js-message-text">Write message</label>
-                                    <textarea name="inputMessage" class="form-control bg-dark" id="js-message-text" rows="3"></textarea>
+                                    <textarea name="inputMessage" class="form-control bg-dark text-left" id="js-message-text" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-2 my-auto">
@@ -74,6 +75,7 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>

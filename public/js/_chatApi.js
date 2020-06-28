@@ -43,6 +43,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         handleDocumentLoad() {
+            this.loadEmojiArea();
+
             if(this.isPublic) {
                 this.updateLastSeen();
             }
@@ -81,7 +83,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             let url = $form.attr('action');
 
             this.sendMessage({content:message}, url).then((data) => {
-                $textareaInput.val('');
+                var emojioneArea = $textareaInput.emojioneArea();
+                emojioneArea[0].emojioneArea.setText('');
                 data['createdAt'] = this.formatDateTime(data['createdAt']);
                 if (data['owner']['id'] === $form.data('user')) {
                     this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
@@ -225,6 +228,12 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             return dateObject.getDate() === today.getDate() 
                 && dateObject.getMonth() === today.getMonth() 
                 && dateObject.getFullYear() === today.getFullYear();
+        }
+
+        loadEmojiArea() {
+            $(ChatApi._selectors.textareaInput).emojioneArea({
+                pickerPosition: 'top',
+            });
         }
     }
 

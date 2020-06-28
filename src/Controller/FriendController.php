@@ -3,12 +3,17 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
+use App\Services\Factory\FriendInvitation\FriendInvitationFactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\HttpFoundation\{Response, Request};
+use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
+use App\Services\Updater\Friend\FriendUpdaterInterface;
 use App\Repository\{FriendRepository, UserRepository};
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\{User, Friend};
 
 /**
 * @IsGranted("ROLE_USER")
@@ -65,6 +70,68 @@ class FriendController extends AbstractController
         return $this->render('friend/search.html.twig', [
             'pagination' => $pagination,
         ]);
+    }
+
+    /**
+     * @Route("/friend/requests", name="friend_requests", methods={"GET"})
+     */
+    public function requestslist(FriendRepository $friendRepository): Response
+    {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $friendRequests = $friendRepository->findAllToAccept($currentUser);
+    
+        return $this->render('friend/requests_list.html.twig', [
+            'friendRequests' => $friendRequests
+        ]);
+    }
+
+
+    //Api
+    /**
+     * @Route("/api/friend/user/{id}/invite", name="api_friend_invite", methods={"GET"})
+     */
+    public function inviteAction(User $user, JsonErrorResponseFactory $jsonErrorFactory, FriendInvitationFactoryInterface $friendInvitationFactory, EntityManagerInterface $entityManager, FriendRepository $friendRepository): Response
+    {   
+
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        if ($user !== $currentUser) {
+            //check is history of this realationship (I want keep just one friend object per pair)
+            $oldStatus = $friendRepository->findAllBetweenUsers($currentUser, $user);
+            if ($oldStatus) {
+                $entityManager->remove($oldStatus);
+            }
+
+            $friend = $friendInvitationFactory->create($currentUser, $user);
+            $entityManager->persist($friend);
+            $entityManager->flush();
+            return new JsonResponse(null, Response::HTTP_OK);
+        }
+
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Something goes wrong.');
+    }
+
+    /**
+     * @Route("/api/friend/{id}/response", name="api_friend_response", methods={"POST", "GET"})
+     */
+    public function responseAction(Friend $friend, Request $request, JsonErrorResponseFactory $jsonErrorFactory, FriendUpdaterInterface $friendUpdater, EntityManagerInterface $entityManager): Response
+    {   
+        $data = json_decode($request->getContent(), true);
+
+        if($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        if ($friend->getInvitee() === $currentUser) {
+            $friend = $friendUpdater->update($friend, $data['status']);
+            $entityManager->flush();
+            return new JsonResponse(null, Response::HTTP_OK);
+        }
+
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Something goes wrong.');
     }
 
 }

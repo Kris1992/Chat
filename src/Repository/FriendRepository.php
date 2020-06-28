@@ -97,4 +97,41 @@ class FriendRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * findAllBetweenUsers Find all types (accepted, rejected, pending...) of friends between 2 users
+     * @param   User    $currentUser    User object of current user
+     * @param   User    $user           User object of second one
+     * @return  Friend|null
+     */
+    public function findAllBetweenUsers(User $currentUser, User $user): ?Friend
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('(f.invitee = :currentUser AND f.inviter = :user) OR (f.invitee = :user AND f.inviter = :currentUser)')
+            ->setParameters([
+                'currentUser' => $currentUser,
+                'user' => $user,
+            ])
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    /**
+     * findAllToAccept Find all friends by status "Pending" where current user is invitee
+     * @param  User     $currentUser    User object of current user
+     * @return Friend[]
+     */
+    public function findAllToAccept(User $currentUser)
+    {   
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.invitee = :invitee AND f.status = :status')
+            ->setParameters([
+                'invitee' => $currentUser,
+                'status' => 'Pending',
+            ])
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 }

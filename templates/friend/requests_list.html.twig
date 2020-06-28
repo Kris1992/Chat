@@ -1,35 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Chat - Contacts{% endblock %}
+{% block title %}Chat - Contacts Requests{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="{{ asset('css/_chat.css') }}">
 {% endblock %}
-{% block section_class %}contacts{% endblock %} 
+{% block section_class %}searchContacts{% endblock %} 
 {% block content_class %}{% endblock %}
 {% block content %}
-    <div class="col-sm-12 text-center mt-5">
-        <div class="row">
+    <div class="col-sm-12 text-center mt-5" id="js-contacts-wrapper">
+        <div class="row">    
             <div class="col-sm-12">
-                <h2 class="mb-3 d-inline-block font-weight-normal text-uppercase text-purple">Contacts</h2>
-                <a href="{{ path('friend_requests') }}" class="d-inline-block btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Pending invites">
-                    <span class="fas fa-envelope"></span>
-                </a>
-                <a href="{{ path('friend_search') }}" class="d-inline-block btn btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Search contacts to invite">
+                <h2 class="mb-3 d-inline-block font-weight-normal text-uppercase text-purple">Pending requests</h2>
+                <a href="{{ path('friend_search') }}" class="d-inline-block btn btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Search friends to invite">
                     <span class="fas fa-user-plus"></span>
                 </a>
+                <a href="{{ path('friend_list') }}" class="d-inline-block btn btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Friends list">
+                    <span class="fas fa-user-friends"></span>
+                </a>
             </div>
-            <div class="col-sm-12 my-3">
-                {{ knp_pagination_filter(pagination, {}) }}
-            </div>
-            {% if pagination is not empty%}
-                {% for friend in pagination %}
-                    {% if friend.invitee is same as(app.user) %}
-                        {% set user = friend.inviter %}
-                    {% else %}
-                        {% set user = friend.invitee %}
-                    {% endif %}
+        </div>
+        <div class="row">
+            {% if friendRequests is not empty%}
+                {% for friendRequest in friendRequests %}
+                    {% set user = friendRequest.inviter %}
                         <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card js-card">
                             <div class="row">
                                 <div class="col-2">
@@ -41,7 +36,7 @@
                                         {% endif %}   
                                     </a>
                                 </div>
-                                <div class="col-8 align-self-center">
+                                <div class="col-6 align-self-center">
                                     <a href="">
                                         <h5 class="text-orange">
                                             {{ user.login }}
@@ -51,33 +46,25 @@
                                 </div>
                                 <div class="col-2 align-self-center">
                                     <h5>
-                                        <a href="" data-toggle="tooltip" data-placement="top" title="Start conversation"><span class="fas fa-comment-dots"></span></a>
+                                        <a class="js-friend-response" href="{{ path('api_friend_response', { id: friendRequest.id }) }}" data-action="accept"><span class="fas fa-user-check"></span></a>
+                                    </h5>
+                                </div>
+                                <div class="col-2 align-self-center">
+                                    <h5>
+                                        <a class="js-friend-response" href="{{ path('api_friend_response', { id: friendRequest.id }) }}" data-action="reject"><span class="text-danger fas fa-user-times"></span></a>
                                     </h5>
                                 </div>
                             </div> 
                         </div>
                 {% endfor %}
-            
-                <div class="col-12 mt-3">
-                    <div class="navigation">
-                        {{ knp_pagination_render(pagination, null, {}, {
-                            'align': 'center'
-                        }) }}
-                        {{ include('paginator/per_page.html.twig', {
-                            span_color: 'text-primary',
-                            per_page: [6,12,18]
-                        }) }}
-                    </div>
-                </div>
             {% else %}
                 <div class="col-11 p-3 mx-auto my-2 link-card">
                     <span class="text-center">
-                        <h5 class="text-green">No one to display here. Common let's  invite someone <a href="">now.</a></h5>
+                        <h5 class="text-green">Actually You don't have any pending requests from other users</h5>
                     </span>
                 </div>
             {% endif %}
         </div>
-    </div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

@@ -2,6 +2,10 @@
 
 {% block title %}Chat - Search Contacts{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/_chat.css') }}">
+{% endblock %}
 {% block section_class %}searchContacts{% endblock %} 
 {% block content_class %}{% endblock %}
 {% block content %}
@@ -9,14 +13,14 @@
         <div class="row">    
             <div class="col-sm-12">
                 <h2 class="mb-3 d-inline-block font-weight-normal text-uppercase text-purple">Look for new contacts</h2>
-                <a href="" class="d-inline-block btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Pending invites">
+                <a href="{{ path('friend_requests') }}" class="d-inline-block btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Pending invites">
                     <span class="fas fa-envelope"></span>
                 </a>
                 <a href="{{ path('friend_list') }}" class="d-inline-block btn btn-primary float-right mr-2" data-toggle="tooltip" data-placement="top" title="Friends list">
                     <span class="fas fa-user-friends"></span>
                 </a>
             </div>
-            <div class="col-sm-12 search-friends my-3">
+            <div class="col-sm-12 my-3">
                 {{ knp_pagination_filter(pagination, {}) }}
             </div>
         </div>
@@ -29,9 +33,9 @@
                                 <div class="col-2">
                                     <a href="">
                                         {% if user.imageFilename %}
-                                            <img class="img-fluid thumbnail" src="{{ uploaded_asset(user.thumbImagePath) }}">
+                                            <img class="img-fluid image-circle" src="{{ uploaded_asset(user.thumbImagePath) }}">
                                         {% else %}
-                                            <img class="img-fluid thumbnail" src="{{ asset('img/users/default.png') }}">
+                                            <img class="img-fluid image-circle" src="{{ asset('img/users/default.png') }}">
                                         {% endif %}   
                                     </a>
                                 </div>
@@ -49,7 +53,7 @@
 
                                     {% if not currentInviteHim and not heWasInvitedByCurrent %}
                                         <h5>
-                                            <a class="js-friend" href=""><span class="fas fa-user-plus"></span></a>
+                                            <a class="js-friend" href="{{ path('api_friend_invite', { id: user.id }) }}"><span class="fas fa-user-plus"></span></a>
                                         </h5>
                                     {% elseif currentInviteHim.status is defined and currentInviteHim.status is same as('Pending') %}
                                         <h5>
@@ -57,7 +61,7 @@
                                         </h5>
                                     {% elseif heWasInvitedByCurrent.status is defined and heWasInvitedByCurrent.status is same as('Pending') %}
                                         <h5>
-                                            <a href=""><span class="fas fa-envelope"></span></a>
+                                            <a href="{{ path('friend_requests') }}"><span class="fas fa-envelope"></span></a>
                                         </h5>
                                     {% else %}
                                         <h5>
