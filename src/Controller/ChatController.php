@@ -80,6 +80,22 @@ class ChatController extends AbstractController
     }
 
     /**
+     * @Route("/chat/private", name="chat_private", methods={"GET"})
+     */
+    public function privateList(ChatRepository $chatRepository, Request $request): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+        
+        $chats = $chatRepository->findPrivateChatsByUser($user);
+
+        return $this->render('chat/private_list.html.twig', [
+            'chats' => $chats
+        ]);
+    }
+
+    /**
      * @Route("api/chat/{id}/update_participant", name="api_chat_update_participant", methods={"POST"})
      */
     public function updateParticipant(Chat $chat, Request $request, EntityManagerInterface $entityManager, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response

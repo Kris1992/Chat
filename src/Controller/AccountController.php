@@ -194,7 +194,7 @@ class AccountController extends AbstractController
      * @Route("/api/account/update_last_activity", name="api_account_last_activity", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function updateLastActivity(Request $request, EntityManagerInterface $entityManager): Response
+    public function updateLastActivity(EntityManagerInterface $entityManager): Response
     {
 
         /** @var User $user */
@@ -203,6 +203,30 @@ class AccountController extends AbstractController
         $entityManager->flush();        
         
         return new JsonResponse(null, Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/api/account/get_last_activities", name="api_account_get_last_activities", methods={"POST", "GET"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function getLastActivities(Request $request, UserRepository $userRepository): Response
+    {
+        
+        $data = json_decode($request->getContent(), true);
+
+        if($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        $ids = [];
+
+        foreach ($data as $idData) {
+            array_push($ids, $idData['id']);    
+        }
+
+        $usersActivities = $userRepository->findUsersLastActicity($ids);
+
+        return new JsonResponse($usersActivities, Response::HTTP_OK);
     }
 
 }

@@ -52,4 +52,20 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * findUsersLastActicity Find users by given ids
+     * @param  array  $usersIds Array with ids of users to find
+     * @return array            Return array with ids and last activity datetime
+     */
+    public function findUsersLastActicity(array $usersIds): array
+    {   
+        return $this->createQueryBuilder('u')
+            ->select('u.id, u.lastActivity')
+            ->andWhere('u.id IN(:usersIds)')
+            ->setParameter('usersIds', $usersIds)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 }

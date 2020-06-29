@@ -50,6 +50,7 @@
                             <a href="{{ path('friend_list') }}" class="menu-item {{ app.request.get('_route') starts with 'friend' ? 'active' }}">
                                 <span class="fas fa-user-friends"></span>
                                 Contacts
+                                <!--<span class="badge badge-primary">10</span>-->
                             </a>
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}

@@ -1,5 +1,12 @@
+.chat-container {
+    height: 70vh;
+}
+
 .messages-container {
-    height: 60vh;
+    height: 75%;
+}
+
+.chat-item-container {
     border: 1px solid #ABDACD;
     overflow-y: scroll;
 }
@@ -8,13 +15,8 @@
     border: 1px solid #ABDACD;
 }
 
-.users-container {
-    border: 1px solid #ABDACD;
-    overflow-y: scroll;
-}
-
 .textarea-container {
-    min-height: 10vh;
+    height: 25%;
     border: 1px solid #ABDACD;
 }
 

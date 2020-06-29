@@ -41,13 +41,22 @@
                                         {% endif %}   
                                     </a>
                                 </div>
-                                <div class="col-8 align-self-center">
+                                <div class="col-7 align-self-center">
                                     <a href="">
                                         <h5 class="text-orange">
                                             {{ user.login }}
                                         </h5>
                                         <small class="text-purple">{{ user.email }}</small>
                                     </a>
+                                </div>
+                                <div class="col-1 align-self-center js-user-activity" id="{{ user.id }}" data-url="{{ path('api_account_get_last_activities') }}">
+                                    <h5>
+                                        {% if date(user.lastActivity) < date('-1 minute')%}
+                                            <span class="fas fa-circle text-danger" data-toggle="tooltip" data-placement="top" title="User is not active now"></span>
+                                        {% else %}
+                                            <span class="fas fa-circle text-success" data-toggle="tooltip" data-placement="top" title="User is active now"></span>
+                                        {% endif %}
+                                    </h5>
                                 </div>
                                 <div class="col-2 align-self-center">
                                     <h5>
@@ -78,6 +87,7 @@
             {% endif %}
         </div>
     </div>
+    {{ include('js_templates/user_activity.html.twig') }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

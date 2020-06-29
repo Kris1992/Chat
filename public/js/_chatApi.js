@@ -18,6 +18,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.chatId = chatId;
             this.lastSeenUrl = lastSeenUrl;
             this.isPublic = isPublic;
+            this.counter = 0;
             this.counterPaused = false;
 
             this.handleDocumentLoad();
@@ -116,15 +117,20 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         updateLastSeen() {
-            const counter = setInterval(startUpdateLastSeen.bind(this), 6000);
+            const counter = setInterval(startUpdateLastSeen.bind(this), 30000);
 
             function startUpdateLastSeen() {
                 if (!this.counterPaused) {
                     this.sendActivity(this.lastSeenUrl).then((data) => {
                         this.showParticipants(data);
                     }).catch((errorData) => {
-                        this.showErrorMessage(errorData.title);
-                        this.counterPaused = true;
+
+                        /** User will be removed from participants after 2 minutes */
+                        this.counter++;
+                        if (this.counter >= 3) {
+                            this.showErrorMessage(errorData.title);
+                            this.counterPaused = true;
+                        }
                     });
                 }
             }

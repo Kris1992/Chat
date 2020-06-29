@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Chat;
+use App\Entity\{Chat, User};
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query;
@@ -67,6 +67,24 @@ class ChatRepository extends ServiceEntityRepository
             ->setParameters([
                 'ids' => $arrayIds,
                 'isPublic' => true
+            ])
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * findPrivateChatsByUser Find private chats by given user as participant 
+     * @param  User   $user User object whose must be one of participants of chat room
+     * @return Chat[]
+     */
+    public function findPrivateChatsByUser(User $user)
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere(':user MEMBER OF c.participants AND c.isPublic = :isPublic')
+            ->setParameters([
+                'user' => $user,
+                'isPublic' => false
             ])
             ->getQuery()
             ->getResult()
