@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
 
@@ -55,6 +56,13 @@ class Chat
      * @MaxDepth(3)
      */
     private $participants;
+
+    /**
+     * @Gedmo\Timestampable(on="create")
+     * @Gedmo\Timestampable(on="change", field={"messages", "title"})
+     * @ORM\Column(type="datetime")
+     */
+    private $lastActivityAt;
 
     public function __construct()
     {
@@ -186,6 +194,11 @@ class Chat
         }
 
         return false;
+    }
+
+    public function getLastActivityAt(): ?\DateTimeInterface
+    {
+        return $this->lastActivityAt;
     }
 
 }

@@ -11,11 +11,14 @@ use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseT
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
 use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
+use App\Services\ModelValidator\ModelValidatorInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use App\Message\Command\CheckUserActivityOnPublicChat;
+use App\Services\Factory\ChatModel\ChatModelFactoryInterface;
+use App\Services\Factory\Chat\ChatFactoryInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\{ChatRepository, ParticipantRepository};
+use App\Repository\{ChatRepository, ParticipantRepository, UserRepository};
 use Symfony\Component\WebLink\Link;
 use App\Entity\Chat;
 
@@ -82,7 +85,7 @@ class ChatController extends AbstractController
     /**
      * @Route("/chat/private", name="chat_private", methods={"GET"})
      */
-    public function privateList(ChatRepository $chatRepository, Request $request): Response
+    public function privateList(ChatRepository $chatRepository): Response
     {
 
         /** @var User $user */
@@ -95,6 +98,44 @@ class ChatController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("chat/private/create", name="chat_private_create", methods={"POST"})
+     */
+    public function createPrivateRoom(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, ChatModelFactoryInterface $chatModelFactory, ModelValidatorInterface $modelValidator, ChatFactoryInterface $chatFactory): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $submittedToken = $request->request->get('token');
+
+        if($request->request->has('friends')) {
+            if ($this->isCsrfTokenValid('private_chat', $submittedToken)) {
+                $usersIds = $request->request->get('friends');
+                $users = $userRepository->findAllByIds($usersIds);
+
+                $chatModel = $chatModelFactory->createFromData($user, false, $users, null, null);
+                $isValid = $modelValidator->isValid($chatModel, "chat:private");
+
+                if ($isValid) {
+                    $chat = $chatFactory->create($chatModel, $user);
+                    
+                    $entityManager->persist($chat);
+                    $entityManager->flush();   
+                    
+                    $this->addFlash('success','Chat was created.');
+                    return $this->redirectToRoute('chat_private');
+                } else {
+                    $this->addFlash('danger', $modelValidator->getErrorMessage());
+                    return $this->redirectToRoute('chat_private');
+                }
+
+            }
+        }
+
+        $this->addFlash('danger','Cannot create this chat room.');
+        return $this->redirectToRoute('chat_private');
+    }
+    
     /**
      * @Route("api/chat/{id}/update_participant", name="api_chat_update_participant", methods={"POST"})
      */

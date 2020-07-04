@@ -68,4 +68,19 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * findAllByIds Find all users with given ids
+     * @param  array  $arrayIds Array with at least one id
+     * @return User[]
+     */
+    public function findAllByIds(array $arrayIds)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.id IN(:ids)')
+            ->setParameter('ids', $arrayIds)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 }

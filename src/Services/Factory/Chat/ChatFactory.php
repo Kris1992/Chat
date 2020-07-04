@@ -8,7 +8,7 @@ use App\Entity\{Chat, User};
 
 class ChatFactory implements ChatFactoryInterface 
 {
-    
+
     public function create(ChatModel $chatModel, User $owner): Chat
     {
 
@@ -24,7 +24,17 @@ class ChatFactory implements ChatFactoryInterface
             ->setIsPublic($chatModel->getIsPublic())
             ->setOwner($owner)
             ;
-            //add users if is not public
+
+        $participants = $chatModel->getParticipants();
+
+        if ($participants) {
+            foreach ($participants as $participant) {
+                $chat
+                    ->addParticipant($participant)
+                ;
+            }
+        }
+            
         return $chat;
     }
 

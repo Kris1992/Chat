@@ -81,11 +81,13 @@ class ChatRepository extends ServiceEntityRepository
     public function findPrivateChatsByUser(User $user)
     {
         return $this->createQueryBuilder('c')
-            ->andWhere(':user MEMBER OF c.participants AND c.isPublic = :isPublic')
+            ->innerJoin('c.participants', 'p')
+            ->andWhere(':user = p.user AND c.isPublic = :isPublic')
             ->setParameters([
                 'user' => $user,
                 'isPublic' => false
             ])
+            ->orderBy('c.lastActivityAt', 'ASC')
             ->getQuery()
             ->getResult()
             ;

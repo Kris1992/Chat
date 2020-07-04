@@ -1,9 +1,9 @@
 .chat-container {
-    height: 70vh;
+    height: 80vh;
 }
 
 .messages-container {
-    height: 75%;
+    height: 70%;
 }
 
 .chat-item-container {
@@ -11,12 +11,16 @@
     overflow-y: scroll;
 }
 
+.friends_list {
+    height: 60vh;
+}
+
 .chat-header {
     border: 1px solid #ABDACD;
 }
 
 .textarea-container {
-    height: 25%;
+    height: 30%;
     border: 1px solid #ABDACD;
 }
 

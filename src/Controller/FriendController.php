@@ -8,6 +8,7 @@ use App\Services\Factory\FriendInvitation\FriendInvitationFactoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use App\Services\Updater\Friend\FriendUpdaterInterface;
 use App\Repository\{FriendRepository, UserRepository};
 use Symfony\Component\Routing\Annotation\Route;
@@ -132,6 +133,28 @@ class FriendController extends AbstractController
         }
 
         return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Something goes wrong.');
+    }
+
+    /**
+     * @Route("/api/friend", name="api_get_friend", methods={"GET"})
+     */
+    public function getFriends(FriendRepository $friendRepository): Response
+    {  
+
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $friends = $friendRepository->findAllByStatus($currentUser, 'Accepted');
+        
+        return $this->json(
+            $friends,
+            200,
+            [],
+            [
+                AbstractObjectNormalizer::GROUPS => 'chat:friends',
+                AbstractObjectNormalizer::CIRCULAR_REFERENCE_LIMIT => 2,
+            ]
+        );
+
     }
 
 }

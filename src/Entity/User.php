@@ -21,12 +21,13 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:friends"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"chat:friends"})
      */
     private $email;
 
@@ -37,7 +38,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Groups({"chat:message", "chat:participants"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends"})
      */
     private $login;
 
@@ -78,7 +79,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"chat:message", "chat:participants"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends"})
      */
     private $imageFilename;
 
@@ -232,7 +233,10 @@ class User implements UserInterface
 
         return $this;
     }
-
+    
+    /**
+     * @Groups({"chat:friends"})
+     */
     public function isActiv()
     {
         if ($this->getLastActivity() < new \DateTime('now -30 seconds')) {
@@ -312,7 +316,7 @@ class User implements UserInterface
     }
 
     /**
-     * @Groups({"chat:message", "chat:participants"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends"})
      */
     public function getThumbImagePath()
     {

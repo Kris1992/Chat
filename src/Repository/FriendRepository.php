@@ -134,4 +134,27 @@ class FriendRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * findAllByStatus Find all friends of given user with status
+     * @param  User     $currentUser    User object of current user (do not include it in friends list)
+     * @param  string   $status         String with status
+     * @return Friend[]
+     */
+    public function findAllByStatus(User $currentUser, string $status)
+    {   
+
+        return $this->createQueryBuilder('f')
+            ->andWhere('(f.inviter = :inviter OR f.invitee = :invitee) 
+                AND f.status = :status')
+            ->setParameters([
+                'inviter' => $currentUser,
+                'invitee' => $currentUser,
+                'status' => $status,
+            ])
+            ->getQuery()
+            ->getResult()
+        ;
+        
+    }
+
 }

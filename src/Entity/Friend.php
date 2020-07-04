@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\FriendRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,12 +23,14 @@ class Friend
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="invitedFriends")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"chat:friends"})
      */
     private $inviter;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="invitedByFriends")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false) 
+     * @Groups({"chat:friends"})
      */
     private $invitee;
 

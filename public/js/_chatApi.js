@@ -28,6 +28,14 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 ChatApi._selectors.sendButton,
                 this.handleSendMessage.bind(this)
             );
+
+            if (!isPublic) {
+                this.$wrapper.on(
+                    'click', 
+                    ChatApi._selectors.createPrivateRoom,
+                    this.handleCreatePrivateRoom.bind(this)
+                );
+            }
         }
 
         static get _selectors() {
@@ -40,6 +48,10 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 othersMessageTemplate: '#js-others-message-template',
                 participantsContainer: '#js-participants-container',
                 participantsTemplate: '#js-participants-template',
+                createPrivateRoom: '#js-create-private-chat',
+                chooseFriendsModal: '#js-choose-friends-modal',
+                friendsModalTemplate: '#js-friends-modal-template',
+                modalTemplateWrapper: '#js-friends-template-wrapper'
             }
         }
 
@@ -96,6 +108,28 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             });
+        }
+
+        handleCreatePrivateRoom() {
+            let $createPrivateRoom = $(ChatApi._selectors.createPrivateRoom);
+            let url = $createPrivateRoom.data('url');
+            const userId = $createPrivateRoom.data('user-id');
+            this.getFriends(url).then((data) => {
+                if (data.length > 0) {
+                    this.showFriendsList(data, userId);
+                }
+            }).catch((errorData) => {
+                this.showErrorMessage(errorData.title);
+            });
+        }
+
+        showFriendsList(friends, userId) {
+            console.log('tutaj');
+            const tplText = $(ChatApi._selectors.friendsModalTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl({friends:friends, currentUser: userId, defaultUserImage:this.defaultUserImage, baseAsset:this.baseAsset});
+            $(ChatApi._selectors.modalTemplateWrapper).html($.parseHTML(html));
+            $(ChatApi._selectors.chooseFriendsModal).modal("toggle");
         }
 
         getHubUrl(url) {
@@ -239,6 +273,23 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         loadEmojiArea() {
             $(ChatApi._selectors.textareaInput).emojioneArea({
                 pickerPosition: 'top',
+            });
+        }
+
+        getFriends(url) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'GET',
+                }).then(function(data) {
+                    resolve(data);
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                });
             });
         }
     }

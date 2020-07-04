@@ -17,27 +17,50 @@
         <div class="col-sm-12 mx-auto js-chat-wrapper" data-url="{{ path('api_hub_url') }}">
             <div class="row">
                 <div class="col-12 col-md-4 bg-primary chat-header text-center text-uppercase">
-                    Chats
+                    <span class="align-middle">Chats</span>
+                    <button type="button" class="btn btn-sm btn-primary float-right" id="js-create-private-chat" data-url="{{ path('api_get_friend') }}" data-user-id="{{ app.user.id }}" data-toggle="modal" data-target="#chooseFriendsModal">
+                        <h6><span class="fa fa-plus-circle"></span></h6>
+                    </button>
                 </div>
                 <div class="col-12 col-md-8 bg-primary chat-header text-center text-uppercase">
-                    Messages
+                    <span class="align-middle">Messages</span>
                 </div>
             </div>
             <div class="row chat-container">
                 <div class="col-sm-12 col-md-4 bg-white chat-item-container">
                     <ul class="list-group" id="js-chats-container">
-                        
+                        {% if chats %}
+                            {% for chat in chats %}
+                                <button type="button" class="list-group-item list-group-item-action mt-1 {{ loop.first ? 'active' : '' }}" id="{{ chat.id }}">
+                                    <span><strong>{{ chat.title }}
+                                        {% set break = false %}
+                                        
+                                        {% for participant in chat.participants %}
+                                            {% if not break %}
+                                                {{ participant.user.login|e }}
+                                                {% if loop.index0 < 2 and not loop.last %}
+                                                    ,
+                                                {% elseif loop.index0 >= 2 %}
+                                                    and more...
+                                                    {% set break = true %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </strong></span>
+                                </button>
+                            {% endfor %}
+                        {% endif %}
                     </ul>
                 </div>
                 <div class="col-sm-12 col-md-8 bg-white p-0 h-100">
                     <div class="m-0 row h-100">
                         <div class="col-12 chat-item-container w-100 messages-container" id="js-messages-container">
                         </div>
-                        <div class="col-12 bg-white textarea-container ">
+                        <div class="col-12 bg-white textarea-container">
                             <form action="" data-user="{{ app.user.id }}" method="POST" id="js-form">
                                 <div class="row">
-                                    <div class="col-8">
-                                        <div class="form-group my-2">
+                                    <div class="col-10">
+                                        <div class="form-group my-3">
                                             <label class="sr-only" for="js-message-text">Write message</label>
                                             <textarea name="inputMessage" class="form-control bg-dark text-left" id="js-message-text" rows="3"></textarea>
                                         </div>
@@ -48,21 +71,20 @@
                                 </div>
                             </form>
                         </div>
-
                     </div>
-                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% include('js_templates/messages.html.twig') %}
+{% include('js_templates/chat_participants.html.twig') %}
+{% include('modals/choose_friends_modal.html.twig') %}
 <script>
     var defaultUserImage = "{{ asset('img/users/default.png') }}";
     var baseAsset = "{{ uploaded_asset('') }}";
     
 </script>
-{{ include('js_templates/messages.html.twig') }}
-{{ include('js_templates/chat_participants.html.twig') }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -75,8 +97,8 @@
     <script type="module" src="{{ asset('js/_chatApi.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-           // var $wrapper = $('.js-chat-wrapper');
-           // var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl);
+           var $wrapper = $('.js-chat-wrapper');
+           var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, null, null, false);
         });
     </script>
 {% endblock %}

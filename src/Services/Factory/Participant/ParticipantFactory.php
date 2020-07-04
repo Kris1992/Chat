@@ -8,7 +8,7 @@ use App\Entity\{Chat, User, Participant};
 class ParticipantFactory implements ParticipantFactoryInterface 
 {
     
-    public function create(User $user, Chat $chat): Participant
+    public function create(User $user, ?Chat $chat): Participant
     {
 
         $participant = new Participant();
