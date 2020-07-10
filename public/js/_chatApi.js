@@ -20,6 +20,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.isPublic = isPublic;
             this.counter = 0;
             this.counterPaused = false;
+            this.currentUser = null;
+            this.hub = null;
+            this.eventSource = null;
 
             this.handleDocumentLoad();
             
@@ -34,6 +37,11 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     'click', 
                     ChatApi._selectors.createPrivateRoom,
                     this.handleCreatePrivateRoom.bind(this)
+                );
+                this.$wrapper.on(
+                    'click', 
+                    ChatApi._selectors.chatButton,
+                    this.handleChooseChat.bind(this)
                 );
             }
         }
@@ -51,35 +59,36 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 createPrivateRoom: '#js-create-private-chat',
                 chooseFriendsModal: '#js-choose-friends-modal',
                 friendsModalTemplate: '#js-friends-modal-template',
-                modalTemplateWrapper: '#js-friends-template-wrapper'
+                modalTemplateWrapper: '#js-friends-template-wrapper',
+                chatsContainer: '#js-chats-container',
+                messagesLoadInfo: '#js-messages-load-info',
+                chatButton: '.js-chat-button',
+                message: '.js-message'
             }
         }
 
         handleDocumentLoad() {
             this.loadEmojiArea();
+            this.setCurrentUser();
 
             if(this.isPublic) {
                 this.updateLastSeen();
+            } else {
+                const $chatsContainer = $(ChatApi._selectors.chatsContainer);
+                if ($chatsContainer.has('button').length > 0) {
+                    this.showLoadMessagesInfo($(ChatApi._selectors.messagesContainer));
+                    this.chatId = $(ChatApi._selectors.chatsContainer).children().first().attr('id');
+                    this.loadMessages(this.chatId, 0).then((data) => {
+                        this.showMessages(data);
+                    }).catch((errorData) => {
+                        this.showErrorMessage(errorData.title);
+                    }).finally(() => {
+                        $(ChatApi._selectors.messagesLoadInfo).remove();
+                    });
+                }
             }
 
-            this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
-                const hub = new URL(hubUrl);
-                hub.searchParams.append('topic', '/chat/public/'+this.chatId);
-                const eventSource = new EventSource(hub, {
-                    withCredentials: true
-                });
-                let $form = $(ChatApi._selectors.formHandler);
-
-                eventSource.onmessage = event => {
-                    var data = JSON.parse(event.data);
-                    data['createdAt'] = this.formatDateTime(data['createdAt']);
-                    if (data['owner']['id'] === $form.data('user')) {
-                        this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
-                    } else {
-                        this.showOthersMessage(data, $(ChatApi._selectors.messagesContainer));
-                    }
-                }
-            });
+            this.openEventSource();
         }
 
         handleSendMessage(event) {
@@ -90,44 +99,147 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             /* If message is empty just do nothing*/
             if (isEmptyField(message)) {
                 return;
-            }
+            } 
+            
+            var url = '/api/chat/'+this.chatId+'/message';
 
-            let $form = $(ChatApi._selectors.formHandler); 
-            let url = $form.attr('action');
-
-            this.sendMessage({content:message}, url).then((data) => {
+            this.sendMessage({content:message}, url).then((message) => {
                 var emojioneArea = $textareaInput.emojioneArea();
                 emojioneArea[0].emojioneArea.setText('');
-                data['createdAt'] = this.formatDateTime(data['createdAt']);
-                if (data['owner']['id'] === $form.data('user')) {
-                    this.showOwnMessage(data, $(ChatApi._selectors.messagesContainer));
-                } else {
-                    this.showOthersMessage(data, $(ChatApi._selectors.messagesContainer));
-                }
-
+                this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             });
         }
 
         handleCreatePrivateRoom() {
-            let $createPrivateRoom = $(ChatApi._selectors.createPrivateRoom);
-            let url = $createPrivateRoom.data('url');
-            const userId = $createPrivateRoom.data('user-id');
+            let url = $(ChatApi._selectors.createPrivateRoom).data('url');
+            
             this.getFriends(url).then((data) => {
                 if (data.length > 0) {
-                    this.showFriendsList(data, userId);
+                    this.showFriendsList(data, this.currentUser);
+                } else {
+                    this.showErrorMessage('Invite some friends first to create chat room with them');
                 }
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             });
         }
 
+        handleChooseChat(event) {
+            $(ChatApi._selectors.chatButton).removeClass('active');
+            let $button = $(event.currentTarget);
+            $button.addClass('active');
+            this.chatId = $button.attr('id');
+            this.closeEventSource();
+
+            this.clearMessages($(ChatApi._selectors.messagesContainer));
+            this.showLoadMessagesInfo($(ChatApi._selectors.messagesContainer));
+            this.loadMessages(this.chatId, 0).then((data) => {
+                this.showMessages(data);
+                this.openEventSource();
+            }).catch((errorData) => {
+                this.showErrorMessage(errorData.title);
+            }).finally(() => {
+                $(ChatApi._selectors.messagesLoadInfo).remove();
+            });
+        }
+
+        openEventSource() {
+            this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
+                this.hub = new URL(hubUrl);
+                this.hub.searchParams.append('topic', '/chat/'+this.chatId);
+                this.eventSource = new EventSource(this.hub, {
+                    withCredentials: true
+                });
+
+                this.eventSource.onmessage = event => {
+                    let message = JSON.parse(event.data);
+                    this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
+                }
+            });
+        }
+
+        closeEventSource() {
+            this.hub = null;
+            if (this.eventSource) {
+                this.eventSource.close();
+            }
+            this.eventSource = null;
+        }
+
+        loadMessages(chatId, offset) {
+            const offsetData = {offset: offset};
+            const url = '/api/chat/'+chatId+'/get_messages';
+
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'POST',
+                    data: JSON.stringify(offsetData)
+                }).then(function(data) {
+                    resolve(data);
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                }); 
+            });
+        }
+
+        showMessages(data, append = true) {
+            if (append) {
+                data.reverse().map(function(message) {
+                    this.distributeMessage(message, $(ChatApi._selectors.messagesContainer), append);
+                }, this);
+            } else {
+                data.map(function(message) {
+                    this.distributeMessage(message, $(ChatApi._selectors.messagesContainer), append);
+                }, this);
+            }
+            
+            this.setObserver();
+        }
+
+        setObserver() {
+            let $messages = $(ChatApi._selectors.message);
+            let firstMessage = $messages.first().get(0);
+    
+            const intersectionCallback = (entries, observer) => {
+                if (entries[0].intersectionRatio <= 0) {
+                    return;
+                }
+
+                if(entries[0].intersectionRatio > 0.85) {
+                    observer.unobserve(firstMessage);
+
+                    this.loadMessages(this.chatId, $messages.length).then((data) => {
+                        if (data.length > 0) {
+                            this.showMessages(data, false);
+                        }
+                    }).catch((errorData) => {
+                        this.showErrorMessage(errorData.title);
+                    }).finally(() => {
+                        $(ChatApi._selectors.messagesLoadInfo).remove();
+                    });
+                }
+            };
+
+            const intersectionOptions = {
+                threshold: 1,
+                rootMargin: '0px 0px 0px 0px'
+            };
+
+            const intersectionObserver = new IntersectionObserver(intersectionCallback, intersectionOptions);
+            intersectionObserver.observe(firstMessage);
+        }
+
         showFriendsList(friends, userId) {
-            console.log('tutaj');
             const tplText = $(ChatApi._selectors.friendsModalTemplate).html();
             const tpl = _.template(tplText);
-            const html = tpl({friends:friends, currentUser: userId, defaultUserImage:this.defaultUserImage, baseAsset:this.baseAsset});
+            const html = tpl({friends:friends, currentUser:userId, defaultUserImage:this.defaultUserImage, baseAsset:this.baseAsset});
             $(ChatApi._selectors.modalTemplateWrapper).html($.parseHTML(html));
             $(ChatApi._selectors.chooseFriendsModal).modal("toggle");
         }
@@ -173,7 +285,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         showParticipants(data) {
             const tplText = $(ChatApi._selectors.participantsTemplate).html();
             const tpl = _.template(tplText);
-            const html = tpl(data, {defaultUserImage:this.defaultUserImage}, {baseAsset:this.baseAsset});
+            const html = tpl({data:data, defaultUserImage:this.defaultUserImage, baseAsset:this.baseAsset, currentUser:this.currentUser});
             $(ChatApi._selectors.participantsContainer).html($.parseHTML(html));
         }
 
@@ -220,23 +332,52 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             });
         }
 
-        showOwnMessage(data, $target) {
+        clearMessages($target) {
+            $target.empty();
+        }
+
+        showLoadMessagesInfo($target) {
+            let content = `
+                <div class="alert alert-info" role="alert" id="js-messages-load-info">
+                    <span class="fa fa-spinner fa-spin"></span> 
+                    <strong>Loading messages...</strong>
+                </div>`;
+            $target.prepend($.parseHTML(content));
+        }
+
+        distributeMessage(message, $target, append = true) {
+            message['createdAt'] = this.formatDateTime(message['createdAt']);
+            if (message['owner']['id'] === this.currentUser) {
+                this.showOwnMessage(message, $target, append);
+            } else {
+                this.showOthersMessage(message, $target, append);
+            }
+        }
+
+        showOwnMessage(data, $target, append) {
             const tplText = $(ChatApi._selectors.ownMessageTemplate).html();
-            this.showMessage(data, $target, tplText);
+            this.showMessage(data, $target, tplText, append);
         }
 
-        showOthersMessage(data, $target) {
+        showOthersMessage(data, $target, append) {
             const tplText = $(ChatApi._selectors.othersMessageTemplate).html();
-            this.showMessage(data, $target, tplText);
+            this.showMessage(data, $target, tplText, append);
         }
 
-        showMessage(data, $target, tplText) {
+        showMessage(data, $target, tplText, append) {
             const tpl = _.template(tplText);
             const html = tpl(data, {defaultUserImage:this.defaultUserImage}, {baseAsset:this.baseAsset});
-            $target.append($.parseHTML(html));
-            $target.stop().animate({
-                scrollTop: $target[0].scrollHeight
-            }, 1200);
+            if (append) {
+                $target.append($.parseHTML(html));
+                $target.stop().animate({
+                    scrollTop: $target[0].scrollHeight
+                }, 1200);
+            } else {
+                $target.prepend($.parseHTML(html));
+                //Set scroll to last viewed message
+                let messageHeight = $(ChatApi._selectors.message).first().get(0).scrollHeight;
+                $target[0].scrollTop += messageHeight;
+            }
         }
 
         formatDateTime(date) {
@@ -274,6 +415,11 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             $(ChatApi._selectors.textareaInput).emojioneArea({
                 pickerPosition: 'top',
             });
+        }
+
+        setCurrentUser() {
+            let $form = $(ChatApi._selectors.formHandler);
+            this.currentUser = $form.data('user');
         }
 
         getFriends(url) {

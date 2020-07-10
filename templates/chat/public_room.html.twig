@@ -29,11 +29,15 @@
                     <ul class="list-group" id="js-participants-container">
                         {% if chat.participants  %}
                             {% for participant in chat.participants %}
-                                <li class="list-group-item">
+                                <li class="list-group-item mt-1 {{ participant.user is same as(app.user) ? 'active-purple' : '' }}">
                                     {% if participant.user.imageFilename %}
-                                    <span><img class="user-image image-circle float-left" src="{{ uploaded_asset(participant.user.thumbImagePath) }}" alt="User image"></span>
+                                        <span>
+                                            <img class="user-image image-circle float-left" src="{{ uploaded_asset(participant.user.thumbImagePath) }}" alt="User image">
+                                        </span>
                                     {% else %}
-                                    <span><img class="user-image image-circle float-left" src="{{asset('img/users/default.png')}}" alt="User image"></span>
+                                        <span>
+                                            <img class="user-image image-circle float-left" src="{{asset('img/users/default.png')}}" alt="User image">
+                                        </span>
                                     {% endif %}
                                     <span><strong>{{ participant.user.login }}</strong></span>
                                 </li>

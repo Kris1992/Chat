@@ -170,3 +170,8 @@ ul.sidebar-footer a {
     color: var(--color-green);
 }
 
+.active-purple {
+    background-color: var(--color-purple);
+    color: var(--color-orange);
+}
+

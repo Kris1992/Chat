@@ -50,7 +50,14 @@
                             <a href="{{ path('friend_list') }}" class="menu-item {{ app.request.get('_route') starts with 'friend' ? 'active' }}">
                                 <span class="fas fa-user-friends"></span>
                                 Contacts
-                                <!--<span class="badge badge-primary">10</span>-->
+                                <div class="d-inline-block" id="js-invites-wrapper">
+                                    {% set pendingFriendsCount = pendingFriends(app.user) %}
+                                    {% if pendingFriendsCount > 0 %}
+                                        <span class="badge badge-primary" data-count="{{ pendingFriendsCount }}" id="js-invites-count">
+                                            {{ pendingFriendsCount }}
+                                        </span>                 
+                                    {% endif %}
+                                </div>
                             </a>
                         </li>
                         {% if is_granted('ROLE_ADMIN') %}

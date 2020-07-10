@@ -13,7 +13,7 @@ use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\Factory\Message\MessageFactoryInterface;
 use Symfony\Component\Mercure\{PublisherInterface, Update};
 use Symfony\Component\Serializer\SerializerInterface;
-use App\Repository\ParticipantRepository;
+use App\Repository\{ParticipantRepository, MessageRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Chat;
 
@@ -47,7 +47,7 @@ class MessageController extends AbstractController
             );
 
             $topics = [
-                sprintf('/chat/public/%d', $chat->getId())
+                sprintf('/chat/%d', $chat->getId())
             ];
 
             $othersParticipants = $participantRepository->findAllOthersParticipantsByChat($user, $chat);
@@ -70,6 +70,30 @@ class MessageController extends AbstractController
         }
 
         return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $modelValidator->getErrorMessage());
+    }
+
+    /**
+     * @Route("api/chat/{id}/get_messages", name="api_chat_get_messages", methods={"POST"})
+     */
+    public function getMessages(Request $request, Chat $chat, MessageRepository $messageRepository): Response
+    {   
+        $this->denyAccessUnlessGranted('CHAT_VIEW', $chat);
+
+        $data = json_decode($request->getContent(), true);
+        
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        $messages = $messageRepository->findBy(['chat' => $chat], ['createdAt' => 'DESC'], 5, $data['offset']);
+
+        return $this->json(
+                $messages,
+                200,
+                [],
+                ['groups' => 'chat:message']
+            );
+
     }
 
 }

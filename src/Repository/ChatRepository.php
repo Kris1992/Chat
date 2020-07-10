@@ -87,7 +87,7 @@ class ChatRepository extends ServiceEntityRepository
                 'user' => $user,
                 'isPublic' => false
             ])
-            ->orderBy('c.lastActivityAt', 'ASC')
+            ->orderBy('c.lastActivityAt', 'DESC')
             ->getQuery()
             ->getResult()
             ;

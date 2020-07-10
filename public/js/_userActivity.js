@@ -2,9 +2,17 @@
 
 $(document).ready(function () {
     setInterval(()=> {
-        updateLastActivity();
-        }, 10000
-    );
+        updateLastActivity().then((data) => {
+            if (data['pendingInvites'] !== $('#js-invites-count').data('count')) {
+                let invitesCount = `
+                <span class="badge badge-primary" data-count="${data['pendingInvites']}" 
+                id="js-invites-count">
+                    ${data['pendingInvites']}
+                </span>`;
+                $('#js-invites-wrapper').html($.parseHTML(invitesCount));
+            }
+        });  
+    }, 10000);
 });
 
 function updateLastActivity() {
@@ -12,8 +20,8 @@ function updateLastActivity() {
         $.ajax({
             url: '/api/account/update_last_activity',
             method: 'POST'
-        }).then(() => {
-            resolve();
+        }).then((data) => {
+            resolve(data);
         });
     });
 }

@@ -17,7 +17,7 @@ use App\Services\Updater\User\UserUpdaterInterface;
 use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Security\LoginFormAuthenticator;
 use App\Services\Mailer\MailingSystemInterface;
-use App\Repository\{UserRepository, PasswordTokenRepository};
+use App\Repository\{UserRepository, PasswordTokenRepository, FriendRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use App\Form\UserFormType;
 use App\Entity\PasswordToken;
@@ -194,15 +194,17 @@ class AccountController extends AbstractController
      * @Route("/api/account/update_last_activity", name="api_account_last_activity", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function updateLastActivity(EntityManagerInterface $entityManager): Response
+    public function updateLastActivity(EntityManagerInterface $entityManager, FriendRepository $friendRepository): Response
     {
 
         /** @var User $user */
         $user = $this->getUser();
         $user->updateLastActivity();
-        $entityManager->flush();        
+        $entityManager->flush();
+
+        $friendPendingsCount = $friendRepository->countInvitationsByUser($user);
         
-        return new JsonResponse(null, Response::HTTP_OK);
+        return new JsonResponse(['pendingInvites' => $friendPendingsCount], Response::HTTP_OK);
     }
 
     /**

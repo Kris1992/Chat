@@ -157,4 +157,25 @@ class FriendRepository extends ServiceEntityRepository
         
     }
 
+    /**
+     * countInvitationsByUser Count all friends invitations where user is invitee
+     * @param  User   $user   User object whose is invitee
+     * @return int
+     */
+    public function countInvitationsByUser(User $user, $status = 'Pending'): int
+    {
+        $result = $this->createQueryBuilder('f')
+            ->select('count(f.id)')
+            ->andWhere('f.invitee = :user AND f.status = :status')
+            ->setParameters([
+                'user' => $user,
+                'status' => $status,
+            ])
+            ->getQuery()
+            ->getSingleScalarResult()
+            ; 
+
+        return intval($result);
+    }
+
 }
