@@ -50,19 +50,25 @@
                         <div class="col-12 chat-item-container w-100 messages-container" id="js-messages-container">
                         </div>
                         <div class="col-12 bg-white textarea-container">
-                            <form action="{{ path('api_chat_message', { id: chat.id }) }}" data-user="{{ app.user.id }}" method="POST" id="js-form">
-                                <div class="row">
-                                    <div class="col-10">
-                                        <div class="form-group my-3">
-                                            <label class="sr-only" for="js-message-text">Write message</label>
-                                            <textarea name="inputMessage" class="form-control bg-dark text-left" id="js-message-text" rows="3"></textarea>
-                                        </div>
+                            <div class="row">
+                                <div class="col-10">
+                                    <div class="my-3">
+                                        <div class="bg-dark text-left" id="js-message-text"></div>
                                     </div>
-                                    <div class="col-2 my-auto">
-                                        <button type="submit" class="btn btn-block btn-primary" id="js-send-message">Send</button>
+                                    <div class="form-group d-none">
+                                        <form action="{{ path('api_upload_image_attachment') }}" method="POST" id="js-image-form" enctype="multipart/form-data">
+                                            <label class="sr-only" for="js-image-input">
+                                                Upload image
+                                            </label>
+                                            <input type="file" name="uploadImage" id="js-image-input" accept=".jpg, .png" />
+                                        </form>
                                     </div>
                                 </div>
-                            </form>
+                                <div class="col-2 my-auto mx-auto">
+                                    <button type="button" class="btn btn-block btn-primary" id="js-upload-image"><span class="fas fa-images"></span></button>
+                                    <button type="button" class="btn btn-block btn-primary" id="js-send-message">Send</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -75,9 +81,11 @@
     var baseAsset = "{{ uploaded_asset('') }}";
     const chatId = "{{ chat.id }}";
     const lastSeenUrl = "{{ path('api_chat_update_participant', { id: chat.id }) }}";
+    const currentUser = "{{ app.user.id }}"
 </script>
 {{ include('js_templates/messages.html.twig') }}
 {{ include('js_templates/chat_participants.html.twig') }}
+{{ include('js_templates/uploaded_image.html.twig') }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -91,7 +99,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var $wrapper = $('.js-chat-wrapper');
-            var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl);
+            var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl, currentUser);
         });
     </script>
 {% endblock %}

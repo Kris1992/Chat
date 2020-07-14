@@ -18,12 +18,10 @@ class UserFactory implements UserFactoryInterface
      * UserFactory Constructor
      * 
      * @param UserPasswordEncoderInterface $passwordEncoder
-     * @param ImagesManagerInterface $imagesManager
      */
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder/*, ImagesManagerInterface $imagesManager*/)  
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)  
     {
         $this->passwordEncoder = $passwordEncoder;
-        /*$this->imagesManager = $imagesManager;*/
     }
     
     public function create(UserModel $userModel, ?array $roles, ?File $uploadedImage): User
@@ -45,11 +43,6 @@ class UserFactory implements UserFactoryInterface
             $user,
             $userModel->getPlainPassword()
         ));
-
-        /*if ($uploadedImage) {
-            $newFilename = $this->imagesManager->uploadImage($uploadedImage, null, $user->getLogin());
-            $user->setImageFilename($newFilename);
-        }*/
 
         if ($userModel->getAgreeTerms()) {
             $user->agreeToTerms();

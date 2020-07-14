@@ -1,11 +1,11 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Message\Command;
 
 class CheckUserActivityOnPublicChat
 {
 
+    /** @var int */
     private $participantId;
 
     public function __construct(int $participantId)

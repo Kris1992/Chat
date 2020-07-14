@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -28,6 +27,11 @@ class AccountController extends AbstractController
 {
 
     /**
+     * @param   Request                       $request
+     * @param   EntityManagerInterface        $entityManager
+     * @param   UserModelFactoryInterface     $userModelFactory
+     * @param   UserUpdaterInterface          $userUpdater
+     * @return  Response
      * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
@@ -58,6 +62,13 @@ class AccountController extends AbstractController
     }
 
     /**
+     * @param   Request                     $request
+     * @param   CsrfTokenManagerInterface   $csrfTokenManager
+     * @param   UserRepository              $userRepository
+     * @param   MailingSystemInterface      $mailer
+     * @param   EntityManagerInterface      $entityManager
+     * @return  Response
+     * @throws  InvalidCsrfTokenException
      * @Route("/password/reset", name="app_reset_password", methods={"POST", "GET"})
      */
     public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, MailingSystemInterface $mailer, EntityManagerInterface $entityManager): Response
@@ -96,6 +107,8 @@ class AccountController extends AbstractController
     }
 
     /**
+     * @param   EntityManagerInterface $entityManager
+     * @return  Response
      * @Route("/password/change", name="app_change_password", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
@@ -116,6 +129,13 @@ class AccountController extends AbstractController
     }
 
     /**
+     * @param   Request                         $request
+     * @param   UserPasswordEncoderInterface    $passwordEncoder
+     * @param   EntityManagerInterface          $entityManager
+     * @param   GuardAuthenticatorHandler       $guardHandler
+     * @param   LoginFormAuthenticator          $formAuthenticator
+     * @param   PasswordToken                   $passwordToken
+     * @return  Response
      * @Route("/password/renew/{token}", name="app_renew_password", methods={"POST", "GET"})
      */
     public function renewPassword(Request $request, UserPasswordEncoderInterface $passwordEncoder, EntityManagerInterface $entityManager, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, PasswordToken $passwordToken): Response
@@ -159,6 +179,12 @@ class AccountController extends AbstractController
     }
 
     /**
+     * @param   Request                     $request
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @param   ImagesManagerInterface      $userImagesManager
+     * @param   EntityManagerInterface      $entityManager
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
      * @Route("/api/account/delete_image", name="api_delete_account_image", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      */
@@ -191,6 +217,9 @@ class AccountController extends AbstractController
     }
 
     /**
+     * @param   EntityManagerInterface  $entityManager
+     * @param   FriendRepository        $friendRepository
+     * @return  Response
      * @Route("/api/account/update_last_activity", name="api_account_last_activity", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
@@ -208,6 +237,10 @@ class AccountController extends AbstractController
     }
 
     /**
+     * @param   Request         $request
+     * @param   UserRepository  $userRepository
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
      * @Route("/api/account/get_last_activities", name="api_account_get_last_activities", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */

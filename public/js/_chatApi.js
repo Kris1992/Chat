@@ -9,7 +9,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
     class ChatApi
     {   
 
-        constructor($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl, isPublic = true)
+        constructor($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl, currentUser, isPublic = true)
         {
             
             this.$wrapper = $wrapper;
@@ -20,7 +20,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.isPublic = isPublic;
             this.counter = 0;
             this.counterPaused = false;
-            this.currentUser = null;
+            this.currentUser = currentUser;
             this.hub = null;
             this.eventSource = null;
 
@@ -30,6 +30,16 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 'click', 
                 ChatApi._selectors.sendButton,
                 this.handleSendMessage.bind(this)
+            );
+            this.$wrapper.on(
+                'click', 
+                ChatApi._selectors.uploadImageButton,
+                this.handleUploadImageButton.bind(this)
+            );
+            this.$wrapper.on(
+                'change', 
+                ChatApi._selectors.uploadImageInput,
+                this.handleUploadedImage.bind(this)
             );
 
             if (!isPublic) {
@@ -50,7 +60,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             return {
                 sendButton: '#js-send-message',
                 textareaInput: '#js-message-text',
-                formHandler: '#js-form',
+                textareaDiv: '.emojionearea-editor',//to delete
+                formImageHandler: '#js-image-form',
                 messagesContainer: '#js-messages-container',
                 ownMessageTemplate: '#js-own-message-template',
                 othersMessageTemplate: '#js-others-message-template',
@@ -60,16 +71,18 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 chooseFriendsModal: '#js-choose-friends-modal',
                 friendsModalTemplate: '#js-friends-modal-template',
                 modalTemplateWrapper: '#js-friends-template-wrapper',
+                uploadedImageTemplate: '#js-uploaded-image-template',
                 chatsContainer: '#js-chats-container',
                 messagesLoadInfo: '#js-messages-load-info',
                 chatButton: '.js-chat-button',
-                message: '.js-message'
+                message: '.js-message',
+                uploadImageButton: '#js-upload-image',
+                uploadImageInput: '#js-image-input'
             }
         }
 
         handleDocumentLoad() {
             this.loadEmojiArea();
-            this.setCurrentUser();
 
             if(this.isPublic) {
                 this.updateLastSeen();
@@ -94,7 +107,11 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         handleSendMessage(event) {
             event.preventDefault();
             let $textareaInput = $(ChatApi._selectors.textareaInput);
-            let message = $textareaInput.val();
+            var emojioneArea = $textareaInput.emojioneArea();
+            let message = emojioneArea[0].emojioneArea.getText();
+            console.log(message);
+            
+            //let message = $textareaInput.val();
 
             /* If message is empty just do nothing*/
             if (isEmptyField(message)) {
@@ -104,7 +121,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             var url = '/api/chat/'+this.chatId+'/message';
 
             this.sendMessage({content:message}, url).then((message) => {
-                var emojioneArea = $textareaInput.emojioneArea();
                 emojioneArea[0].emojioneArea.setText('');
                 this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
             }).catch((errorData) => {
@@ -142,6 +158,55 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 this.showErrorMessage(errorData.title);
             }).finally(() => {
                 $(ChatApi._selectors.messagesLoadInfo).remove();
+            });
+        }
+
+        handleUploadImageButton() {
+            $(ChatApi._selectors.uploadImageInput).click();
+        }
+
+        handleUploadedImage() {
+            let $imageForm = $(ChatApi._selectors.formImageHandler);
+            let url = $imageForm.attr('action');
+            let formData = new FormData($imageForm.get(0));
+
+            this.uploadImage(url, formData).then((data) => {
+                this.showUploadedImage(data, $(ChatApi._selectors.textareaInput));
+            }).catch((errorData) => {
+                this.showErrorMessage(errorData.title);
+            }).finally(() => {
+                //$(ChatApi._selectors.messagesLoadInfo).remove();
+            });
+        }
+
+        showUploadedImage(imageData, $target) {
+            const tplText = $(ChatApi._selectors.uploadedImageTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl({image:imageData}, {baseAsset:this.baseAsset});
+            //$target.append($.parseHTML(html));
+
+            var emojioneArea = $target.emojioneArea();
+            let message = emojioneArea[0].emojioneArea.setText(html);
+        }
+
+        uploadImage(url, image) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'POST',
+                    data: image,
+                    contentType: false,
+                    processData: false
+                }).then(function(data) {
+                    console.log(data);
+                    resolve(JSON.parse(data));
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                }); 
             });
         }
 
@@ -415,11 +480,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             $(ChatApi._selectors.textareaInput).emojioneArea({
                 pickerPosition: 'top',
             });
-        }
-
-        setCurrentUser() {
-            let $form = $(ChatApi._selectors.formHandler);
-            this.currentUser = $form.data('user');
         }
 
         getFriends(url) {

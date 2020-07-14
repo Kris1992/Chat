@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Form;
 
@@ -21,11 +20,6 @@ class ChatFormType extends AbstractType
                 'help' => 'Add short description about this chat room'
             ])
             ;
-
-        /* From admin area you can create just public rooms */
-        //if ($options['is_admin']) {
-            //$chat->setIsPublic(true);
-        //}
 
     }
 

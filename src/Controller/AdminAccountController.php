@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -25,6 +24,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 class AdminAccountController extends AbstractController
 {
     /**
+     * @param   UserRepository      $userRepository
+     * @param   PaginatorInterface  $paginator
+     * @param   Request             $request
+     * @return  Response
      * @Route("/admin/account", name="admin_account", methods={"GET"})
      */
     public function list(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
@@ -44,6 +47,12 @@ class AdminAccountController extends AbstractController
     }
 
     /**
+     * @param   User                        $user
+     * @param   Request                     $request
+     * @param   EntityManagerInterface      $entityManager
+     * @param   UserModelFactoryInterface   $userModelFactory
+     * @param   UserUpdaterInterface        $userUpdater
+     * @return  Response
      * @Route("/admin/account/{id}/edit", name="admin_account_edit", methods={"POST", "GET"})
      */
     public function edit(User $user, Request $request, EntityManagerInterface $entityManager, UserModelFactoryInterface $userModelFactory, UserUpdaterInterface $userUpdater): Response
@@ -74,6 +83,11 @@ class AdminAccountController extends AbstractController
     }
 
     /**
+     * @param   Request                 $request
+     * @param   User                    $user
+     * @param   EntityManagerInterface  $entityManager
+     * @param   BanManagerInterface     $banManager
+     * @return  Response
      * @Route("/admin/account/{id}/ban", name="admin_account_ban",  methods={"POST"})
      */
     public function banManage(Request $request, User $user, EntityManagerInterface $entityManager, BanManagerInterface $banManager): Response
@@ -96,6 +110,10 @@ class AdminAccountController extends AbstractController
     }
 
     /**
+     * @param   Request                 $request
+     * @param   EntityManagerInterface  $entityManager
+     * @param   UserRepository          $userRepository
+     * @return  Response
      * @Route("/admin/account/ban_selected", name="admin_account_ban_selected",  methods={"POST"})
      */
     public function banSelected(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): Response
@@ -128,6 +146,13 @@ class AdminAccountController extends AbstractController
     }
 
     /**
+     * @param   Request                     $request
+     * @param   User                        $user
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @param   ImagesManagerInterface      $userImagesManager
+     * @param   EntityManagerInterface      $entityManager
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
      * @Route("/api/admin/account/{id}/delete_image", name="api_admin_delete_account_image",
      * methods={"DELETE"})
      */

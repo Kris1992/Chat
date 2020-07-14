@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\DataFixtures;
 
@@ -9,10 +8,13 @@ use Faker\{Factory, Generator};
 
 abstract class BaseFixture extends Fixture
 {
+    
     /** @var ObjectManager */
     private $manager;
+
     /** @var Generator */
     protected $faker;
+
     private $referencesIndex = [];
 
     abstract protected function loadData(ObjectManager $manager);
@@ -23,8 +25,9 @@ abstract class BaseFixture extends Fixture
         $this->faker = Factory::create();
         $this->loadData($manager);
     }
+    
     /**
-     * Create many objects at once:
+     * Create many objects at once
      *
      *
      * @param int      $count
@@ -46,7 +49,7 @@ abstract class BaseFixture extends Fixture
             $this->addReference(sprintf('%s_%d', $groupName, $i), $entity);
         }
     }
-
+    
     protected function getRandomReference(string $groupName) {
         if (!isset($this->referencesIndex[$groupName])) {
             $this->referencesIndex[$groupName] = [];

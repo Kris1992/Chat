@@ -3,7 +3,7 @@
 $(document).ready(function () {
     setInterval(()=> {
         updateLastActivity().then((data) => {
-            if (data['pendingInvites'] !== $('#js-invites-count').data('count')) {
+            if (data['pendingInvites'] !== $('#js-invites-count').data('count') && Number.isInteger(data['pendingInvites'])) {
                 let invitesCount = `
                 <span class="badge badge-primary" data-count="${data['pendingInvites']}" 
                 id="js-invites-count">

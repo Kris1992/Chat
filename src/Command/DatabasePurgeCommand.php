@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Command;
 
@@ -13,6 +12,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class DatabasePurgeCommand extends Command
 {
     protected static $defaultName = 'app:database:purge';
+
+    /** @var EntityManagerInterface */
     private $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
