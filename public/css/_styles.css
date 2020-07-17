@@ -11,6 +11,11 @@
     padding: 0;  
 }
 
+@font-face {
+  font-family: "Oswald";
+  src: url("../fonts/oswald/Oswald-VariableFont_wght.ttf") format("truetype");
+}
+
 .viewh-75 {
     height: 75vh;
 }
@@ -175,3 +180,29 @@ ul.sidebar-footer a {
     color: var(--color-orange);
 }
 
+.font-oswald {
+    font-family: 'Oswald', sans-serif;
+}
+
+.cursor {
+    width: 2px;
+    background-color: #ccc;
+    margin-left: 0.1rem;
+    animation: blink 1s infinite;
+}
+
+.cursor.typing {
+    animation: none;
+}
+
+@keyframes blink {
+    0% {
+        background-color: #ccc;
+    }
+    50% {
+        background-color: transparent;
+    }
+    100% {
+        background-color: #ccc;
+    }
+}

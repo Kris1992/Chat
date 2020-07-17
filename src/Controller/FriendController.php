@@ -22,6 +22,10 @@ class FriendController extends AbstractController
 {
 
     /**
+     * @param   FriendRepository    $friendRepository
+     * @param   PaginatorInterface  $paginator
+     * @param   Request             $request
+     * @return  Response
      * @Route("/friend", name="friend_list", methods={"GET"})
      */
     public function list(FriendRepository $friendRepository, PaginatorInterface $paginator, Request $request): Response
@@ -47,6 +51,11 @@ class FriendController extends AbstractController
     }
 
     /**
+     * @param   UserRepository      $userRepository
+     * @param   PaginatorInterface  $paginator
+     * @param   Request             $request
+     * @param   FriendRepository    $friendRepository
+     * @return  Response
      * @Route("/friend/search", name="friend_search", methods={"GET"})
      */
     public function search(UserRepository $userRepository, PaginatorInterface $paginator, Request $request, FriendRepository $friendRepository): Response
@@ -73,6 +82,8 @@ class FriendController extends AbstractController
     }
 
     /**
+     * @param   FriendRepository $friendRepository
+     * @return  Response
      * @Route("/friend/requests", name="friend_requests", methods={"GET"})
      */
     public function requestslist(FriendRepository $friendRepository): Response
@@ -89,6 +100,12 @@ class FriendController extends AbstractController
 
     //Api
     /**
+     * @param   User                                $user
+     * @param   JsonErrorResponseFactory            $jsonErrorFactory
+     * @param   FriendInvitationFactoryInterface    $friendInvitationFactory
+     * @param   EntityManagerInterface              $entityManager
+     * @param   FriendRepository                    $friendRepository
+     * @return  Response
      * @Route("/api/friend/user/{id}/invite", name="api_friend_invite", methods={"GET"})
      */
     public function inviteAction(User $user, JsonErrorResponseFactory $jsonErrorFactory, FriendInvitationFactoryInterface $friendInvitationFactory, EntityManagerInterface $entityManager, FriendRepository $friendRepository): Response
@@ -113,6 +130,13 @@ class FriendController extends AbstractController
     }
 
     /**
+     * @param   Friend                      $friend
+     * @param   Request                     $request
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @param   FriendUpdaterInterface      $friendUpdater
+     * @param   EntityManagerInterface      $entityManager
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
      * @Route("/api/friend/{id}/response", name="api_friend_response", methods={"POST", "GET"})
      */
     public function responseAction(Friend $friend, Request $request, JsonErrorResponseFactory $jsonErrorFactory, FriendUpdaterInterface $friendUpdater, EntityManagerInterface $entityManager): Response
@@ -135,6 +159,8 @@ class FriendController extends AbstractController
     }
 
     /**
+     * @param   FriendRepository $friendRepository
+     * @return  Response
      * @Route("/api/friend", name="api_get_friend", methods={"GET"})
      */
     public function getFriends(FriendRepository $friendRepository): Response

@@ -1,5 +1,4 @@
-<?php 
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Updater\User;
 
@@ -21,4 +20,5 @@ interface UserUpdaterInterface
      * @return User                 Updated user
      */
     public function update(UserModel $userModel, User $user, ?File $uploadedImage): User;
+    
 }

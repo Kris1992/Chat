@@ -1,3 +1,4 @@
+php bin/console messenger:consume async_priority_high async
 ./vendor/bin/phpspec run  spec/Services/ModelValidator
 ./vendor/bin/phpspec describe App/Services/ModelValidator/ModelValidatorChooser
 

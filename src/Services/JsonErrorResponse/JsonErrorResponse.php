@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\JsonErrorResponse;
 
@@ -30,6 +29,12 @@ class JsonErrorResponse
     /** @var array Array with extra data of error */
     private $extraData = [];
 
+    /**
+     * JsonErrorResponse Constructor
+     * @param int               $statusCode  Integer with error status code
+     * @param string            $type        String with error type
+     * @param string|null       $customTitle String with custom title [optional] 
+     */
     public function __construct(int $statusCode, string $type, ?string $customTitle)
     {
         $this->statusCode = $statusCode;

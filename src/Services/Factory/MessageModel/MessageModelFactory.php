@@ -27,10 +27,14 @@ class MessageModelFactory implements MessageModelFactoryInterface
             ->setChat($chat)
             ;
 
-        $attachments = $this->attachmentsHelper->getAttachments($content);
-        dump($attachments);
-        if ($attachments) {
+        $filenames = $this->attachmentsHelper->getAttachmentsFilenames($content);
+        
+        if ($filenames) {
+            $attachments = $this->attachmentsHelper->getAttachments($filenames, $owner);
             
+            foreach ($attachments as $attachment) {
+                $messageModel->addAttachment($attachment);  
+            }       
         }
 
         return $messageModel;

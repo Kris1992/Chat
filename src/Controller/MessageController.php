@@ -20,7 +20,19 @@ class MessageController extends AbstractController
 {
 
     /**
-     * @Route("api/chat/{id}/message", name="api_chat_message", methods={"POST"})
+     * @param   Chat                            $chat
+     * @param   Request                         $request
+     * @param   EntityManagerInterface          $entityManager
+     * @param   PublisherInterface              $publisher
+     * @param   SerializerInterface             $serializer
+     * @param   ParticipantRepository           $participantRepository
+     * @param   JsonErrorResponseFactory        $jsonErrorFactory
+     * @param   MessageModelFactoryInterface    $messageModelFactory
+     * @param   ModelValidatorInterface         $modelValidator
+     * @param   MessageFactoryInterface         $messageFactory
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
+     * @Route("/api/chat/{id}/message", name="api_chat_message", methods={"POST"})
      */
     public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
     {
@@ -30,7 +42,6 @@ class MessageController extends AbstractController
         if ($data === null) {
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
-        dump($data);
 
         /** @var User $user */
         $user = $this->getUser();
@@ -73,7 +84,12 @@ class MessageController extends AbstractController
     }
 
     /**
-     * @Route("api/chat/{id}/get_messages", name="api_chat_get_messages", methods={"POST"})
+     * @param   Request             $request
+     * @param   Chat                $chat
+     * @param   MessageRepository   $messageRepository
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
+     * @Route("/api/chat/{id}/get_messages", name="api_chat_get_messages", methods={"POST"})
      */
     public function getMessages(Request $request, Chat $chat, MessageRepository $messageRepository): Response
     {   

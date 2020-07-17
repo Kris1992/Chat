@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Twig;
 
@@ -13,7 +12,12 @@ class PendingFriendsExtension extends AbstractExtension
 
     /** @var FriendRepository */
     private $friendRepository;
-    
+
+    /**
+     * PendingFriendsExtension Contructor
+     * 
+     * @param FriendRepository $friendRepository
+     */
     public function __construct(FriendRepository $friendRepository)
     {
         $this->friendRepository = $friendRepository;

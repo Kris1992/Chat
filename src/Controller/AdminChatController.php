@@ -22,6 +22,10 @@ class AdminChatController extends AbstractController
 {
     
     /**
+     * @param   ChatRepository      $chatRepository
+     * @param   PaginatorInterface  $paginator
+     * @param   Request             $request
+     * @return  Response
      * @Route("/admin/chat", name="admin_chat", methods={"GET"})
      */
     public function list(ChatRepository $chatRepository, PaginatorInterface $paginator, Request $request): Response
@@ -41,6 +45,10 @@ class AdminChatController extends AbstractController
     }
 
     /**
+     * @param   Request                 $request
+     * @param   EntityManagerInterface  $entityManager
+     * @param   ChatFactoryInterface    $chatFactory
+     * @return  Response
      * @Route("/admin/chat/add", name="admin_chat_add", methods={"POST","GET"})
      */
     public function add(Request $request, EntityManagerInterface $entityManager, ChatFactoryInterface $chatFactory): Response
@@ -73,6 +81,12 @@ class AdminChatController extends AbstractController
     }
 
     /**
+     * @param   Chat                        $chat
+     * @param   Request                     $request
+     * @param   EntityManagerInterface      $entityManager
+     * @param   ChatModelFactoryInterface   $chatModelFactory
+     * @param   ChatUpdaterInterface        $chatUpdater
+     * @return  Response
      * @Route("/admin/chat/{id}/edit", name="admin_chat_edit", methods={"POST","GET"})
      */
     public function edit(Chat $chat, Request $request, EntityManagerInterface $entityManager, ChatModelFactoryInterface $chatModelFactory, ChatUpdaterInterface $chatUpdater): Response
@@ -100,6 +114,9 @@ class AdminChatController extends AbstractController
     }
 
     /**
+     * @param   Chat                    $chat
+     * @param   EntityManagerInterface  $entityManager
+     * @return  Response
      * @Route("/admin/chat/{id}/delete", name="admin_chat_delete",  methods={"DELETE"})
      */
     public function delete(Chat $chat, EntityManagerInterface $entityManager): Response
@@ -114,6 +131,10 @@ class AdminChatController extends AbstractController
     }
 
     /**
+     * @param   Request                 $request
+     * @param   EntityManagerInterface  $entityManager
+     * @param   ChatRepository          $chatRepository
+     * @return  Response
      * @Route("/admin/chat/delete_selected", name="admin_chat_delete_selected",  methods={"POST", "DELETE"})
      */
     public function deleteSelected(Request $request, EntityManagerInterface $entityManager, ChatRepository $chatRepository): Response
@@ -148,4 +169,3 @@ class AdminChatController extends AbstractController
     }
 
 }
-

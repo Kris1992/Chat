@@ -18,6 +18,8 @@ use App\Form\UserFormType;
 class SecurityController extends AbstractController
 {
     /**
+     * @param   AuthenticationUtils $authenticationUtils
+     * @return  Response
      * @Route("/login", name="app_login", methods={"POST", "GET"})
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
@@ -35,6 +37,12 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @param   Request                     $request
+     * @param   GuardAuthenticatorHandler   $guardHandler
+     * @param   LoginFormAuthenticator      $formAuthenticator
+     * @param   UserRegistrationInterface   $userRegistration
+     * @param   EntityManagerInterface      $entityManager
+     * @return  Response
      * @Route("/register", name="app_register", methods={"POST", "GET"})
      */
     public function register(Request $request, GuardAuthenticatorHandler $guardHandler, LoginFormAuthenticator $formAuthenticator, UserRegistrationInterface $userRegistration, EntityManagerInterface $entityManager): Response
@@ -85,6 +93,11 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @param   Request                     $request
+     * @param   CheckerInterface            $isUserUniqueChecker
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
      * @Route("/api/is_user_unique", name="api_isUserUnique")
      */
     public function isUserUniqueAction(Request $request, CheckerInterface $isUserUniqueChecker, JsonErrorResponseFactory $jsonErrorFactory): Response

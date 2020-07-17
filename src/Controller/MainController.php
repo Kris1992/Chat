@@ -12,6 +12,7 @@ use Lcobucci\JWT\Signer\Key;
 class MainController extends AbstractController
 {
     /**
+     * @return  Response
      * @Route("/", name="app_homepage", methods={"GET"})
      */
     public function index(): Response

@@ -77,7 +77,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 chatButton: '.js-chat-button',
                 message: '.js-message',
                 uploadImageButton: '#js-upload-image',
-                uploadImageInput: '#js-image-input'
+                uploadImageInput: '#js-image-input',
+                progressBarTemplate: '#js-progress-bar-template',
+                progressBar: '#js-progress-bar',
             }
         }
 
@@ -92,7 +94,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     this.showLoadMessagesInfo($(ChatApi._selectors.messagesContainer));
                     this.chatId = $(ChatApi._selectors.chatsContainer).children().first().attr('id');
                     this.loadMessages(this.chatId, 0).then((data) => {
-                        this.showMessages(data);
+                        if (data.length > 0) {
+                            this.showMessages(data);
+                        }
                     }).catch((errorData) => {
                         this.showErrorMessage(errorData.title);
                     }).finally(() => {
@@ -109,7 +113,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             let $textareaInput = $(ChatApi._selectors.textareaInput);
             var emojioneArea = $textareaInput.emojioneArea();
             let message = emojioneArea[0].emojioneArea.getText();
-            console.log(message);
             
             //let message = $textareaInput.val();
 
@@ -152,7 +155,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.clearMessages($(ChatApi._selectors.messagesContainer));
             this.showLoadMessagesInfo($(ChatApi._selectors.messagesContainer));
             this.loadMessages(this.chatId, 0).then((data) => {
-                this.showMessages(data);
+                if (data.length > 0) {
+                    this.showMessages(data);
+                }
                 this.openEventSource();
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
@@ -170,13 +175,32 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             let url = $imageForm.attr('action');
             let formData = new FormData($imageForm.get(0));
 
+            this.showProgressBar($(ChatApi._selectors.textareaInput), 25, 'Loading...');
             this.uploadImage(url, formData).then((data) => {
+                this.changeProgressBarValue($(ChatApi._selectors.progressBar), 75);
                 this.showUploadedImage(data, $(ChatApi._selectors.textareaInput));
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             }).finally(() => {
-                //$(ChatApi._selectors.messagesLoadInfo).remove();
+                this.changeProgressBarValue($(ChatApi._selectors.progressBar), 100);
             });
+        }
+
+        showProgressBar($target, valueNow, loadingText) {
+            const tplText = $(ChatApi._selectors.progressBarTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl({valueNow:valueNow, loadingText:loadingText});
+            $target.before($.parseHTML(html));
+        }
+
+        changeProgressBarValue($target, newValue) {
+            $target.attr('aria-valuenow', newValue);
+            $target.css('width', newValue+"%");
+            if (newValue === 100) {
+                setTimeout(function(){
+                    $target.parent().remove();
+                }, 2000);
+            }
         }
 
         showUploadedImage(imageData, $target) {
@@ -186,7 +210,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             //$target.append($.parseHTML(html));
 
             var emojioneArea = $target.emojioneArea();
-            let message = emojioneArea[0].emojioneArea.setText(html);
+            let message = emojioneArea[0].emojioneArea.getText();
+            message = message + ' ' + html;
+            emojioneArea[0].emojioneArea.setText(message);
         }
 
         uploadImage(url, image) {

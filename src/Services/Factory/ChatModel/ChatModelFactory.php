@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Factory\ChatModel;
 
@@ -44,7 +43,7 @@ class ChatModelFactory implements ChatModelFactoryInterface
 
         if (!$isPublic) {
             $chatModel
-                ->setTitle('Conversation with:')
+                ->setTitle('Conversation')
                ;
 
             foreach ($users as $user) {

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Factory\Message;
 
@@ -18,6 +17,16 @@ class MessageFactory implements MessageFactoryInterface
             ->setOwner($messageModel->getOwner())
             ->setChat($messageModel->getChat())
             ;
+
+        $attachments = $messageModel->getAttachments();
+        
+        if ($attachments) {
+            foreach ($attachments as $attachment) {
+                $message
+                    ->addAttachment($attachment)
+                    ;
+            }
+        }
 
         return $message;
     }

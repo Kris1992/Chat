@@ -3,8 +3,17 @@
 namespace App\Model\Attachment;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\UniqueProperties;
 use App\Entity\{Message, User};
 
+/**
+ * @UniqueProperties(
+ *     fields={"filename", "user"},
+ *     errorPath="filename",
+ *     entityClass="Attachment",
+ *     message="File with this name is already uploaded.Please change name of file."
+ * )
+ */
 class AttachmentModel
 {
     
@@ -21,6 +30,8 @@ class AttachmentModel
      * @Assert\NotBlank(message="Filename cannot be blank.")
      */
     private $filename;
+
+    private $type;
 
     public function getId(): ?int
     {
@@ -68,6 +79,18 @@ class AttachmentModel
     public function getFilename(): ?string
     {
         return $this->filename;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
     }
 
 }

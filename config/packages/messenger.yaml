@@ -43,3 +43,5 @@ framework:
         routing:
             # Route your messages to the transports
             'App\Message\Command\CheckUserActivityOnPublicChat': async_priority_high
+            'App\Message\Command\CheckIsAttachmentUsed': async
+            'App\Message\Event\AttachmentDeletedEvent': async

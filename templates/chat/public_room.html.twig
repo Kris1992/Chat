@@ -81,11 +81,12 @@
     var baseAsset = "{{ uploaded_asset('') }}";
     const chatId = "{{ chat.id }}";
     const lastSeenUrl = "{{ path('api_chat_update_participant', { id: chat.id }) }}";
-    const currentUser = "{{ app.user.id }}"
+    const currentUser = "{{ app.user.id }}";
 </script>
 {{ include('js_templates/messages.html.twig') }}
 {{ include('js_templates/chat_participants.html.twig') }}
 {{ include('js_templates/uploaded_image.html.twig') }}
+{{ include('js_templates/progress_bar.html.twig') }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}

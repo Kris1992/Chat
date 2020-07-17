@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Checker\User;
 
@@ -9,6 +8,7 @@ use App\Repository\UserRepository;
 class UserUniqueChecker implements CheckerInterface 
 {
 
+    /** @var array Array with possible properties to check */
     private $fields = ['email', 'login']; 
 
     /** @var UserRepository */

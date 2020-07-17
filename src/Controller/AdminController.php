@@ -14,6 +14,7 @@ class AdminController extends AbstractController
 {
 
     /**
+     * @return Response
      * @Route("/admin/dashboard", name="admin_dashboard", methods={"GET"}))
      */
     public function dashboard(): Response

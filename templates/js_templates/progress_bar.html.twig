@@ -1,0 +1,10 @@
+<script type="text/template" id="js-progress-bar-template">
+    <div class="progress">
+        <div class="progress-bar d-inline" style="width: <%= valueNow %>%" role="progressbar" 
+            aria-valuenow="<%= valueNow %>" aria-valuemin="0" aria-valuemax="100" id="js-progress-bar">
+            <span class="fas fa-spinner fa-spin"> 
+            </span>
+            <strong><%= loadingText %></strong>
+        </div>
+    </div>
+</script>

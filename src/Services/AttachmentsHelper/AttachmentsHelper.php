@@ -2,10 +2,21 @@
 
 namespace App\Services\AttachmentsHelper;
 
+use App\Repository\AttachmentRepository;
+use App\Entity\User;
+
 class AttachmentsHelper implements AttachmentsHelperInterface 
 {
 
-    public function getAttachments(string $content): ?array
+    /** @var AttachmentRepository */
+    private $attachmentRepository;
+
+    public function __construct(AttachmentRepository $attachmentRepository)
+    {
+        $this->attachmentRepository = $attachmentRepository;
+    }
+
+    public function getAttachmentsFilenames(string $content): ?array
     {
 
         $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
@@ -16,8 +27,25 @@ class AttachmentsHelper implements AttachmentsHelperInterface
             }, $matches[1]);
             return $filenames;
         }
+
        
         return null;
     }
-  
+    
+    public function getAttachments(array $filenames, User $user): array
+    {
+        $attachments = [];
+
+        foreach ($filenames as $filename) {
+            $attachment = $this->attachmentRepository->findOneBy([
+                'filename' => $filename,
+                'user' => $user
+            ]);
+            if ($attachment) {
+                array_push($attachments, $attachment);
+            }
+        }
+
+        return $attachments;
+    }
 }

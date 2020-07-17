@@ -53,7 +53,6 @@ class AttachmentManager implements AttachmentManagerInterface
         }
 
         $attachmentModel = $this->attachmentModelFactory->createFromData($user, $message, $file, $type);
-
         $isValid = $this->modelValidator->isValid($attachmentModel);
 
         if (!$isValid) {

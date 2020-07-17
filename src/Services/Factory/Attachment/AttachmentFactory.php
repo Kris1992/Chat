@@ -3,7 +3,7 @@
 namespace App\Services\Factory\Attachment;
 
 use App\Model\Attachment\AttachmentModel;
-use App\Entity\{Message, User, Attachment};
+use App\Entity\Attachment;
 
 class AttachmentFactory implements AttachmentFactoryInterface 
 {
@@ -16,6 +16,7 @@ class AttachmentFactory implements AttachmentFactoryInterface
             ->setUser($attachmentModel->getUser())
             ->setMessage($attachmentModel->getMessage())
             ->setFilename($attachmentModel->getFilename())
+            ->setType($attachmentModel->getType())
             ;
 
         return $attachment;

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Factory\UserModel;
 
@@ -18,4 +17,5 @@ interface UserModelFactoryInterface
      * @return UserModel            Return filled in user model 
      */
     public function create(User $user): UserModel;
+    
 }

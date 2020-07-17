@@ -50,7 +50,7 @@ class Message
     private $chat;
 
     /**
-     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="message")
+     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="message", orphanRemoval=true, cascade={"persist", "refresh"})
      */
     private $attachments;
 

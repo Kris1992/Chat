@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Twig;
 
@@ -15,6 +14,11 @@ class UploadedAssetExtension extends AbstractExtension implements ServiceSubscri
     /** @var ContainerInterface */
     private $container;
 
+    /**
+     * UploadedAssetExtension Constructor
+     * 
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -33,6 +37,7 @@ class UploadedAssetExtension extends AbstractExtension implements ServiceSubscri
             new TwigFunction('uploaded_asset', [$this, 'getUploadedAssetPath'])
         ];
     }
+    
     public function getUploadedAssetPath(string $path): string
     {
         return $this->container

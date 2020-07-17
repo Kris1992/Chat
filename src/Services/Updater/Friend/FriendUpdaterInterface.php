@@ -1,5 +1,4 @@
-<?php 
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Updater\Friend;
 
@@ -17,4 +16,5 @@ interface FriendUpdaterInterface
      * @return  Friend
      */
     public function update(Friend $friend, string $status): Friend;
+    
 }

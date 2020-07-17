@@ -38,6 +38,10 @@ class UploadedImagesRemoveCommand extends Command
             $io->success('Users images was removed.');
         }
 
+        if($this->publicFilesystem->deleteDir(ImagesConstants::CHATS_IMAGES)) {
+            $io->success('Chats images was removed.');
+        }
+
         $io->success('All uploaded images was removed successfully.');
 
         return 0;

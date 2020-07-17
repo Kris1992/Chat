@@ -27,6 +27,7 @@ use App\Entity\Chat;
 class ChatController extends AbstractController
 {
     /**
+     * @return  Response
      * @Route("/chat", name="chat_dashboard", methods={"GET"})
      */
     public function dashboard(): Response
@@ -36,6 +37,10 @@ class ChatController extends AbstractController
     }
 
     /**
+     * @param   ChatRepository      $chatRepository
+     * @param   PaginatorInterface  $paginator
+     * @param   Request             $request
+     * @return  Response
      * @Route("/chat/public", name="chat_public", methods={"GET"})
      */
     public function publicList(ChatRepository $chatRepository, PaginatorInterface $paginator, Request $request): Response
@@ -55,6 +60,11 @@ class ChatController extends AbstractController
     }
 
     /**
+     * @param   Chat                            $chat
+     * @param   ParticipantFactoryInterface     $participantFactory
+     * @param   EntityManagerInterface          $entityManager
+     * @param   MessageBusInterface             $messageBus
+     * @return  Response
      * @Route("/chat/public/{id}", name="chat_public_room", methods={"GET"})
      */
     public function publicRoom(Chat $chat, ParticipantFactoryInterface $participantFactory, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
@@ -82,6 +92,8 @@ class ChatController extends AbstractController
     }
 
     /**
+     * @param   ChatRepository $chatRepository
+     * @return  Response
      * @Route("/chat/private", name="chat_private", methods={"GET"})
      */
     public function privateList(ChatRepository $chatRepository): Response
@@ -98,7 +110,14 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("chat/private/create", name="chat_private_create", methods={"POST"})
+     * @param   Request                     $request
+     * @param   EntityManagerInterface      $entityManager
+     * @param   UserRepository              $userRepository
+     * @param   ChatModelFactoryInterface   $chatModelFactory
+     * @param   ModelValidatorInterface     $modelValidator
+     * @param   ChatFactoryInterface        $chatFactory
+     * @return  Response
+     * @Route("/chat/private/create", name="chat_private_create", methods={"POST"})
      */
     public function createPrivateRoom(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, ChatModelFactoryInterface $chatModelFactory, ModelValidatorInterface $modelValidator, ChatFactoryInterface $chatFactory): Response
     {
@@ -136,9 +155,14 @@ class ChatController extends AbstractController
     }
     
     /**
-     * @Route("api/chat/{id}/update_participant", name="api_chat_update_participant", methods={"POST"})
+     * @param   Chat                        $chat
+     * @param   EntityManagerInterface      $entityManager
+     * @param   ParticipantRepository       $participantRepository
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @return  Response
+     * @Route("/api/chat/{id}/update_participant", name="api_chat_update_participant", methods={"POST"})
      */
-    public function updateParticipant(Chat $chat, Request $request, EntityManagerInterface $entityManager, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
+    public function updateParticipant(Chat $chat, EntityManagerInterface $entityManager, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
 
         /** @var User $user */
@@ -165,7 +189,9 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @Route("api/chat/hub_url", name="api_hub_url", methods={"GET"})
+     * @param   Request     $request
+     * @return  Response
+     * @Route("/api/chat/hub_url", name="api_hub_url", methods={"GET"})
      */
     public function getHubUrl(Request $request): Response
     {

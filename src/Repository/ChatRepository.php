@@ -31,6 +31,8 @@ class ChatRepository extends ServiceEntityRepository
             return $this->searchByTermsQuery($searchTerms);
         }
         return $this->createQueryBuilder('c')
+            ->leftJoin('c.participants', 'p')
+            ->addSelect('p')
             ->andWhere('c.isPublic = :public')
             ->setParameter('public', true)
             ->getQuery()
@@ -45,6 +47,8 @@ class ChatRepository extends ServiceEntityRepository
     public function searchByTermsQuery(string $searchTerms): Query
     {
         return $this->createQueryBuilder('c')
+            ->leftJoin('c.participants', 'p')
+            ->addSelect('p')
             ->andWhere('c.isPublic = :public AND c.title LIKE :searchTerms')
             ->setParameters([
                 'searchTerms' => '%'.$searchTerms.'%',

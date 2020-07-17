@@ -109,7 +109,11 @@
                     <ul class="navbar-nav m-auto text-uppercase">
                         <li class="nav-item">
                             <span>
-                                <a class="nav-link" href="">Welcome!!</a>
+                                <a class="nav-link font-oswald" href="{{ path('app_homepage') }}">
+                                    <span id="js-non-typed-text">Chat</span> 
+                                    <span class="typed-text text-purple"></span>
+                                    <span class="cursor d-inline-block">&nbsp;</span>
+                                </a>
                             </span>
                         </li>
                     </ul>
@@ -128,15 +132,27 @@
                 </main>
             </div>
         </div>
+        {% if is_granted('ROLE_USER') %}
+            <script>
+                const currentUserLogin = "{{ app.user.login }}";
+            </script>
+        {% else %}
+            <script>
+                const currentUserLogin = null;
+            </script>
+        {% endif %}
         {% block javascripts %}
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="{{ asset('js/_textTyperApi.js') }}"></script>
+        
         <script type="text/javascript">
             $(document).ready(function () {
                 $('#sidebarCollapse').on('click', function () {
-                $('#sidebar').toggleClass('active');
+                    $('#sidebar').toggleClass('active');
                 });
+                var textTyperApi = new TextTyperApi(currentUserLogin);
 
             });
         </script>

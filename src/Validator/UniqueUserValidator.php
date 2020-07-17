@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Validator;
 
@@ -9,9 +8,15 @@ use App\Repository\UserRepository;
 
 class UniqueUserValidator extends ConstraintValidator
 {
+
     /** @var UserRepository */
     private $userRepository;
 
+    /**
+     * UniqueUserValidator Constructor
+     * 
+     * @param UserRepository $userRepository
+     */
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;

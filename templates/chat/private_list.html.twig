@@ -32,21 +32,53 @@
                         {% if chats %}
                             {% for chat in chats %}
                                 <button type="button" class="list-group-item list-group-item-action mt-1 js-chat-button {{ loop.first ? 'active' : '' }}" id="{{ chat.id }}">
-                                    <span><strong>{{ chat.title }}
-                                        {% set break = false %}
-                                        
-                                        {% for participant in chat.participants %}
-                                            {% if not break %}
-                                                {{ participant.user.login }}
-                                                {% if loop.index0 < 2 and not loop.last %}
-                                                    ,
-                                                {% elseif loop.index0 >= 2 %}
-                                                    and more...
-                                                    {% set break = true %}
+                                    <div class="row no-gutters">
+                                        <div class="col-sm-12 col-md-4">
+                                            {% set break = false %}
+                                            {% set index = 0 %}
+                                                
+                                            {% for participant in chat.participants %}
+                                                {% if not break and participant.user is not same as(app.user) %}
+                                                    {% set index = index + 1 %}
+                                                        {% if index < 3 %}
+                                                            {% if participant.user.imageFilename %}
+                                                                <img class="user-image image-circle image-border float-left" src="{{ uploaded_asset(participant.user.thumbImagePath) }}" alt="User image">
+                                                            {% else %}
+                                                                <img class="user-image image-circle image-border float-left" src="{{ asset('img/users/default.png') }}" alt="User image">
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <div class="user-image image-circle float-left bg-primary image-border">
+                                                                <span class="fas fa-plus"></span>
+                                                            </div>
+                                                            {% set break = true %}
+                                                        {% endif %}
                                                 {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </strong></span>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col-sm-12 col-md-8">
+                                            <span class="participants"><strong>
+                                                {% set break = false %}
+                                                {% set index = 0 %}
+                                                
+                                                {% for participant in chat.participants %}
+                                                    {% if not break and participant.user is not same as(app.user) %}
+                                                        {% set index = index + 1 %}
+
+                                                        {{ participant.user.login }}
+                                                        {% if index < 2 and not loop.last %}
+                                                            ,
+                                                        {% elseif index >= 2 %}
+                                                            and more...
+                                                            {% set break = true %}
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </strong></span>
+                                        </div>
+                                        <div class="col-12 border-top">
+                                            <small>Work in progress (last message here)</small>
+                                        </div>
+                                    </div>
                                 </button>
                             {% endfor %}
                         {% endif %}
@@ -57,19 +89,25 @@
                         <div class="col-12 chat-item-container w-100 messages-container" id="js-messages-container">
                         </div>
                         <div class="col-12 bg-white textarea-container">
-                            <form data-user="{{ app.user.id }}" method="POST" id="js-form">
-                                <div class="row">
-                                    <div class="col-10">
-                                        <div class="form-group my-3">
-                                            <label class="sr-only" for="js-message-text">Write message</label>
-                                            <textarea name="inputMessage" class="form-control bg-dark text-left" id="js-message-text" rows="3"></textarea>
-                                        </div>
+                            <div class="row">
+                                <div class="col-10">
+                                    <div class="my-3">
+                                        <div class="bg-dark text-left" id="js-message-text"></div>
                                     </div>
-                                    <div class="col-2 my-auto">
-                                        <button type="submit" class="btn btn-block btn-primary" id="js-send-message">Send</button>
+                                    <div class="form-group d-none">
+                                        <form action="{{ path('api_upload_image_attachment') }}" method="POST" id="js-image-form" enctype="multipart/form-data">
+                                            <label class="sr-only" for="js-image-input">
+                                                Upload image
+                                            </label>
+                                            <input type="file" name="uploadImage" id="js-image-input" accept=".jpg, .png" />
+                                        </form>
                                     </div>
                                 </div>
-                            </form>
+                                <div class="col-2 my-auto mx-auto">
+                                    <button type="button" class="btn btn-block btn-primary" id="js-upload-image"><span class="fas fa-images"></span></button>
+                                    <button type="button" class="btn btn-block btn-primary" id="js-send-message">Send</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -77,12 +115,15 @@
         </div>
     </div>
 </div>
-{% include('js_templates/messages.html.twig') %}
-{% include('js_templates/chat_participants.html.twig') %}
-{% include('modals/choose_friends_modal.html.twig') %}
+{{ include('js_templates/messages.html.twig') }}
+{{ include('js_templates/chat_participants.html.twig') }}
+{{ include('modals/choose_friends_modal.html.twig') }}
+{{ include('js_templates/uploaded_image.html.twig') }}
+{{ include('js_templates/progress_bar.html.twig') }}
 <script>
     var defaultUserImage = "{{ asset('img/users/default.png') }}";
     var baseAsset = "{{ uploaded_asset('') }}";
+    const currentUser = "{{ app.user.id }}";
 </script>
 {% endblock %}
 {% block javascripts %}
@@ -97,7 +138,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
            var $wrapper = $('.js-chat-wrapper');
-           var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, null, null, false);
+           var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, null, null, currentUser, false);
         });
     </script>
 {% endblock %}

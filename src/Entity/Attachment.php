@@ -44,6 +44,11 @@ class Attachment
      */
     private $filename;
 
+    /**
+     * @ORM\Column(type="string", length=25)
+     */
+    private $type;
+
 
     public function getId(): ?int
     {
@@ -94,6 +99,18 @@ class Attachment
     public function getThumbImagePath(): ?string
     {
         return ImagesConstants::CHATS_IMAGES.'/'.$this->user->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getFilename();
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
 }

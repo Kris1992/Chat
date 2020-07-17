@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Factory\User;
 
@@ -8,7 +7,7 @@ use App\Model\User\UserModel;
 use App\Entity\User;
 
 /**
- *  Take care about creating users
+ *  Take care about creating user objects
  */
 interface UserFactoryInterface
 {   

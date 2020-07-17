@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\JsonErrorResponse;
 
@@ -14,7 +13,7 @@ class JsonErrorResponseFactory
     public function createResponse(int $statusCode, string $type, $data = null, $customTitle = null): JsonResponse
     {
 
-        //Data is most important if someone pass data and customTitle 
+        //Data is more important if someone pass data and customTitle 
         if ($data) {
             
             if(is_array($data)){

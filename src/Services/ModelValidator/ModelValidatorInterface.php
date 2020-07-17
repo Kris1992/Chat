@@ -1,5 +1,4 @@
-<?php 
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\ModelValidator;
 
@@ -13,7 +12,8 @@ interface ModelValidatorInterface
 {
     /**
      * isValid Check is model data valid
-     * @param  $dataModel Model data object which will be validated
+     * @param  $dataModel   Model data object which will be validated
+     * @param  $groups      String with validation groups [optional] 
      * @return boolean
      */
     public function isValid($dataModel, $groups=null): bool;

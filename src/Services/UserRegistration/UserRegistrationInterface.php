@@ -1,11 +1,10 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\UserRegistration;
 
-use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
 use App\Model\User\UserModel;
+use App\Entity\User;
 
 /**
  *  Take care about user registration process 

@@ -3,7 +3,7 @@
 namespace App\Services\Factory\Attachment;
 
 use App\Model\Attachment\AttachmentModel;
-use App\Entity\{Message, User, Attachment};
+use App\Entity\Attachment;
 
 /**
  *  Take care about creating message attachment

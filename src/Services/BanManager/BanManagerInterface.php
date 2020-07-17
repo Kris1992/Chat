@@ -1,12 +1,11 @@
-<?php 
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\BanManager;
 
 use App\Entity\User;
 
 /** 
- *  Interface for updating User entities
+ *  Interface for block or unblock user account
  */
 interface BanManagerInterface
 {

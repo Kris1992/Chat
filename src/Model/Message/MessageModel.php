@@ -3,7 +3,8 @@
 namespace App\Model\Message;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Entity\{User, Chat};
+use Doctrine\Common\Collections\{ArrayCollection, Collection};
+use App\Entity\{User, Chat, Attachment};
 
 class MessageModel
 {
@@ -24,6 +25,13 @@ class MessageModel
      * @Assert\NotBlank(message="Chat for this message not found")
      */
     private $chat;
+
+    private $attachments;
+
+    public function __construct()
+    {
+        $this->attachments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -69,6 +77,32 @@ class MessageModel
     public function setChat(?Chat $chat): self
     {
         $this->chat = $chat;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Attachment[]
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    public function addAttachment(Attachment $attachment): self
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments[] = $attachment;
+        }
+
+        return $this;
+    }
+
+    public function removeAttachment(Attachment $attachment): self
+    {
+        if ($this->attachments->contains($attachment)) {
+            $this->attachments->removeElement($attachment);
+        }
 
         return $this;
     }

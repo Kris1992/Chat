@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Services\Factory\AttachmentModel;
 
@@ -44,6 +43,7 @@ class AttachmentModelFactory implements AttachmentModelFactoryInterface
             ->setUser($user)
             ->setMessage($message)
             ->setFilename($filename)
+            ->setType($type)
             ;
 
         return $attachmentModel;
