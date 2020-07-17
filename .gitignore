@@ -9,4 +9,5 @@
 ###< symfony/framework-bundle ###
 
 /public/uploads/users_images/*
+/public/uploads/chats_images/*
 /src/Migrations

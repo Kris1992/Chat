@@ -76,7 +76,33 @@
                                             </strong></span>
                                         </div>
                                         <div class="col-12 border-top">
-                                            <small>Work in progress (last message here)</small>
+                                            {% if chat.lastMessage %}
+                                            <small>
+                                                <div class="row">
+                                                    <div class="col-2">
+                                                        {% if chat.lastMessage.owner is same as(app.user) %}
+                                                            <span><strong>
+                                                                You:
+                                                            </strong></span>
+                                                        {% else %}
+                                                            <span><strong>
+                                                                {{chat.lastMessage.owner.login }}:
+                                                            </strong></span>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-7 text-left">
+                                                        {{ chat.lastMessage.content }}
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <span class="text-muted"><strong>
+                                                            {{ chat.lastMessage.createdAt | date('Y-m-d H:i:s') }}
+                                                        </strong></span>
+                                                    </div>
+                                                </div>
+                                            </small>
+                                            {% else %}
+                                                <small>No messages now. Write first one!</small>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </button>

@@ -45,12 +45,17 @@ class Chat
     private $owner;
 
     /**
-     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="chat", orphanRemoval=true, cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=Message::class, cascade={"persist", "remove"})
+     */
+    private $lastMessage;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="chat", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private $messages;
 
     /**
-     * @ORM\OneToMany(targetEntity=Participant::class, mappedBy="chat", orphanRemoval=true, cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Participant::class, mappedBy="chat", orphanRemoval=true, cascade={"persist", "remove"})
      * @Groups({"chat:participants"})
      * @MaxDepth(3)
      */
@@ -118,6 +123,18 @@ class Chat
     public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getLastMessage(): ?Message
+    {
+        return $this->lastMessage;
+    }
+
+    public function setLastMessage(?Message $lastMessage): self
+    {
+        $this->lastMessage = $lastMessage;
 
         return $this;
     }

@@ -20,6 +20,7 @@ class ChatRepository extends ServiceEntityRepository
         parent::__construct($registry, Chat::class);
     }
 
+    //left join lastMessage
     /**
      * findPublicChatsQuery Find public chats or if searchTerms are not empty find public chats with following data
      * @param  string $searchTerms Search word

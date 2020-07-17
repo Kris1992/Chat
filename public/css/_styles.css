@@ -41,8 +41,8 @@
 
 #sidebar {
     min-height: 100vh;
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 200px;
+    max-width: 200px;
     background: linear-gradient(150deg, rgb(40, 20, 131) 15%, rgb(143, 110, 213) 70%, rgb(215, 130, 217) 94%);
     color: #fff;
     transition: all 0.3s;
@@ -128,7 +128,7 @@ ul.sidebar-footer {
 }
 
 ul.sidebar-footer a {
-    font-size: 0.7em !important;
+    font-size: 0.9rem !important;
 }
 
 /* STRETCHED LINKS */

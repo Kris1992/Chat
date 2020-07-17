@@ -50,6 +50,7 @@ class MessageController extends AbstractController
         if ($isValid) {
             $message = $messageFactory->create($messageModel);
             $chat->addMessage($message);
+            $chat->setLastMessage($message);
             $entityManager->flush();
 
             $serializedMessage = $serializer->serialize(
