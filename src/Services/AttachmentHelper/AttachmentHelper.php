@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Services\AttachmentsHelper;
+namespace App\Services\AttachmentHelper;
 
 use App\Repository\AttachmentRepository;
 use App\Entity\User;
 
-class AttachmentsHelper implements AttachmentsHelperInterface 
+class AttachmentHelper implements AttachmentHelperInterface 
 {
 
     /** @var AttachmentRepository */
@@ -21,13 +21,12 @@ class AttachmentsHelper implements AttachmentsHelperInterface
 
         $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
         preg_match_all($pattern, $content, $matches);
-        if ($matches) {
+        if ($matches[0]) {
             $filenames = array_map(function($match) {
                 return basename($match);
             }, $matches[1]);
             return $filenames;
         }
-
        
         return null;
     }

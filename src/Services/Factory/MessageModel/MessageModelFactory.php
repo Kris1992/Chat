@@ -2,19 +2,19 @@
 
 namespace App\Services\Factory\MessageModel;
 
-use App\Services\AttachmentsHelper\AttachmentsHelperInterface;
+use App\Services\AttachmentHelper\AttachmentHelperInterface;
 use App\Model\Message\MessageModel;
 use App\Entity\{User,Chat};
 
 class MessageModelFactory implements MessageModelFactoryInterface 
 {
 
-    /** @var AttachmentsHelperInterface */
-    private $attachmentsHelper;
+    /** @var AttachmentHelperInterface */
+    private $attachmentHelper;
 
-    public function __construct(AttachmentsHelperInterface $attachmentsHelper)
+    public function __construct(AttachmentHelperInterface $attachmentHelper)
     {
-        $this->attachmentsHelper = $attachmentsHelper;
+        $this->attachmentHelper = $attachmentHelper;
     }
 
     public function createFromData(?string $content, ?User $owner, ?Chat $chat): MessageModel
@@ -27,10 +27,10 @@ class MessageModelFactory implements MessageModelFactoryInterface
             ->setChat($chat)
             ;
 
-        $filenames = $this->attachmentsHelper->getAttachmentsFilenames($content);
+        $filenames = $this->attachmentHelper->getAttachmentsFilenames($content);
         
         if ($filenames) {
-            $attachments = $this->attachmentsHelper->getAttachments($filenames, $owner);
+            $attachments = $this->attachmentHelper->getAttachments($filenames, $owner);
             
             foreach ($attachments as $attachment) {
                 $messageModel->addAttachment($attachment);  

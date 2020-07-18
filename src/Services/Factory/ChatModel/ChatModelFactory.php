@@ -27,6 +27,7 @@ class ChatModelFactory implements ChatModelFactoryInterface
             ->setTitle($chat->getTitle())
             ->setDescription($chat->getDescription())
             ->setIsPublic($chat->getIsPublic())
+            ->setOwner($chat->getOwner())
             ;
 
         return $chatModel;

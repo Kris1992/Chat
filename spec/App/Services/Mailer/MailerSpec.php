@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace spec\App\Services\Mailer;
 
@@ -24,7 +23,7 @@ class MailerSpec extends ObjectBehavior
         $this->shouldHaveType(Mailer::class);
     }
 
-    function it_impelements_mailing_system_interface()
+    function it_implements_mailing_system_interface()
     {
         $this->shouldImplement(MailingSystemInterface::class);
     }

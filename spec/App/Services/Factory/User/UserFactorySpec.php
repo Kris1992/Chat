@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace spec\App\Services\Factory\User;
 
@@ -22,7 +21,7 @@ class UserFactorySpec extends ObjectBehavior
         $this->shouldHaveType(UserFactory::class);
     }
 
-    function it_impelements_user_factory_interface()
+    function it_implements_user_factory_interface()
     {
         $this->shouldImplement(UserFactoryInterface::class);
     }

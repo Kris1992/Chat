@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace spec\App\Services\BanManager;
 
@@ -14,7 +13,7 @@ class BanManagerSpec extends ObjectBehavior
         $this->shouldHaveType(BanManager::class);
     }
 
-    function it_impelements_ban_manager_interface()
+    function it_implements_ban_manager_interface()
     {
         $this->shouldImplement(BanManagerInterface::class);
     }
