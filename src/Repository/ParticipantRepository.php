@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\{Participant, Chat, User};
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @method Participant|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,6 +18,18 @@ class ParticipantRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Participant::class);
+    }
+
+    /**
+     * createNotIncludedUserCriteria Returns Participants of chat without given user
+     * @param  User     $user   User object which should be not included to participants list
+     * @return Criteria
+     */
+    public static function createNotIncludedUserCriteria(User $user): Criteria
+    {
+        return Criteria::create()
+            ->andWhere(Criteria::expr()->neq('user', $user))
+        ;
     }
 
     /**

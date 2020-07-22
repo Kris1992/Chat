@@ -11,6 +11,10 @@
     overflow-y: scroll;
 }
 
+#js-chats-container {
+    max-height: 20px !important;
+}
+
 .friends_list {
     height: 80vh;
 }

@@ -189,6 +189,34 @@ class ChatController extends AbstractController
     }
 
     /**
+     * @param   Chat                        $chat
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @return  Response
+     * @Route("/api/chat/{id}/other_participants", name="api_chat_get_other__participants", methods={"GET"})
+     */
+    public function getParticipants(Chat $chat, JsonErrorResponseFactory $jsonErrorFactory): Response
+    {
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $participants = $chat->getOtherParticipants($user);
+
+        if ($participants) {
+
+            return $this->json(
+                $participants,
+                200,
+                [],
+                [   
+                    AbstractObjectNormalizer::GROUPS => 'chat:participants',
+                ]
+            );
+        }
+
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot update list of chats. Please refresh this page.');
+    }
+
+    /**
      * @param   Request     $request
      * @return  Response
      * @Route("/api/chat/hub_url", name="api_hub_url", methods={"GET"})

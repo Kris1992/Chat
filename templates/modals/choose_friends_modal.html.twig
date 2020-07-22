@@ -11,79 +11,6 @@
                 <div class="modal-body">
                     <div class="chat-item-container friends_list">
                         <ul id="js-friends-template-wrapper">
-                            <script type="text/template" id="js-friends-modal-template"> 
-                                <% _.each(friends, function(friend){ %>
-                                    <li class="list-group-item">
-                                        <div class="row align-items-center">
-                                            <% if (friend.invitee.id === currentUser) { %>
-                                                <div class="col-1">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input position-static" type="checkbox" name="friends[]" value="<%= friend.inviter.id %>" aria-label="Choose friend">
-                                                    </div>
-                                                </div>
-                                                <div class="col-2 text-center">
-                                                    <% if (friend.inviter.imageFilename !== null) { %>
-                                                        <img class="user-image image-circle" src="<%= baseAsset %><%= friend.inviter.thumbImagePath %>" alt="User image">
-                                                    <% } else { %>
-                                                        <img class="user-image image-circle" src="<%= defaultUserImage %>" alt="User image">
-                                                    <% } %>
-                                                </div>
-                                                <div class="col-7">
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                        <span><strong><%= friend.inviter.login %></strong></span>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <span><small><%= friend.inviter.email %></small></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-2">
-                                                    <h5>
-                                                        <% if (friend.inviter.isActiv) { %>
-                                                            <span class="fas fa-circle text-success"></span>
-                                                        <% } else { %>
-                                                            <span class="fas fa-circle text-danger"></span>
-                                                        <% } %>
-                                                    </h5>
-                                                </div>
-                                            <% } else { %>
-                                                <div class="col-1">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input position-static" type="checkbox" name="friends[]" value="<%= friend.invitee.id %>" aria-label="Choose friend">
-                                                    </div>
-                                                </div>
-                                                <div class="col-2 text-center">
-                                                    <% if (friend.invitee.imageFilename !== null) { %>
-                                                        <img class="user-image image-circle" src="<%= baseAsset %><%= friend.invitee.thumbImagePath %>" alt="User image">
-                                                    <% } else { %>
-                                                        <img class="user-image image-circle" src="<%= defaultUserImage %>" alt="User image">
-                                                    <% } %>
-                                                </div>
-                                                <div class="col-7">
-                                                    <div class="row">
-                                                        <div class="col-12">
-                                                        <span><strong><%= friend.invitee.login %></strong></span>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <span><small><%= friend.invitee.email %></small></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-2">
-                                                    <h5>
-                                                        <% if (friend.invitee.isActiv) { %>
-                                                            <span class="fas fa-circle text-success"></span>
-                                                        <% } else { %>
-                                                            <span class="fas fa-circle text-danger"></span>
-                                                        <% } %>
-                                                    </h5>
-                                                </div>
-                                            <% } %>
-                                        </div>
-                                    </li>
-                                <% }); %> 
-                            </script>
                         </ul>
                     </div>
                 </div>
@@ -96,4 +23,78 @@
         </div>
     </div>
 </div>
+
+<script type="text/template" id="js-friends-modal-template"> 
+    <% _.each(friends, function(friend){ %>
+        <li class="list-group-item">
+            <div class="row align-items-center">
+                <% if (friend.invitee.id == currentUser) { %>
+                    <div class="col-1">
+                        <div class="form-check">
+                            <input class="form-check-input position-static" type="checkbox" name="friends[]" value="<%= friend.inviter.id %>" aria-label="Choose friend">
+                        </div>
+                    </div>
+                    <div class="col-2 text-center">
+                        <% if (friend.inviter.imageFilename !== null) { %>
+                            <img class="user-image image-circle" src="<%= baseAsset %><%= friend.inviter.thumbImagePath %>" alt="User image">
+                        <% } else { %>
+                            <img class="user-image image-circle" src="<%= defaultUserImage %>" alt="User image">
+                        <% } %>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <div class="col-12">
+                            <span><strong><%= friend.inviter.login %></strong></span>
+                            </div>
+                            <div class="col-12">
+                                <span><small><%= friend.inviter.email %></small></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <h5>
+                            <% if (friend.inviter.activ) { %>
+                                <span class="fas fa-circle text-success"></span>
+                            <% } else { %>
+                                <span class="fas fa-circle text-danger"></span>
+                            <% } %>
+                        </h5>
+                    </div>
+                <% } else { %>
+                    <div class="col-1">
+                        <div class="form-check">
+                            <input class="form-check-input position-static" type="checkbox" name="friends[]" value="<%= friend.invitee.id %>" aria-label="Choose friend">
+                        </div>
+                    </div>
+                    <div class="col-2 text-center">
+                        <% if (friend.invitee.imageFilename !== null) { %>
+                            <img class="user-image image-circle" src="<%= baseAsset %><%= friend.invitee.thumbImagePath %>" alt="User image">
+                        <% } else { %>
+                            <img class="user-image image-circle" src="<%= defaultUserImage %>" alt="User image">
+                        <% } %>
+                    </div>
+                    <div class="col-7">
+                        <div class="row">
+                            <div class="col-12">
+                            <span><strong><%= friend.invitee.login %></strong></span>
+                            </div>
+                            <div class="col-12">
+                                <span><small><%= friend.invitee.email %></small></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <h5>
+                            <% if (friend.invitee.activ) { %>
+                                <span class="fas fa-circle text-success"></span>
+                            <% } else { %>
+                                <span class="fas fa-circle text-danger"></span>
+                            <% } %>
+                        </h5>
+                    </div>
+                <% } %>
+            </div>
+        </li>
+    <% }); %> 
+</script>
 

@@ -60,7 +60,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             return {
                 sendButton: '#js-send-message',
                 textareaInput: '#js-message-text',
-                textareaDiv: '.emojionearea-editor',//to delete
                 formImageHandler: '#js-image-form',
                 messagesContainer: '#js-messages-container',
                 ownMessageTemplate: '#js-own-message-template',
@@ -80,6 +79,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 uploadImageInput: '#js-image-input',
                 progressBarTemplate: '#js-progress-bar-template',
                 progressBar: '#js-progress-bar',
+                lastMessage: '.js-last-message',
+                lastMessageTemplate: '#js-last-message-template',
+                newPrivateChatTemplate: '#js-private-chat-template'
             }
         }
 
@@ -103,8 +105,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                         $(ChatApi._selectors.messagesLoadInfo).remove();
                     });
                 }
+                this.openPrivateChatsEventSource();
             }
-
+            
             this.openEventSource();
         }
 
@@ -224,7 +227,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     contentType: false,
                     processData: false
                 }).then(function(data) {
-                    console.log(data);
                     resolve(JSON.parse(data));
                 }).catch(function(jqXHR) {
                     let errorData = getStatusError(jqXHR);
@@ -251,12 +253,81 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             });
         }
 
+        openPrivateChatsEventSource() {
+            let chatsHub = null; 
+            let chatsEventSource = null;
+
+            this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
+                chatsHub = new URL(hubUrl);
+                chatsHub.searchParams.append('topic', '/account/'+this.currentUser+'/chats');
+                chatsEventSource = new EventSource(chatsHub, {
+                    withCredentials: true
+                });
+
+                chatsEventSource.onmessage = event => {
+                    let messageData = JSON.parse(event.data);
+                    this.updateChatsList(messageData, $(ChatApi._selectors.chatsContainer));
+                }
+            });
+        }
+
         closeEventSource() {
             this.hub = null;
             if (this.eventSource) {
                 this.eventSource.close();
             }
             this.eventSource = null;
+        }
+
+        updateChatsList(messageData, $chatsContainer) {
+            let chatId = messageData.chat.id;
+            let $chat = $chatsContainer.children('#' + chatId);
+            if ($chat.length > 0) {
+                $chat.prependTo($chatsContainer);
+                let $lastMessage = $chat.find(ChatApi._selectors.lastMessage);
+                this.setLastMessage(messageData, $lastMessage);
+            } else {
+                this.getParticipants(messageData.chat.id).then((participantsData) => {
+                    this.setNewPrivateChat(messageData, participantsData, $chatsContainer);
+                }).catch((errorData) => {
+                    this.showErrorMessage(errorData.title);
+                });
+            }
+        }
+
+        setLastMessage(messageData, $target) {
+            messageData.createdAt = this.formatDateTime(messageData.createdAt);
+            const tplText = $(ChatApi._selectors.lastMessageTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl({messageData: messageData, currentUser:this.currentUser});
+            $target.html($.parseHTML(html));
+        }
+
+        getParticipants(chatId) {
+            let url = '/api/chat/' + chatId + '/other_participants';
+
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'GET',
+                }).then(function(data) {
+                    resolve(data);
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                }); 
+            });
+        }
+
+        setNewPrivateChat(messageData, participantsData, $chatsContainer) {
+            messageData.createdAt = this.formatDateTime(messageData.createdAt);
+            const tplText = $(ChatApi._selectors.newPrivateChatTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl({messageData: messageData, participantsData: participantsData, currentUser: this.currentUser, defaultUserImage: this.defaultUserImage, baseAsset: this.baseAsset});
+            $chatsContainer.prepend($.parseHTML(html));
         }
 
         loadMessages(chatId, offset) {

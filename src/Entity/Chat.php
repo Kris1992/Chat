@@ -4,11 +4,13 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
+use App\Repository\ParticipantRepository;
 
 /**
  * @ORM\Entity(repositoryClass=ChatRepository::class)
@@ -199,6 +201,18 @@ class Chat
         }
 
         return $this;
+    }
+
+    /**
+     * getOtherParticipants Get chat participants without given user 
+     * @param User      $user       User object which should be not included to participants list
+     * @return Collection|Participant[]
+     */
+    public function getOtherParticipants(User $user): Collection
+    {
+        $criteria = ParticipantRepository::createNotIncludedUserCriteria($user);
+
+        return $this->participants->matching($criteria);
     }
 
     public function hasParticipant(User $user): bool

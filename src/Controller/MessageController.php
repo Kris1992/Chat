@@ -67,6 +67,7 @@ class MessageController extends AbstractController
             if ($othersParticipants) {
                 foreach ($othersParticipants as $participant) {
                     $topics[] = sprintf('/%s', $participant->getUser()->getLogin());
+                    $topics[] = sprintf('/account/%d/chats', $participant->getUser()->getId());
                 }
             }
 
