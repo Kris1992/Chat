@@ -61,6 +61,19 @@ class FilesManager implements FilesManagerInterface
         return $newFilename;
     }
 
+    public function delete(string $filePath): bool
+    {
+        try {
+
+            return $this->publicFilesystem->delete($filePath);
+
+        } catch(\Exception $e) {
+            $this->logger->alert(sprintf('File "%s" cannot be deleted.', $filePath));
+            
+            return false;
+        }
+    }
+
     /**
      * clearFilename Clear filename form dots and generate unique name 
      * @param  string $filename Name of uploaded file
@@ -72,5 +85,6 @@ class FilesManager implements FilesManagerInterface
         $clearFilename = Urlizer::urlize(pathinfo($clearFilename, PATHINFO_FILENAME)).'-'.uniqid();
         
         return $clearFilename;
-    } 
+    }
+
 }

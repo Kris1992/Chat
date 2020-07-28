@@ -1,10 +1,18 @@
 .chat-container {
-    height: 80vh;
+    height: 100vh;
 }
 
 .messages-container {
-    height: 70%;
+    height: 60%;
 }
+
+/*.chat-menu {
+    display: none;
+}
+
+.chat-header:hover .chat-menu {
+    display: inline-block;
+}*/
 
 .chat-item-container {
     border: 1px solid #ABDACD;
@@ -15,8 +23,12 @@
     max-height: 20px !important;
 }
 
+#js-uploaded-attachments {
+    overflow-x: auto;
+}
+
 .friends_list {
-    height: 80vh;
+    height: 70vh;
 }
 
 .chat-header {
@@ -24,7 +36,7 @@
 }
 
 .textarea-container {
-    height: 30%;
+    height: 40%;
     border: 1px solid #ABDACD;
 }
 
@@ -58,4 +70,8 @@ textarea {
 
 .participants {
     font-size: 0.8rem;
+}
+
+.font-75 {
+    font-size: 75px;
 }

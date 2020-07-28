@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use App\Services\AttachmentFileUploader\AttachmentsConstants;
 use Hateoas\Configuration\Annotation as Hateoas;
 use App\Services\ImagesManager\ImagesConstants;
 use App\Repository\AttachmentRepository;
 use JMS\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+
 
 /**
  * @ORM\Entity(repositoryClass=AttachmentRepository::class)
@@ -18,6 +20,11 @@ use Doctrine\ORM\Mapping as ORM;
  *     href = "expr(object.getThumbImagePath())",
  *     exclusion = @Hateoas\Exclusion(groups={"attachment:show"})
  * ) 
+ * @Hateoas\Relation("filePath", 
+ *     href = "expr(object.getFilePath())",
+ *     exclusion = @Hateoas\Exclusion(groups={"attachment:show"})
+ * ) 
+ * 
  */
 class Attachment
 {
@@ -99,6 +106,11 @@ class Attachment
     public function getThumbImagePath(): ?string
     {
         return ImagesConstants::CHATS_IMAGES.'/'.$this->user->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getFilename();
+    }
+
+    public function getFilePath(): ?string
+    {
+        return AttachmentsConstants::CHATS_FILES.'/'.$this->user->getLogin().'/'.$this->getFilename();
     }
 
     public function getType(): ?string

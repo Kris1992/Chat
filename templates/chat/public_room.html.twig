@@ -21,7 +21,10 @@
                     Participants
                 </div>
                 <div class="col-12 col-md-8 bg-primary chat-header text-center text-uppercase">
-                    Messages
+                    <span class="align-middle">Messages</span>
+                    <button class="btn btn-primary chat-menu float-right text-white align-middle border border-secondary" data-toggle="modal" data-target="#chatOptionsModal">
+                        <span class="fas fa-bars"></span>
+                    </button>
                 </div>
             </div>
             <div class="row chat-container">
@@ -51,22 +54,36 @@
                         </div>
                         <div class="col-12 bg-white textarea-container">
                             <div class="row">
+                                <div class="col-10 mt-1 text-left d-flex align-items-center d-none" id="js-uploaded-attachments">
+                                    
+                                </div>
                                 <div class="col-10">
                                     <div class="my-3">
                                         <div class="bg-dark text-left" id="js-message-text"></div>
                                     </div>
                                     <div class="form-group d-none">
-                                        <form action="{{ path('api_upload_image_attachment') }}" method="POST" id="js-image-form" enctype="multipart/form-data">
+                                        <form action="{{ path('api_upload_attachment', { type:'file' }) }}" method="POST" id="js-file-form" enctype="multipart/form-data">
+                                            <label class="sr-only" for="js-file-input">
+                                                Upload attachment file
+                                            </label>
+                                            <input type="file" name="uploadFile" id="js-file-input" />
+                                            <input type="hidden" name="token" value="{{ csrf_token('upload') }}"/>
+                                        </form>
+                                    </div>
+                                    <div class="form-group d-none">
+                                        <form action="{{ path('api_upload_attachment', { type: 'image'}) }}" method="POST" id="js-image-form" enctype="multipart/form-data">
                                             <label class="sr-only" for="js-image-input">
                                                 Upload image
                                             </label>
                                             <input type="file" name="uploadImage" id="js-image-input" accept=".jpg, .png" />
+                                            <input type="hidden" name="token" value="{{ csrf_token('upload') }}"/>
                                         </form>
                                     </div>
                                 </div>
                                 <div class="col-2 my-auto mx-auto">
+                                    <button type="button" class="btn btn-block btn-primary" id="js-upload-file"><span class="fas fa-paperclip"></span></button>
                                     <button type="button" class="btn btn-block btn-primary" id="js-upload-image"><span class="fas fa-images"></span></button>
-                                    <button type="button" class="btn btn-block btn-primary" id="js-send-message">Send</button>
+                                    <button type="button" class="btn btn-block btn-primary" id="js-send-message">Send <span class="fas fa-paper-plane"></span></button>
                                 </div>
                             </div>
                         </div>
@@ -85,8 +102,9 @@
 </script>
 {{ include('js_templates/messages.html.twig') }}
 {{ include('js_templates/chat_participants.html.twig') }}
-{{ include('js_templates/uploaded_image.html.twig') }}
+{{ include('js_templates/uploaded_file.html.twig') }}
 {{ include('js_templates/progress_bar.html.twig') }}
+{{ include('modals/chat_options_modal.html.twig') }}
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -99,8 +117,8 @@
     <script type="module" src="{{ asset('js/_chatApi.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            var $wrapper = $('.js-chat-wrapper');
-            var chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl, currentUser);
+            let $wrapper = $('.js-chat-wrapper');
+            let chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl, currentUser);
         });
     </script>
 {% endblock %}

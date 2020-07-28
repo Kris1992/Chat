@@ -22,6 +22,7 @@ use Hateoas\HateoasBuilder;
 class AttachmentController extends AbstractController
 {
     /**
+     * @param   string                      $type
      * @param   Request                     $request
      * @param   AttachmentManagerInterface  $attachmentManager
      * @param   JsonErrorResponseFactory    $jsonErrorFactory
@@ -29,21 +30,35 @@ class AttachmentController extends AbstractController
      * @param   MessageBusInterface         $messageBus
      * @return  Response
      * @throws  ApiBadRequestHttpException
-     * @Route("/api/attachment/image", name="api_upload_image_attachment", methods={"POST"})
+     * @Route("/api/attachment/{type}", name="api_upload_attachment", methods={"POST"})
      */
-    public function uploadImage(Request $request, AttachmentManagerInterface $attachmentManager, JsonErrorResponseFactory $jsonErrorFactory, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
+    public function upload(string $type, Request $request, AttachmentManagerInterface $attachmentManager, JsonErrorResponseFactory $jsonErrorFactory, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
     {
-
         /** @var User $user */
         $user = $this->getUser();
-        $imageFile = $request->files->get('uploadImage');
 
-        if (!$imageFile) {
+        $submittedToken = $request->request->get('token');
+        if (!$this->isCsrfTokenValid('upload', $submittedToken)) {
+            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Wrong token.');
+        }
+
+        switch ($type) {
+            case 'image':
+                $file = $request->files->get('uploadImage');
+                break;
+            case 'file':
+                $file = $request->files->get('uploadFile');
+                break;
+            default:
+                return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_INVALID_REQUEST_BODY_FORMAT, null, 'Invalid request.');
+        }
+
+        if (!$file) {
             throw new ApiBadRequestHttpException('Invalid JSON.');
         }
         
         try {
-            $attachment = $attachmentManager->create($user, null, $imageFile, 'Image');
+            $attachment = $attachmentManager->create($user, null, $file, ucfirst($type));
         } catch (\Exception $e) {
 
             return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $e->getMessage());

@@ -2,7 +2,7 @@
 
 namespace App\Services\Factory\AttachmentModel;
 
-use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\AttachmentFileUploader\AttachmentFileUploaderInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Model\Attachment\AttachmentModel;
 use App\Entity\{Message, User};
@@ -10,29 +10,23 @@ use App\Entity\{Message, User};
 class AttachmentModelFactory implements AttachmentModelFactoryInterface 
 {
 
-    /** @var ImagesManagerInterface */
-    private $attachmentImagesManager;
+    /** @var AttachmentFileUploaderInterface */
+    private $attachmentFileUploader;
 
     /**
      * AttachmentModelFactory Constructor
      * 
-     * @param ImagesManagerInterface $attachmentImagesManager
+     * @param AttachmentFileUploaderInterface $attachmentFileUploader
      */
-    public function __construct(ImagesManagerInterface $attachmentImagesManager)  
+    public function __construct(AttachmentFileUploaderInterface $attachmentFileUploader)  
     {
-        $this->attachmentImagesManager = $attachmentImagesManager;
+        $this->attachmentFileUploader = $attachmentFileUploader;
     }
 
     public function createFromData(User $user, ?Message $message, File $file, string $type): AttachmentModel
     {
 
-        switch ($type) {
-            case 'Image':
-                $filename = $this->attachmentImagesManager->uploadImage($file, null, $user->getLogin());
-                break;
-            default:
-                throw new \Exception("Unsupported attachment type. Contact with admin.");
-        }
+        $filename = $this->attachmentFileUploader->upload($file, $user->getLogin(), $type);
 
         if (!$filename) {
             throw new \Exception("Cannot upload that file.");

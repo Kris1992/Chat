@@ -44,6 +44,9 @@ class AttachmentManager implements AttachmentManagerInterface
             case 'Image':
                 $isValid = $this->modelValidator->isValid($fileModel, ['attachment:image']);
                 break;
+            case 'File':
+                $isValid = $this->modelValidator->isValid($fileModel, ['attachment:file']);
+                break;
             default:
                 throw new \Exception("Unsupported attachment type. Contact with admin.");
         }

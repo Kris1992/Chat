@@ -9,7 +9,7 @@ class AttachmentFileModel
 {
 
     /**
-     * @Assert\NotNull(groups={"attachment:image"})
+     * @Assert\NotNull(groups={"attachment:image", "attachment:file"})
      * @Assert\Image(
      *     mimeTypes={
      *         "image/jpeg",
@@ -17,6 +17,18 @@ class AttachmentFileModel
      *     },
      *     maxSize="3M",
      *     groups={"attachment:image"})
+     * @Assert\File(
+     *     maxSize = "3M",
+     *     mimeTypes = {
+     *         "application/pdf", 
+     *         "application/x-pdf", 
+     *         "application/msword", 
+     *         "text/*", 
+     *         "audio/*", 
+     *         "video/*"
+     *     },
+     *     groups={"attachment:file"})
+     * )
      */
     private $file;
 

@@ -39,9 +39,18 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.$wrapper.on(
                 'change', 
                 ChatApi._selectors.uploadImageInput,
-                this.handleUploadedImage.bind(this)
+                this.handleUploadedFile.bind(this, $(ChatApi._selectors.formImageHandler), 'Image')
             );
-
+            this.$wrapper.on(
+                'click', 
+                ChatApi._selectors.uploadFileButton,
+                this.handleUploadFileButton.bind(this)
+            );
+            this.$wrapper.on(
+                'change', 
+                ChatApi._selectors.uploadFileInput,
+                this.handleUploadedFile.bind(this, $(ChatApi._selectors.formFileHandler), 'File')
+            );
             if (!isPublic) {
                 this.$wrapper.on(
                     'click', 
@@ -61,6 +70,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 sendButton: '#js-send-message',
                 textareaInput: '#js-message-text',
                 formImageHandler: '#js-image-form',
+                formFileHandler: '#js-file-form',
                 messagesContainer: '#js-messages-container',
                 ownMessageTemplate: '#js-own-message-template',
                 othersMessageTemplate: '#js-others-message-template',
@@ -71,17 +81,21 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 friendsModalTemplate: '#js-friends-modal-template',
                 modalTemplateWrapper: '#js-friends-template-wrapper',
                 uploadedImageTemplate: '#js-uploaded-image-template',
+                uploadedFileTemplate: '#js-uploaded-file-template',
                 chatsContainer: '#js-chats-container',
                 messagesLoadInfo: '#js-messages-load-info',
                 chatButton: '.js-chat-button',
                 message: '.js-message',
                 uploadImageButton: '#js-upload-image',
                 uploadImageInput: '#js-image-input',
+                uploadFileButton: '#js-upload-file',
+                uploadFileInput: '#js-file-input',
                 progressBarTemplate: '#js-progress-bar-template',
                 progressBar: '#js-progress-bar',
                 lastMessage: '.js-last-message',
                 lastMessageTemplate: '#js-last-message-template',
-                newPrivateChatTemplate: '#js-private-chat-template'
+                newPrivateChatTemplate: '#js-private-chat-template',
+                uploadedAttachments: '#js-uploaded-attachments'
             }
         }
 
@@ -115,8 +129,13 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             event.preventDefault();
             let $textareaInput = $(ChatApi._selectors.textareaInput);
             var emojioneArea = $textareaInput.emojioneArea();
-            let message = emojioneArea[0].emojioneArea.getText();
-            
+            let message = $(ChatApi._selectors.uploadedAttachments).html();
+            if (message !== "") {
+                message = message + '</br>' + emojioneArea[0].emojioneArea.getText();
+            } else {
+                message = emojioneArea[0].emojioneArea.getText();
+            }
+        
             //let message = $textareaInput.val();
 
             /* If message is empty just do nothing*/
@@ -128,6 +147,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
             this.sendMessage({content:message}, url).then((message) => {
                 emojioneArea[0].emojioneArea.setText('');
+                $(ChatApi._selectors.uploadedAttachments).html('');
                 this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
@@ -173,18 +193,22 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             $(ChatApi._selectors.uploadImageInput).click();
         }
 
-        handleUploadedImage() {
-            let $imageForm = $(ChatApi._selectors.formImageHandler);
-            let url = $imageForm.attr('action');
-            let formData = new FormData($imageForm.get(0));
+        handleUploadFileButton() {
+            $(ChatApi._selectors.uploadFileInput).click();
+        }
+
+        handleUploadedFile($fileForm, type) {
+            let url = $fileForm.attr('action');
+            let formData = new FormData($fileForm.get(0));
 
             this.showProgressBar($(ChatApi._selectors.textareaInput), 25, 'Loading...');
-            this.uploadImage(url, formData).then((data) => {
+            this.uploadFile(url, formData).then((data) => {
                 this.changeProgressBarValue($(ChatApi._selectors.progressBar), 75);
-                this.showUploadedImage(data, $(ChatApi._selectors.textareaInput));
+                this.showUploadedFile(data, $(ChatApi._selectors.uploadedAttachments), type);
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             }).finally(() => {
+                $fileForm.get(0).reset();
                 this.changeProgressBarValue($(ChatApi._selectors.progressBar), 100);
             });
         }
@@ -206,24 +230,30 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             }
         }
 
-        showUploadedImage(imageData, $target) {
-            const tplText = $(ChatApi._selectors.uploadedImageTemplate).html();
-            const tpl = _.template(tplText);
-            const html = tpl({image:imageData}, {baseAsset:this.baseAsset});
-            //$target.append($.parseHTML(html));
+        showUploadedFile(fileData, $target, type) {
 
-            var emojioneArea = $target.emojioneArea();
-            let message = emojioneArea[0].emojioneArea.getText();
-            message = message + ' ' + html;
-            emojioneArea[0].emojioneArea.setText(message);
+            switch (type) {
+                case 'Image':
+                    var tplText = $(ChatApi._selectors.uploadedImageTemplate).html();
+                    break;
+                case 'File':
+                    var tplText = $(ChatApi._selectors.uploadedFileTemplate).html();
+                    break;
+                default:
+                    return;
+            }
+            
+            const tpl = _.template(tplText);
+            const html = tpl({file:fileData}, {baseAsset:this.baseAsset});
+            $target.append($.parseHTML(html));
         }
 
-        uploadImage(url, image) {
+        uploadFile(url, file) {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     url,
                     method: 'POST',
-                    data: image,
+                    data: file,
                     contentType: false,
                     processData: false
                 }).then(function(data) {
@@ -296,11 +326,22 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         setLastMessage(messageData, $target) {
+            messageData.content = this.sanitazeContent(messageData.content);
             messageData.createdAt = this.formatDateTime(messageData.createdAt);
             const tplText = $(ChatApi._selectors.lastMessageTemplate).html();
             const tpl = _.template(tplText);
             const html = tpl({messageData: messageData, currentUser:this.currentUser});
             $target.html($.parseHTML(html));
+        }
+
+        sanitazeContent(content) {
+            if (content.match(/<img [^>]*src="[^"]*"[^>]*>/gm)) {
+                content = '<span class="fas fa-file-image"></span> Sent image.';
+            } else if(content.match(/<a class="uploaded-file"[^>]/gm)) {
+                content = '<span class="fas fa-file-alt"></span> Sent file.';
+            }
+            
+            return content;
         }
 
         getParticipants(chatId) {

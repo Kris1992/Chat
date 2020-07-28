@@ -19,5 +19,11 @@ interface FilesManagerInterface
      */
     public function upload(File $file, string $folderName): string;
 
+    /**
+     * delete  Delete file from server
+     * @param  string   $filePath               String with path to file from public directory
+     * @return bool                             Return true if success otherwise false
+     */
+    public function delete(string $filePath): bool;
 
 }

@@ -2,7 +2,6 @@
 
 namespace App\Services\ImagesManager;
 
-use League\Flysystem\FilesystemInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Asset\Context\RequestStackContext;
 use App\Services\ImagesResizer\ImagesResizerInterface;
@@ -12,9 +11,6 @@ use Psr\Log\LoggerInterface;
 
 class UsersImagesManager implements ImagesManagerInterface
 {
-
-    /** @var FilesystemInterface */
-    private $publicFilesystem;
 
     /** @var FilesManagerInterface */
     private $filesManager;
@@ -35,7 +31,6 @@ class UsersImagesManager implements ImagesManagerInterface
     /**
      * UsersImagesManager Constructor
      *
-     *@param FilesystemInterface    $publicUploadsFilesystem
      *@param FilesManagerInterface  $filesManager
      *@param LoggerInterface        $logger
      *@param RequestStackContext    $requestStackContext
@@ -43,9 +38,8 @@ class UsersImagesManager implements ImagesManagerInterface
      *@param string                 $uploadedAssetsBaseUrl
      *
      */
-    public function __construct(FilesystemInterface $publicUploadsFilesystem, FilesManagerInterface $filesManager, LoggerInterface $logger,  RequestStackContext $requestStackContext, ImagesResizerInterface $imagesResizer, string $uploadedAssetsBaseUrl)
+    public function __construct(FilesManagerInterface $filesManager, LoggerInterface $logger,  RequestStackContext $requestStackContext, ImagesResizerInterface $imagesResizer, string $uploadedAssetsBaseUrl)
     {
-        $this->publicFilesystem = $publicUploadsFilesystem;
         $this->filesManager = $filesManager;
         $this->logger = $logger;
         $this->requestStackContext = $requestStackContext;
@@ -129,17 +123,10 @@ class UsersImagesManager implements ImagesManagerInterface
     private function deleteOldImage(string $existingFilename, string $subdirectory): bool
     {
 
-        try {
-            $result = $this->publicFilesystem->delete(ImagesConstants::USERS_IMAGES.'/'.$subdirectory.'/'.$existingFilename);
-            $resultThumb = $this->publicFilesystem->delete(ImagesConstants::USERS_IMAGES.'/'.$subdirectory.'/'.ImagesConstants::THUMB_IMAGES.'/'.$existingFilename);
-            
-            if (!$result || !$resultThumb) {
-                return false;
-            }
-
-        } catch(\Exception $e) {
-            $this->logger->alert(sprintf('Old uploaded file "%s" was missing when trying to delete', $existingFilename));
-            
+        $result = $this->filesManager->delete(ImagesConstants::USERS_IMAGES.'/'.$subdirectory.'/'.$existingFilename);
+        $resultThumb = $this->filesManager->delete(ImagesConstants::USERS_IMAGES.'/'.$subdirectory.'/'.ImagesConstants::THUMB_IMAGES.'/'.$existingFilename);
+        
+        if (!$result || !$resultThumb) {
             return false;
         }
 
