@@ -11,6 +11,11 @@
     padding: 0;  
 }
 
+body {
+    /*  This pattern is downloaded from www.toptal.com/designers/subtlepatterns */
+    background-image: url("../img/bg1.png");
+}
+
 @font-face {
   font-family: "Oswald";
   src: url("../fonts/oswald/Oswald-VariableFont_wght.ttf") format("truetype");
@@ -21,8 +26,6 @@
 }
 
 .main-container {
-    /*  This pattern is downloaded from www.toptal.com/designers/subtlepatterns */
-    background-image: url("../img/bg1.png");
     display: flex;
     align-items: stretch;
 }

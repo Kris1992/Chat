@@ -79,10 +79,11 @@ class ChatRepository extends ServiceEntityRepository
 
     /**
      * findPrivateChatsByUser Find private chats by given user as participant 
-     * @param  User   $user User object whose must be one of participants of chat room
+     * @param  User   $user     User object whose must be one of participants of chat room
+     * @param  int    $offset   Integer with offset number
      * @return Chat[]
      */
-    public function findPrivateChatsByUser(User $user)
+    public function findPrivateChatsByUser(User $user, int $offset = 0)
     {
         return $this->createQueryBuilder('c')
             ->innerJoin('c.participants', 'p')
@@ -92,6 +93,8 @@ class ChatRepository extends ServiceEntityRepository
                 'isPublic' => false
             ])
             ->orderBy('c.lastActivityAt', 'DESC')
+            ->setFirstResult($offset)
+            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
             ;

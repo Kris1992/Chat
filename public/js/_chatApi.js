@@ -84,6 +84,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 uploadedFileTemplate: '#js-uploaded-file-template',
                 chatsContainer: '#js-chats-container',
                 messagesLoadInfo: '#js-messages-load-info',
+                chatsLoadInfo: '#js-chats-load-info',
                 chatButton: '.js-chat-button',
                 message: '.js-message',
                 uploadImageButton: '#js-upload-image',
@@ -107,7 +108,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             } else {
                 const $chatsContainer = $(ChatApi._selectors.chatsContainer);
                 if ($chatsContainer.has('button').length > 0) {
-                    this.showLoadMessagesInfo($(ChatApi._selectors.messagesContainer));
+                    this.showLoadContentInfo($(ChatApi._selectors.messagesContainer));
                     this.chatId = $(ChatApi._selectors.chatsContainer).children().first().attr('id');
                     this.loadMessages(this.chatId, 0).then((data) => {
                         if (data.length > 0) {
@@ -118,6 +119,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     }).finally(() => {
                         $(ChatApi._selectors.messagesLoadInfo).remove();
                     });
+
+                    this.setChatsObserver();
                 }
                 this.openPrivateChatsEventSource();
             }
@@ -130,7 +133,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             let $textareaInput = $(ChatApi._selectors.textareaInput);
             var emojioneArea = $textareaInput.emojioneArea();
             let message = $(ChatApi._selectors.uploadedAttachments).html();
-            if (message !== "") {
+            if (message) {
                 message = message + '</br>' + emojioneArea[0].emojioneArea.getText();
             } else {
                 message = emojioneArea[0].emojioneArea.getText();
@@ -176,7 +179,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.closeEventSource();
 
             this.clearMessages($(ChatApi._selectors.messagesContainer));
-            this.showLoadMessagesInfo($(ChatApi._selectors.messagesContainer));
+            this.showLoadContentInfo($(ChatApi._selectors.messagesContainer));
             this.loadMessages(this.chatId, 0).then((data) => {
                 if (data.length > 0) {
                     this.showMessages(data);
@@ -363,12 +366,17 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             });
         }
 
-        setNewPrivateChat(messageData, participantsData, $chatsContainer) {
+        setNewPrivateChat(messageData, participantsData, $chatsContainer, append = false) {
             messageData.createdAt = this.formatDateTime(messageData.createdAt);
             const tplText = $(ChatApi._selectors.newPrivateChatTemplate).html();
             const tpl = _.template(tplText);
             const html = tpl({messageData: messageData, participantsData: participantsData, currentUser: this.currentUser, defaultUserImage: this.defaultUserImage, baseAsset: this.baseAsset});
-            $chatsContainer.prepend($.parseHTML(html));
+            if (!append) {
+                $chatsContainer.prepend($.parseHTML(html));
+            } else {
+                $chatsContainer.append($.parseHTML(html));
+            }
+           
         }
 
         loadMessages(chatId, offset) {
@@ -437,6 +445,78 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
             const intersectionObserver = new IntersectionObserver(intersectionCallback, intersectionOptions);
             intersectionObserver.observe(firstMessage);
+        }
+
+        setChatsObserver() {
+            let $chats = $(ChatApi._selectors.chatButton);
+            let lastChat = $chats.last().get(0);
+    
+            const intersectionCallback = (entries, observer) => {
+                if (entries[0].intersectionRatio <= 0) {
+                    return;
+                }
+
+                if(entries[0].intersectionRatio > 0.85) {
+                    observer.unobserve(lastChat);
+                    let $chatsContainer = $(ChatApi._selectors.chatsContainer);
+                    this.showLoadContentInfo($chatsContainer, true, 'Loading chats...', 'js-chats-load-info');
+
+                    //Chats may be changed (e.g creating new one)
+                    let $actualChats = $(ChatApi._selectors.chatButton);
+
+                    this.loadChats($actualChats.length).then((data) => {
+                        if (data.length > 0) {
+                            
+                            data.map(function(chatData) {
+                                let participantsData = chatData['participants'];
+                                let messageData = chatData['lastMessage'];
+                                if (!messageData) {
+                                    messageData = {};
+                                }
+
+                                messageData['chat'] = {};
+                                messageData['chat']['id'] = chatData['id'];
+
+                                this.setNewPrivateChat(messageData, participantsData, $chatsContainer, true);
+                            }, this);
+                            this.setChatsObserver();
+                        }
+                    }).catch((errorData) => {
+                        this.showErrorMessage(errorData.title);
+                    }).finally(() => {
+                        $(ChatApi._selectors.chatsLoadInfo).remove();
+                    });
+                }
+            };
+
+            const intersectionOptions = {
+                threshold: 1,
+                rootMargin: '0px 0px 0px 0px'
+            };
+
+            const intersectionObserver = new IntersectionObserver(intersectionCallback, intersectionOptions);
+            intersectionObserver.observe(lastChat);
+        }
+
+        loadChats(offset) {
+            const offsetData = {offset: offset};
+            const url = '/api/chat/private';
+
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'POST',
+                    data: JSON.stringify(offsetData)
+                }).then(function(data) {
+                    resolve(data);
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                }); 
+            });
         }
 
         showFriendsList(friends, userId) {
@@ -539,18 +619,22 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             $target.empty();
         }
 
-        showLoadMessagesInfo($target) {
+        showLoadContentInfo($target, append = false, message = 'Loading messages...', id = 'js-messages-load-info') {
             let content = `
-                <div class="alert alert-info" role="alert" id="js-messages-load-info">
+                <div class="alert alert-info" role="alert" id="` + id + `">
                     <span class="fa fa-spinner fa-spin"></span> 
-                    <strong>Loading messages...</strong>
+                    <strong>` + message + `</strong>
                 </div>`;
-            $target.prepend($.parseHTML(content));
+            if (!append) {
+                $target.prepend($.parseHTML(content));
+            } else {
+                $target.append($.parseHTML(content));
+            }
         }
 
         distributeMessage(message, $target, append = true) {
             message['createdAt'] = this.formatDateTime(message['createdAt']);
-            if (message['owner']['id'] === this.currentUser) {
+            if (message['owner']['id'] == this.currentUser) {
                 this.showOwnMessage(message, $target, append);
             } else {
                 this.showOthersMessage(message, $target, append);

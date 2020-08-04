@@ -26,4 +26,11 @@ interface FilesManagerInterface
      */
     public function delete(string $filePath): bool;
 
+    /**
+     * getAbsolutePath  Get absolute path to file
+     * @param  string   $path       String with relative path to file from public directory
+     * @return string               String with absolute path
+     */
+    public function getAbsolutePath(string $path): string;
+
 }

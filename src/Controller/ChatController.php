@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
+use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request, ResponseHeaderBag};
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
@@ -17,6 +17,8 @@ use App\Services\Factory\ChatModel\ChatModelFactoryInterface;
 use App\Services\Factory\Chat\ChatFactoryInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
+//use App\Services\ChatPrinter\ChatPrinter;
+use App\Services\ChatPrinter\PdfPrinter;
 use App\Repository\{ChatRepository, ParticipantRepository, UserRepository};
 use Symfony\Component\WebLink\Link;
 use App\Entity\Chat;
@@ -102,7 +104,7 @@ class ChatController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         
-        $chats = $chatRepository->findPrivateChatsByUser($user);
+        $chats = $chatRepository->findPrivateChatsByUser($user, 0);
 
         return $this->render('chat/private_list.html.twig', [
             'chats' => $chats
@@ -152,6 +154,40 @@ class ChatController extends AbstractController
 
         $this->addFlash('danger','Cannot create this chat room.');
         return $this->redirectToRoute('chat_private');
+    }
+
+    /**
+     * @param   Request             $request
+     * @param   ChatRepository      $chatRepository
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
+     * @Route("/api/chat/private", name="api_get_chats", methods={"POST"})
+     */
+    public function getChats(Request $request, ChatRepository $chatRepository): Response
+    {   
+
+        $data = json_decode($request->getContent(), true);
+        
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+        $chats = $chatRepository->findPrivateChatsByUser($user, $data['offset']);
+
+        return $this->json(
+                $chats,
+                200,
+                [],
+                [
+                    AbstractObjectNormalizer::GROUPS => [
+                        'chat:list',
+                        'chat:participants'
+                    ],
+                ]
+            );
+
     }
     
     /**
@@ -228,5 +264,40 @@ class ChatController extends AbstractController
 
         return new Response(null, Response::HTTP_OK);
     }
+
+    /**
+     * @param   Chat        $chat
+     * @param   Request     $request
+     * @return  Response
+     * @Route("/api/chat/{id}/file", name="api_get_chat_data_file", methods={"POST"})
+     */
+    public function getChatDataAsFile(Chat $chat, Request $request, PdfPrinter $chatPrinter): Response
+    {
+        $this->denyAccessUnlessGranted('CHAT_VIEW', $chat);
+
+        $data = json_decode($request->getContent(), true);
+        
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+
+        $startAt = new \DateTime($data['startAt']);
+        $stopAt = new \DateTime($data['stopAt']);
+
+        $messages = $chat->getMessagesBetween($startAt, $stopAt);
+
+        if (!$messages) {
+            // there is no messages to print in this interval        
+        }
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        //$chatPrinter = ChatPrinter::choosePrinter($data['fileFormat']);
+        $link = $chatPrinter->printToFile($messages, $user, $startAt, $stopAt);
+
+        return new JsonResponse($link, Response::HTTP_OK);
+    }
+
 
 }

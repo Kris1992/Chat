@@ -75,3 +75,8 @@ textarea {
 .font-75 {
     font-size: 75px;
 }
+
+.swal2-overflow {
+    overflow-x: visible;
+    overflow-y: visible;
+}

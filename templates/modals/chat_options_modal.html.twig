@@ -1,4 +1,4 @@
-<div class="modal fade" id="chatOptionsModal" tabindex="-1" role="dialog" aria-labelledby="chat-options-modal-title" aria-hidden="true">
+<div class="modal fade" id="js-chat-options-modal" tabindex="-1" role="dialog" aria-labelledby="chat-options-modal-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -11,7 +11,7 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card">
-                            <a href="#" class="stretched-link">
+                            <a data-toggle="collapse" href="#js-choose-print-chat" role="button" aria-expanded="false" aria-controls="js-choose-print-chat" class="stretched-link">
                                 <div class="card bg-transparent border-0">
                                     <div class="row">
                                         <div class="col-12">
@@ -21,6 +21,42 @@
                                         </div>
                                         <div class="col-12 card-title text-center text-uppercase title-style">
                                             <h6>Print chat</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row collapse" id="js-choose-print-chat">
+                        <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card">
+                            <a href="#" role="button" class="stretched-link" id="js-save-image">
+                                <div class="card bg-transparent border-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h1 class="text-center">
+                                                <span class="fas fa-camera"></span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-12 card-title text-center text-uppercase title-style">
+                                            <h6>Save as image</h6>
+                                            <small>(Just now visible text)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card">
+                            <a href="#" role="button" class="stretched-link" id="js-save-file">
+                                <div class="card bg-transparent border-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h1 class="text-center">
+                                                <span class="fas fa-file-pdf"></span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-12 card-title text-center text-uppercase title-style">
+                                            <h6>Save as file</h6>
+                                            <small>(All loaded messages)</small>
                                         </div>
                                     </div>
                                 </div>

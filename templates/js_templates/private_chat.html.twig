@@ -33,29 +33,33 @@
             </strong></span>
         </div>
         <div class="col-12 border-top js-last-message my-1">
-            <small>
-                <div class="row">
-                    <div class="col-8 text-left">
-                        <% if (messageData.owner.id === currentUser) { %>
-                            <span><strong>
-                                You
-                            </strong></span>
-                        <% } else { %>
-                            <span><strong>
-                                <%= messageData.owner.login %>
-                            </strong></span>
-                        <% } %>
+            <% if (messageData.content) { %>
+                <small>
+                    <div class="row">
+                        <div class="col-8 text-left">
+                            <% if (messageData.owner.id === currentUser) { %>
+                                <span><strong>
+                                    You
+                                </strong></span>
+                            <% } else { %>
+                                <span><strong>
+                                    <%= messageData.owner.login %>
+                                </strong></span>
+                            <% } %>
+                        </div>
+                        <div class="col-4">
+                            <span><small>
+                                <%= messageData.createdAt %>
+                            </small></span>
+                        </div>
+                        <div class="col-12 text-left">
+                            <%= messageData.content %>
+                        </div>
                     </div>
-                    <div class="col-4">
-                        <span><small>
-                            <%= messageData.createdAt %>
-                        </small></span>
-                    </div>
-                    <div class="col-12 text-left">
-                        <%= messageData.content %>
-                    </div>
-                </div>
-            </small>
+                </small>
+            <% } else { %>
+                <small>No messages now. Write first one!</small>
+            <% } %>
         </div>
     </div>
 </button>

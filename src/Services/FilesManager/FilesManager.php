@@ -16,17 +16,22 @@ class FilesManager implements FilesManagerInterface
     /** @var LoggerInterface */
     private $logger;
 
+    /** @var string */
+    private $uploadsDirectory;
+
     /**
      * FilesManager Constructor
      *
-     *@param FilesystemInterface $publicUploadsFilesystem
-     *@param LoggerInterface $logger
+     *@param FilesystemInterface    $publicUploadsFilesystem
+     *@param LoggerInterface        $logger
+     *@param string                 $uploadsDirectory           Path to uploads directory
      *
      */
-    public function __construct(FilesystemInterface $publicUploadsFilesystem, LoggerInterface $logger)  
+    public function __construct(FilesystemInterface $publicUploadsFilesystem, LoggerInterface $logger, string $uploadsDirectory)  
     {
         $this->publicFilesystem = $publicUploadsFilesystem;
         $this->logger = $logger;
+        $this->uploadsDirectory = $uploadsDirectory;
     }
 
     public function upload(File $file, string $folderName): string
@@ -72,6 +77,11 @@ class FilesManager implements FilesManagerInterface
             
             return false;
         }
+    }
+
+    public function getAbsolutePath(string $path): string
+    {   
+        return $this->uploadsDirectory.'/'.$path;
     }
 
     /**

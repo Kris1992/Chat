@@ -25,26 +25,26 @@ class Message
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:list"})
      */
     private $owner;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:list"})
      */
     private $content;
 
     /**
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:list"})
      */
     private $createdAt;
 
     /**
      * @ORM\ManyToOne(targetEntity=Chat::class, inversedBy="messages")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      * @Groups({"chat:message"})
      */
     private $chat;

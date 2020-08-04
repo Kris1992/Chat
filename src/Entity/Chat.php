@@ -11,6 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
 use App\Repository\ParticipantRepository;
+use App\Repository\MessageRepository;
 
 /**
  * @ORM\Entity(repositoryClass=ChatRepository::class)
@@ -21,7 +22,7 @@ class Chat
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"chat:message"})
+     * @Groups({"chat:message", "chat:list"})
      */
     private $id;
 
@@ -48,6 +49,7 @@ class Chat
 
     /**
      * @ORM\OneToOne(targetEntity=Message::class, cascade={"persist", "remove"})
+     * @Groups({"chat:list"})
      */
     private $lastMessage;
 
@@ -186,6 +188,19 @@ class Chat
         }
 
         return $this;
+    }
+
+    /**
+     * getMessagesBetween   Get chat messages between start and stop date 
+     * @param \DateTimeInterface    $startDate      Start date of messages to get
+     * @param \DateTimeInterface    $stopDate       Stop date of messages to get
+     * @return Collection|Message[]
+     */
+    public function getMessagesBetween(\DateTimeInterface $startDate, \DateTimeInterface $stopDate): Collection
+    {
+        $criteria = MessageRepository::createBetweenDatesCriteria($startDate, $stopDate);
+
+        return $this->messages->matching($criteria);
     }
 
     /**

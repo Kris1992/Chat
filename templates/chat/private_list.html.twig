@@ -5,6 +5,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/_chat.css') }}">
 {% endblock %}
 {% block section_class %}privateRooms{% endblock %} 
@@ -24,7 +25,7 @@
                 </div>
                 <div class="col-12 col-md-8 bg-primary chat-header text-center text-uppercase">
                     <span class="align-middle">Messages</span>
-                    <button class="btn btn-primary chat-menu float-right text-white align-middle border border-secondary" data-toggle="modal" data-target="#chatOptionsModal">
+                    <button class="btn btn-primary chat-menu float-right text-white align-middle border border-secondary" data-toggle="modal" data-target="#js-chat-options-modal">
                         <span class="fas fa-bars"></span>
                     </button>
                 </div>
@@ -91,7 +92,7 @@
                                                     <div class="col-4">
                                                         <span><small>
                                                             {% if date(chat.lastMessage.createdAt) < date('today') %}
-                                                                {{ chat.lastMessage.createdAt | date('Y-m-d H:i:s') }}
+                                                                {{ chat.lastMessage.createdAt | date('m/d/Y g:ia') }}
                                                             {% else %}
                                                                 {{ chat.lastMessage.createdAt | date(" g:ia") }}
                                                             {% endif %}
@@ -177,16 +178,22 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+    <!--<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/canvas2image@1.0.5/canvas2image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    
     <script type="module" src="{{ asset('js/helpers/_errorHelper.js') }}"></script>
     <script type="module" src="{{ asset('js/helpers/_validationHelper.js') }}"></script>
     <script type="module" src="{{ asset('js/_chatApi.js') }}"></script>
-    <script type="module" src="{{ asset('js/_screenApi.js') }}"></script>
+    <script type="module" src="{{ asset('js/_chatOptionsApi.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             let $wrapper = $('.js-chat-wrapper');
             let chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, null, null, currentUser, false);
-            //let $menuWrapper = $('#js-chat-menu');
-            //let screenApi = new ScreenApi($menuWrapper);
+
+            let $optionsWrapper = $('#js-chat-options-modal');
+            let chatOptionsApi = new ChatOptionsApi($optionsWrapper);
         });
     </script>
 {% endblock %}

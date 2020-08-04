@@ -1,0 +1,66 @@
+{% extends 'printer/printer_base.html.twig' %}
+
+{% block title %}Chat - Messages{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ absolute_url(asset('css/_chat.css')) }}">
+{% endblock %}
+
+{% block section_class %}selectedMessages{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content %}
+<div class="col-sm-12 text-center my-auto">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Messages ( 
+            {{ startDate | date('m/d/Y g:ia') }} - 
+            {{ stopDate | date('m/d/Y g:ia') }} ) </h2>
+        </div>
+        <div class="col-12 p-3 mx-auto my-3">
+            {% for message in messages %}
+                <div class="col-12 my-2 js-message">
+                    <div class="row">
+                        {% if message.owner is same as(currentUser) %}
+                            <div class="col-12">
+                                {% if message.owner.imageFilename is not same as(null) %}
+                                    <img class="user-image image-circle float-left" src="{{ absolute_url(uploaded_asset(message.owner.thumbImagePath)) }}" alt="User image">
+                                {% else %}
+                                    <img class="user-image image-circle float-left" src="
+                                    {{ absolute_url(asset('img/users/default.png')) }}" alt="User image">
+                                {% endif %}
+                                <strong class="ml-2 float-left">You</strong>
+                            </div>
+                            <div class="col-9 mx-auto">
+                                <p class="text-left bg-primary rounded w-100 p-2">
+                                    {{ message.content | raw }} 
+                                </p>
+                                <small class="float-left text-muted">
+                                    {{ message.createdAt | date('m/d/Y g:ia') }}
+                                </small>
+                            </div>
+                        {% else %}
+                            <div class="col-12">
+                                {% if message.owner.imageFilename is not same as(null) %}
+                                    <img class="user-image image-circle float-right" src="{{ absolute_url(uploaded_asset(message.owner.thumbImagePath)) }}" alt="User image">
+                                {% else %}
+                                    <img class="user-image image-circle float-right" src="{{ absolute_url(asset('img/users/default.png')) }}" alt="User image">
+                                {% endif %}
+                                <strong class="mr-2 float-right">{{ message.owner.login }}</strong>
+                            </div>
+                            <div class="col-9 mx-auto">
+                                <p class="text-left bg-secondary rounded w-100 p-2">
+                                    {{ message.content | raw }}
+                                </p>
+                                <small class="float-right text-muted">
+                                    {{ message.createdAt | date('m/d/Y g:ia') }}
+                                </small>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
