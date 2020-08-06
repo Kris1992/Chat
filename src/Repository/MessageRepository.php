@@ -33,6 +33,4 @@ class MessageRepository extends ServiceEntityRepository
         ;
     }
 
-    
-
 }

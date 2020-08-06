@@ -6,14 +6,6 @@
     height: 60%;
 }
 
-/*.chat-menu {
-    display: none;
-}
-
-.chat-header:hover .chat-menu {
-    display: inline-block;
-}*/
-
 .chat-item-container {
     border: 1px solid #ABDACD;
     overflow-y: scroll;
@@ -79,4 +71,40 @@ textarea {
 .swal2-overflow {
     overflow-x: visible;
     overflow-y: visible;
+}
+
+.typing-dots {
+    padding: 10px;
+    background-color: grey;
+}
+
+.typing-dots span {
+    width: 30px;
+    height: 30px;
+    margin: 0px 5px;
+    /*  This pattern is downloaded from www.toptal.com/designers/subtlepatterns */
+    background-image: url("../img/bg1.png");
+    border-radius: 50%;
+    display: inline-block;
+    animation-name: typing;
+    animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.4s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.8s;
+}
+
+@keyframes typing {
+    50% {
+        opacity: 0;
+        transform: scale(0.7) translateY(-10px);
+    }
 }

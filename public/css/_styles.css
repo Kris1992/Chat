@@ -21,6 +21,12 @@ body {
   src: url("../fonts/oswald/Oswald-VariableFont_wght.ttf") format("truetype");
 }
 
+.break{
+        display: block;
+        clear: both;
+        page-break-after: always;
+}
+
 .viewh-75 {
     height: 75vh;
 }

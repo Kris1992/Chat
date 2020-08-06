@@ -12,13 +12,12 @@ use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
-use App\Message\Command\CheckUserActivityOnPublicChat;
+use App\Message\Command\{CheckUserActivityOnPublicChat, RemoveScreenFile};
 use App\Services\Factory\ChatModel\ChatModelFactoryInterface;
 use App\Services\Factory\Chat\ChatFactoryInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-//use App\Services\ChatPrinter\ChatPrinter;
-use App\Services\ChatPrinter\PdfPrinter;
+use App\Services\ChatPrinter\ChatPrinter;
 use App\Repository\{ChatRepository, ParticipantRepository, UserRepository};
 use Symfony\Component\WebLink\Link;
 use App\Entity\Chat;
@@ -266,12 +265,15 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @param   Chat        $chat
-     * @param   Request     $request
+     * @param   Chat                            $chat
+     * @param   Request                         $request
+     * @param   ChatPrinter                     $chatPrinter
+     * @param   JsonErrorResponseFactory        $jsonErrorFactory
+     * @param   MessageBusInterface             $messageBus
      * @return  Response
      * @Route("/api/chat/{id}/file", name="api_get_chat_data_file", methods={"POST"})
      */
-    public function getChatDataAsFile(Chat $chat, Request $request, PdfPrinter $chatPrinter): Response
+    public function getChatDataAsFile(Chat $chat, Request $request, ChatPrinter $chatPrinter, JsonErrorResponseFactory $jsonErrorFactory, MessageBusInterface $messageBus): Response
     {
         $this->denyAccessUnlessGranted('CHAT_VIEW', $chat);
 
@@ -286,18 +288,27 @@ class ChatController extends AbstractController
 
         $messages = $chat->getMessagesBetween($startAt, $stopAt);
 
-        if (!$messages) {
-            // there is no messages to print in this interval        
+        if ($messages->isEmpty()) {
+            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'There is no messages to print in given interval.');        
         }
 
         /** @var User $user */
         $user = $this->getUser();
 
-        //$chatPrinter = ChatPrinter::choosePrinter($data['fileFormat']);
-        $link = $chatPrinter->printToFile($messages, $user, $startAt, $stopAt);
+        try {
+            $concretePrinter = $chatPrinter->choosePrinter($data['fileFormat']);
+            $link = $concretePrinter->printToFile($messages, $user, $startAt, $stopAt);
+        } catch (\Exception $e) {
+            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, $e->getMessage());
+        }
+
+        $message = new RemoveScreenFile(basename($link));
+        $envelope = new Envelope($message, [
+            new DelayStamp(900000)//15 minutes delay 
+        ]);
+        $messageBus->dispatch($envelope);
 
         return new JsonResponse($link, Response::HTTP_OK);
     }
-
 
 }

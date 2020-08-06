@@ -39,7 +39,7 @@ class PdfPrinter implements ChatPrinterInterface
             'margin-left'   => 0,
         ];
 
-        $filePath = sprintf('%s/%s.pdf',ChatPrinterConstants::CHAT_PRINTER, $currentUser->getLogin());
+        $filePath = sprintf('uploads/%s/%s_%d.pdf',ChatPrinterConstants::CHAT_PRINTER, $currentUser->getLogin(), uniqid());
         $this->pdf->generateFromHtml($html, $filePath, $options, true);
 
         return $filePath;

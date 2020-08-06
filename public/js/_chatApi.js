@@ -22,7 +22,13 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.counterPaused = false;
             this.currentUser = currentUser;
             this.hub = null;
+            this.privateChatsHub = null;
+            this.typingHub = null;
             this.eventSource = null;
+            this.privateChatsEventSource = null;
+            this.typingEventSource = null;
+            this.typingTimeout = null;
+            this.showTyperTimeout = null;
 
             this.handleDocumentLoad();
             
@@ -96,7 +102,10 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 lastMessage: '.js-last-message',
                 lastMessageTemplate: '#js-last-message-template',
                 newPrivateChatTemplate: '#js-private-chat-template',
-                uploadedAttachments: '#js-uploaded-attachments'
+                uploadedAttachments: '#js-uploaded-attachments',
+                typingMessageTemplate: '#js-typing-message-template',
+                typingMessageContainer: '#js-typing-dots',
+                typerInfo: '#js-typer' 
             }
         }
 
@@ -122,16 +131,22 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
                     this.setChatsObserver();
                 }
-                this.openPrivateChatsEventSource();
+        
             }
             
-            this.openEventSource();
+            this.setEventSources();
         }
 
         handleSendMessage(event) {
             event.preventDefault();
             let $textareaInput = $(ChatApi._selectors.textareaInput);
             var emojioneArea = $textareaInput.emojioneArea();
+            
+            if (this.typingTimeout !== null) {
+                clearTimeout(this.typingTimeout); 
+                this.turnOnTypingEventListener();   
+            }
+            
             let message = $(ChatApi._selectors.uploadedAttachments).html();
             if (message) {
                 message = message + '</br>' + emojioneArea[0].emojioneArea.getText();
@@ -177,6 +192,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             $button.addClass('active');
             this.chatId = $button.attr('id');
             this.closeEventSource();
+            this.closeTypingEventSource();
 
             this.clearMessages($(ChatApi._selectors.messagesContainer));
             this.showLoadContentInfo($(ChatApi._selectors.messagesContainer));
@@ -185,6 +201,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     this.showMessages(data);
                 }
                 this.openEventSource();
+                this.openTypingEventSource();
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             }).finally(() => {
@@ -214,6 +231,46 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 $fileForm.get(0).reset();
                 this.changeProgressBarValue($(ChatApi._selectors.progressBar), 100);
             });
+        }
+
+        handleTextAreaTyping() {
+            $(ChatApi._selectors.textareaInput).emojioneArea()[0].emojioneArea.off('keypress');
+            this.typingTimeout = setTimeout(this.turnOnTypingEventListener.bind(this), 20000);
+            this.sendTypingMessage();
+        }
+
+        turnOnTypingEventListener() {
+            $(ChatApi._selectors.textareaInput).emojioneArea()[0].emojioneArea.on("keypress", function(editor, event) {
+                this.handleTextAreaTyping();
+            }.bind(this));
+        }
+
+        sendTypingMessage() {
+            let url = '/api/chat/' + this.chatId + '/message/typing';
+            return new Promise(function(resolve) {
+                $.ajax({
+                    url,
+                    method: 'GET',
+                }).then(() => {
+                    resolve();
+                }); 
+            });
+        }
+
+        showTypingMessage(typerData) {
+            if($(ChatApi._selectors.typingMessageContainer).length < 1) {
+                const tplText = $(ChatApi._selectors.typingMessageTemplate).html();
+                const tpl = _.template(tplText);
+                const html = tpl({typer:typerData}, {defaultUserImage:this.defaultUserImage}, {baseAsset:this.baseAsset});
+                $(ChatApi._selectors.messagesContainer).append($.parseHTML(html));
+                this.showTyperTimeout = setTimeout(this.removeTypingMessage, 7000);
+            } else {
+                $(ChatApi._selectors.typerInfo).html('Few users are writing message...')
+            }
+        }
+
+        removeTypingMessage() {
+            $(ChatApi._selectors.typingMessageContainer).remove();
         }
 
         showProgressBar($target, valueNow, loadingText) {
@@ -271,37 +328,59 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             });
         }
 
-        openEventSource() {
+        setEventSources() {
             this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
-                this.hub = new URL(hubUrl);
-                this.hub.searchParams.append('topic', '/chat/'+this.chatId);
-                this.eventSource = new EventSource(this.hub, {
-                    withCredentials: true
-                });
+                this.hubUrl = hubUrl;
 
-                this.eventSource.onmessage = event => {
-                    let message = JSON.parse(event.data);
-                    this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
+                if(!this.isPublic) {
+                    this.openPrivateChatsEventSource();
                 }
+
+                this.openEventSource();
+                this.openTypingEventSource();
             });
         }
 
-        openPrivateChatsEventSource() {
-            let chatsHub = null; 
-            let chatsEventSource = null;
-
-            this.getHubUrl(this.$wrapper.data('url')).then((hubUrl) => {
-                chatsHub = new URL(hubUrl);
-                chatsHub.searchParams.append('topic', '/account/'+this.currentUser+'/chats');
-                chatsEventSource = new EventSource(chatsHub, {
-                    withCredentials: true
-                });
-
-                chatsEventSource.onmessage = event => {
-                    let messageData = JSON.parse(event.data);
-                    this.updateChatsList(messageData, $(ChatApi._selectors.chatsContainer));
-                }
+        openEventSource() {            
+            this.hub = new URL(this.hubUrl);
+            this.hub.searchParams.append('topic', '/chat/'+this.chatId);
+            this.eventSource = new EventSource(this.hub, {
+                withCredentials: true
             });
+
+            this.eventSource.onmessage = event => {
+                let message = JSON.parse(event.data);
+                //First remove typer message
+                clearTimeout(this.showTyperTimeout);
+                this.removeTypingMessage();
+                this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
+            }   
+        }
+
+        openTypingEventSource() {
+            this.typingHub = new URL(this.hubUrl);
+            this.typingHub.searchParams.append('topic', '/chat/'+this.chatId+'/message/typing');
+            this.typingEventSource = new EventSource(this.typingHub, {
+                withCredentials: true
+            });
+
+            this.typingEventSource.onmessage = event => {
+                this.showTypingMessage(JSON.parse(event.data));
+                this.scrollDown($(ChatApi._selectors.messagesContainer));
+            }
+        }
+
+        openPrivateChatsEventSource() {
+            this.privateChatsHub = new URL(this.hubUrl);
+            this.privateChatsHub.searchParams.append('topic', '/account/'+this.currentUser+'/chats');
+            this.privateChatsEventSource = new EventSource(this.privateChatsHub, {
+                withCredentials: true
+            });
+
+            this.privateChatsEventSource.onmessage = event => {
+                let messageData = JSON.parse(event.data);
+                this.updateChatsList(messageData, $(ChatApi._selectors.chatsContainer));
+            }
         }
 
         closeEventSource() {
@@ -310,6 +389,14 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 this.eventSource.close();
             }
             this.eventSource = null;
+        }
+
+        closeTypingEventSource() {
+            this.typingHub = null;
+            if (this.typingEventSource) {
+                this.typingEventSource.close();
+            }
+            this.typingEventSource = null;
         }
 
         updateChatsList(messageData, $chatsContainer) {
@@ -402,11 +489,12 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
         showMessages(data, append = true) {
             if (append) {
-                data.reverse().map(function(message) {
+               data.reverse().map((message) => {
                     this.distributeMessage(message, $(ChatApi._selectors.messagesContainer), append);
                 }, this);
+               this.scrollDown($(ChatApi._selectors.messagesContainer));
             } else {
-                data.map(function(message) {
+                data.map((message) => {
                     this.distributeMessage(message, $(ChatApi._selectors.messagesContainer), append);
                 }, this);
             }
@@ -656,15 +744,18 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             const html = tpl(data, {defaultUserImage:this.defaultUserImage}, {baseAsset:this.baseAsset});
             if (append) {
                 $target.append($.parseHTML(html));
-                $target.stop().animate({
-                    scrollTop: $target[0].scrollHeight
-                }, 1200);
             } else {
                 $target.prepend($.parseHTML(html));
                 //Set scroll to last viewed message
                 let messageHeight = $(ChatApi._selectors.message).first().get(0).scrollHeight;
                 $target[0].scrollTop += messageHeight;
             }
+        }
+
+        scrollDown($target) {
+            $target.stop().animate({
+                scrollTop: $target[0].scrollHeight
+            }, 1200);
         }
 
         formatDateTime(date) {
@@ -701,6 +792,11 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         loadEmojiArea() {
             $(ChatApi._selectors.textareaInput).emojioneArea({
                 pickerPosition: 'top',
+                events: {
+                    keypress: (editor, event) => {
+                        this.handleTextAreaTyping();
+                    }
+                }
             });
         }
 

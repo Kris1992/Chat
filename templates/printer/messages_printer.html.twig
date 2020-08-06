@@ -19,7 +19,7 @@
         </div>
         <div class="col-12 p-3 mx-auto my-3">
             {% for message in messages %}
-                <div class="col-12 my-2 js-message">
+                <div class="col-12 my-2 js-message" style="page-break-inside: avoid;">
                     <div class="row">
                         {% if message.owner is same as(currentUser) %}
                             <div class="col-12">

@@ -86,6 +86,49 @@ class MessageController extends AbstractController
     }
 
     /**
+     * @param   Chat                        $chat
+     * @param   PublisherInterface          $publisher
+     * @param   SerializerInterface         $serializer
+     * @param   ParticipantRepository       $participantRepository
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @return  Response
+     * @Route("/api/chat/{id}/message/typing", name="api_chat_message_typing", methods={"GET"})
+     */
+    public function typingMessage(Chat $chat, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        
+        //change to hateoas
+        $serializedUser = $serializer->serialize(
+            $user,
+            'json', ['groups' => 'user:typing']
+        );
+
+        $topics = [
+            sprintf('/chat/%d/message/typing', $chat->getId())
+        ];
+
+        $othersParticipants = $participantRepository->findAllOthersParticipantsByChat($user, $chat);
+        
+        if ($othersParticipants) {
+            foreach ($othersParticipants as $participant) {
+                $topics[] = sprintf('/%s', $participant->getUser()->getLogin());
+            }
+        }
+
+        $update = new Update(
+            $topics,
+            $serializedUser,
+            true
+        );
+    
+        $publisher->__invoke($update);
+
+        return new JsonResponse(null, Response::HTTP_OK);
+    }
+
+    /**
      * @param   Request             $request
      * @param   Chat                $chat
      * @param   MessageRepository   $messageRepository

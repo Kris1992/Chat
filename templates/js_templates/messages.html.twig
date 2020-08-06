@@ -34,3 +34,24 @@
         </div>
     </div>
 </script>
+<script type="text/template" id="js-typing-message-template">
+<div class="col-12 my-2" id="js-typing-dots">
+    <div class="row">
+        <div class="col-12">
+            <% if (typer.imageFilename !== null) { %>
+                <img class="user-image image-circle float-left" src="<%= baseAsset %><%= typer.thumbImagePath %>" alt="User image">
+            <% } else { %>
+                <img class="user-image image-circle float-left" src="<%= defaultUserImage %>" alt="User image">
+            <% } %>
+        </div>
+        <div class="col-9 mx-auto">
+            <p class="text-left bg-info rounded w-100 p-2 typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+                <strong class="text-white" id="js-typer"><%= typer.login %> is writing message...</strong>
+            </p>
+        </div>
+    </div>
+</div>   
+</script>

@@ -37,7 +37,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Groups({"chat:message", "chat:participants", "chat:friends"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends", "user:typing"})
      */
     private $login;
 
@@ -78,7 +78,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"chat:message", "chat:participants", "chat:friends"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends", "user:typing"})
      */
     private $imageFilename;
 
@@ -315,7 +315,7 @@ class User implements UserInterface
     }
 
     /**
-     * @Groups({"chat:message", "chat:participants", "chat:friends"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends", "user:typing"})
      */
     public function getThumbImagePath()
     {

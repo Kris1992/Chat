@@ -6,14 +6,15 @@ import { getStatusError } from './helpers/_errorHelper.js';
 {
     const inputImagesOptions = ['png', 'jpeg', 'bmp'];
 
-    const inputFilesOptions = ['pdf'];
+    const inputFilesOptions = ['pdf', 'txt'];
 
     class ChatOptionsApi
     {   
 
-        constructor($optionsWrapper)
+        constructor($optionsWrapper, chatId = null)
         {    
             this.$optionsWrapper = $optionsWrapper;
+            this.chatId = chatId;
             
             this.$optionsWrapper.on(
                 'click', 
@@ -47,11 +48,8 @@ import { getStatusError } from './helpers/_errorHelper.js';
         handleChatToFile(event) {
             event.preventDefault();
             $("#js-chat-options-modal").modal("hide");
+
             this.choosePrintScreenOption(inputFilesOptions, 'File');
-
-            //wysłać date pierwszej wiadomości załadowanej i active chat id 
-            //wygenerować pdfa w phpie i wyrzucić linka tutaj
-
         }
 
         async choosePrintScreenOption(inputOptions, type) {
@@ -120,11 +118,15 @@ import { getStatusError } from './helpers/_errorHelper.js';
                     });
                 },
                 preConfirm: () => {
-                    let $activeChat = $(ChatOptionsApi._selectors.chatButton).filter(".active");
-                    let chatId = $activeChat.attr('id');
+                    // If chatId is null -> private chat
+                    if (!this.chatId) {
+                        let $activeChat = $(ChatOptionsApi._selectors.chatButton).filter(".active");
+                        this.chatId = $activeChat.attr('id');
+                    }
+
                     return {
                         fileFormat: fileFormat,
-                        chatId: chatId,
+                        chatId: this.chatId,
                         startAt: $('#js-start-at').val(),
                         stopAt: $('#js-stop-at').val(),
                     }
@@ -134,6 +136,12 @@ import { getStatusError } from './helpers/_errorHelper.js';
             if (chatData) {
                 this.getFile(chatData).then((location) => {
                     this.downloadFile(location);
+                }).catch((errorData) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: errorData.title,
+                    });
                 });
             }
         }
@@ -159,7 +167,6 @@ import { getStatusError } from './helpers/_errorHelper.js';
         }
 
         downloadFile(href) {
-            console.log(href);
             let anchor = document.createElement('a');
             anchor.href = href;
             anchor.download = href;
