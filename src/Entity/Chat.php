@@ -133,22 +133,6 @@ class Chat
 
     public function getLastMessage(): ?Message
     {
-        if ($this->lastMessage) {
-            $content = $this->lastMessage->getContent();
-            
-            $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
-            preg_match($pattern, $content, $matches);
-            if ($matches) {
-                $this->lastMessage->setContent('<span class="fas fa-file-image"></span> Sent image.');
-            } else {
-                $pattern = '~<a class="uploaded-file"[^>]~';
-                preg_match($pattern, $content, $matches);
-                if ($matches) {
-                    $this->lastMessage->setContent('<span class="fas fa-file-alt"></span> Sent file.');
-                }
-            }
-
-        }
         return $this->lastMessage;
     }
 

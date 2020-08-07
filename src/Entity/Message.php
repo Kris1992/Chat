@@ -81,6 +81,29 @@ class Message
         return $this->content;
     }
 
+    /**
+     * getSanitazedContent Get message content without images and attachments
+     * @return string
+     * @Groups({"chat:message", "chat:list"})
+     */
+    public function getSanitazedContent(): ?string
+    {
+        $content = $this->getContent();
+        
+        $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
+        preg_match($pattern, $content, $matches);
+        if ($matches) {
+            $content = '<span class="fas fa-file-image"></span> Sent image.';
+        } else {
+            $pattern = '~<a class="uploaded-file"[^>]~';
+            preg_match($pattern, $content, $matches);
+            if ($matches) {
+                $content = '<span class="fas fa-file-alt"></span> Sent file.';
+            }
+        }
+        return $content;
+    }
+
     public function setContent(string $content): self
     {
         $this->content = $content;

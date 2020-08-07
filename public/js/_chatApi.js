@@ -761,7 +761,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         formatDateTime(date) {
             let dateObject = new Date(date);
         
-            let month = dateObject.getMonth();
+            let month = dateObject.getMonth() + 1;
             let day = dateObject.getDate();
             let year = dateObject.getFullYear();
 

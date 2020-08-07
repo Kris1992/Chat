@@ -7,6 +7,9 @@ namespace App\Services\ChatPrinter;
  */
 class ChatPrinterConstants
 {
+    const PDF_PRINTER="pdf";
+    const TXT_PRINTER="txt";
+    const CSV_PRINTER="csv";
     const CHAT_PRINTER = 'chat_screens';
 
 }

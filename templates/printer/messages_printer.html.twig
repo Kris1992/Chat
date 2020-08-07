@@ -15,7 +15,7 @@
         <div class="col-sm-12">
             <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Messages ( 
             {{ startDate | date('m/d/Y g:ia') }} - 
-            {{ stopDate | date('m/d/Y g:ia') }} ) </h2>
+            {{ stopDate | date('m/d/Y g:ia') }} ) from {{ currentUser.login }} chat room</h2>
         </div>
         <div class="col-12 p-3 mx-auto my-3">
             {% for message in messages %}
@@ -24,9 +24,9 @@
                         {% if message.owner is same as(currentUser) %}
                             <div class="col-12">
                                 {% if message.owner.imageFilename is not same as(null) %}
-                                    <img class="user-image image-circle float-left" src="{{ absolute_url(uploaded_asset(message.owner.thumbImagePath)) }}" alt="User image">
+                                    <img class="user-image image-circle float-left border border-secondary" src="{{ absolute_url(uploaded_asset(message.owner.thumbImagePath)) }}" alt="User image">
                                 {% else %}
-                                    <img class="user-image image-circle float-left" src="
+                                    <img class="user-image image-circle float-left border border-secondary" src="
                                     {{ absolute_url(asset('img/users/default.png')) }}" alt="User image">
                                 {% endif %}
                                 <strong class="ml-2 float-left">You</strong>
@@ -42,9 +42,9 @@
                         {% else %}
                             <div class="col-12">
                                 {% if message.owner.imageFilename is not same as(null) %}
-                                    <img class="user-image image-circle float-right" src="{{ absolute_url(uploaded_asset(message.owner.thumbImagePath)) }}" alt="User image">
+                                    <img class="user-image image-circle float-right border border-secondary" src="{{ absolute_url(uploaded_asset(message.owner.thumbImagePath)) }}" alt="User image">
                                 {% else %}
-                                    <img class="user-image image-circle float-right" src="{{ absolute_url(asset('img/users/default.png')) }}" alt="User image">
+                                    <img class="user-image image-circle float-right border border-secondary" src="{{ absolute_url(asset('img/users/default.png')) }}" alt="User image">
                                 {% endif %}
                                 <strong class="mr-2 float-right">{{ message.owner.login }}</strong>
                             </div>

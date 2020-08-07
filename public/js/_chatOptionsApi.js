@@ -6,7 +6,7 @@ import { getStatusError } from './helpers/_errorHelper.js';
 {
     const inputImagesOptions = ['png', 'jpeg', 'bmp'];
 
-    const inputFilesOptions = ['pdf', 'txt'];
+    const inputFilesOptions = ['pdf', 'txt', 'csv'];
 
     class ChatOptionsApi
     {   

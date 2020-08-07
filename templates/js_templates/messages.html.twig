@@ -3,9 +3,9 @@
         <div class="row">
             <div class="col-12">
                 <% if (owner.imageFilename !== null) { %>
-                    <img class="user-image image-circle float-left" src="<%= baseAsset %><%= owner.thumbImagePath %>" alt="User image">
+                    <img class="user-image image-circle float-left border border-secondary" src="<%= baseAsset %><%= owner.thumbImagePath %>" alt="User image">
                 <% } else { %>
-                    <img class="user-image image-circle float-left" src="<%= defaultUserImage %>" alt="User image">
+                    <img class="user-image image-circle float-left border border-secondary" src="<%= defaultUserImage %>" alt="User image">
                 <% } %>
                 <strong class="ml-2 float-left">You</strong>
             </div>
@@ -21,9 +21,9 @@
         <div class="row">
             <div class="col-12">
                 <% if (owner.imageFilename !== null) { %>
-                    <img class="user-image image-circle float-right" src="<%= baseAsset %><%= owner.thumbImagePath %>" alt="User image">
+                    <img class="user-image image-circle float-right border border-secondary" src="<%= baseAsset %><%= owner.thumbImagePath %>" alt="User image">
                 <% } else { %>
-                    <img class="user-image image-circle float-right" src="<%= defaultUserImage %>" alt="User image">
+                    <img class="user-image image-circle float-right border border-secondary" src="<%= defaultUserImage %>" alt="User image">
                 <% } %>
                 <strong class="mr-2 float-right"><%= owner.login %></strong>
             </div>
@@ -39,9 +39,9 @@
     <div class="row">
         <div class="col-12">
             <% if (typer.imageFilename !== null) { %>
-                <img class="user-image image-circle float-left" src="<%= baseAsset %><%= typer.thumbImagePath %>" alt="User image">
+                <img class="user-image image-circle float-left border border-secondary" src="<%= baseAsset %><%= typer.thumbImagePath %>" alt="User image">
             <% } else { %>
-                <img class="user-image image-circle float-left" src="<%= defaultUserImage %>" alt="User image">
+                <img class="user-image image-circle float-left border border-secondary" src="<%= defaultUserImage %>" alt="User image">
             <% } %>
         </div>
         <div class="col-9 mx-auto">
