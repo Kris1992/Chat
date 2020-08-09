@@ -82,7 +82,7 @@ class MessageController extends AbstractController
             return new JsonResponse($serializedMessage, Response::HTTP_CREATED); 
         }
 
-        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $modelValidator->getErrorMessage());
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $modelValidator->getErrorMessage());
     }
 
     /**

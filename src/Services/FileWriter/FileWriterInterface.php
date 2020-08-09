@@ -17,18 +17,12 @@ interface FileWriterInterface
     public function open(string $absoluteFilePath): void;
 
     /**
-     * setHeader Write header to file
-     * @param   string       $headerText      String with header to write
-     * @return  void
-     */
-    public function setHeader(string $headerText): void;
-
-    /**
      * write Write to file
-     * @param   string       $text      String with text to write
+     * @param   string       $text              String with text to write
+     * @param   string       $headerText        String with header to write [optional]
      * @return  void
      */
-    public function write(string $text): void;
+    public function write(string $text, string $headerText = null): void;
 
     /**
      * close Close file after write

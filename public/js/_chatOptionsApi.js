@@ -55,7 +55,7 @@ import { getStatusError } from './helpers/_errorHelper.js';
         async choosePrintScreenOption(inputOptions, type) {
 
             const inputOptionsObj = inputOptions.reduce((object, cur, i) => {
-                return { ...object, [cur]: cur };     }, 
+                return { ...object, [cur]: cur }; }, 
                 {}
             );
 
@@ -84,7 +84,7 @@ import { getStatusError } from './helpers/_errorHelper.js';
                             }
 
                         } else {
-                            resolve('You need to select valid option')
+                            resolve('You need to select valid option');
                         }
                     })
                 }

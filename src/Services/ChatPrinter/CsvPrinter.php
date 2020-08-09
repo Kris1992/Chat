@@ -28,14 +28,13 @@ class CsvPrinter implements ChatPrinterInterface
         $relativePath = sprintf('%s/%s_%d.csv',ChatPrinterConstants::CHAT_PRINTER, $currentUser->getLogin(), uniqid());
         $absolutePath = $this->filesManager->getAbsolutePath($relativePath);
         $this->fileWriter->open($absolutePath);
-        $this->fileWriter->setHeader($this->createHeaderText());
         
         $text = "";
         foreach($messages as $i => $message) {
             $text .= $this->messageToText($message, $currentUser);
         }
 
-        $this->fileWriter->write($text);
+        $this->fileWriter->write($text, $this->createHeaderText());
 
         $this->fileWriter->close();
         $filePath = sprintf('%s/%s', 'uploads', $relativePath);

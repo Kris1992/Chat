@@ -19,31 +19,59 @@
         <div class="col-sm-12 mx-auto js-chat-wrapper" data-url="{{ path('api_hub_url') }}">
             <div class="row">
                 <div class="col-12 col-md-4 bg-primary chat-header text-center text-uppercase">
-                    Participants
+                    <strong>Participants</strong>
                 </div>
                 <div class="col-12 col-md-8 bg-primary chat-header text-center text-uppercase">
-                    <span class="align-middle">Messages</span>
+                    <span class="align-middle">
+                        <strong>Messages</strong>
+                    </span>
                     <button class="btn btn-primary chat-menu float-right text-white align-middle border border-secondary" data-toggle="modal" data-target="#js-chat-options-modal">
                         <span class="fas fa-bars"></span>
                     </button>
                 </div>
             </div>
             <div class="row chat-container">
-                <div class="col-sm-12 col-md-4 bg-white chat-item-container">
+                <div class="col-sm-12 col-md-4 bg-white chat-item-container px-0">
+                    <div class="input-group mb-1">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text input-icon">
+                                <span class="fas fa-search" id="search-icon"></span>
+                            </div>
+                        </div>
+                        <input type="search" class="form-control" placeholder="Search for participant..." aria-label="Participant login" id="js-search-input" aria-describedby="search-icon">
+
+                    </div>
                     <ul class="list-group" id="js-participants-container">
                         {% if chat.participants  %}
                             {% for participant in chat.participants %}
                                 <li class="list-group-item mt-1 {{ participant.user is same as(app.user) ? 'active-purple' : '' }}">
-                                    {% if participant.user.imageFilename %}
-                                        <span>
-                                            <img class="user-image image-circle float-left" src="{{ uploaded_asset(participant.user.thumbImagePath) }}" alt="User image">
-                                        </span>
-                                    {% else %}
-                                        <span>
-                                            <img class="user-image image-circle float-left" src="{{asset('img/users/default.png')}}" alt="User image">
-                                        </span>
-                                    {% endif %}
-                                    <span><strong>{{ participant.user.login }}</strong></span>
+                                    <div class="row">
+                                        <div class="col-lg-1">
+                                            {% if participant.user.imageFilename %}
+                                                <span>
+                                                    <img class="user-image image-circle float-left" src="{{ uploaded_asset(participant.user.thumbImagePath) }}" alt="User image">
+                                                </span>
+                                            {% else %}
+                                                <span>
+                                                    <img class="user-image image-circle float-left" src="{{asset('img/users/default.png')}}" alt="User image">
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <span>
+                                                <strong>{{ participant.user.login }}</strong>
+                                            </span>
+                                        </div>
+                                        {% if participant.user is not same as(app.user) %}
+                                            <div class="col-lg-3 align-self-center mx-0">
+                                                <!--<a href="#" class="d-inline-block" data-toggle="tooltip" data-placement="top" title="Add to friends">
+                                                    <span class="fas fa-user-plus"></span>
+                                                </a>-->
+                                                <a href="#" data-toggle="tooltip" data-placement="top" title="Report" class="js-report-user" data-user-id="{{participant.user.id}}">
+                                                    <span class="fas fa-exclamation-circle text-danger"></span>
+                                                </a>
+                                            </div>
+                                        {% endif %}
                                 </li>
                             {% endfor %}
                         {% endif %}
@@ -121,6 +149,8 @@
     <script type="module" src="{{ asset('js/helpers/_validationHelper.js') }}"></script>
     <script type="module" src="{{ asset('js/_chatApi.js') }}"></script>
     <script type="module" src="{{ asset('js/_chatOptionsApi.js') }}"></script>
+    <script type="module" src="{{ asset('js/_searchParticipant.js') }}"></script>
+    <script type="module" src="{{ asset('js/_reportUserApi.js') }}"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -129,6 +159,9 @@
 
             let $optionsWrapper = $('#js-chat-options-modal');
             let chatOptionsApi = new ChatOptionsApi($optionsWrapper, chatId);
+
+            let $usersWrapper = $('#js-participants-container');
+            let reportUserApi = new ReportUserApi($usersWrapper);
         });
     </script>
 {% endblock %}

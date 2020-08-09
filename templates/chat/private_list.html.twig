@@ -18,13 +18,17 @@
         <div class="col-sm-12 mx-auto js-chat-wrapper" data-url="{{ path('api_hub_url') }}">
             <div class="row">
                 <div class="col-12 col-md-4 bg-primary chat-header text-center text-uppercase">
-                    <span class="align-middle">Chats</span>
+                    <span class="align-middle">
+                        <strong>Chats</strong>
+                    </span>
                     <button type="button" class="btn btn-sm btn-primary float-right" id="js-create-private-chat" data-url="{{ path('api_get_friend') }}" data-toggle="modal" data-target="#chooseFriendsModal">
                         <h6><span class="fa fa-plus-circle"></span></h6>
                     </button>
                 </div>
                 <div class="col-12 col-md-8 bg-primary chat-header text-center text-uppercase">
-                    <span class="align-middle">Messages</span>
+                    <span class="align-middle">
+                        <strong>Messages</strong>
+                    </span>
                     <button class="btn btn-primary chat-menu float-right text-white align-middle border border-secondary" data-toggle="modal" data-target="#js-chat-options-modal">
                         <span class="fas fa-bars"></span>
                     </button>

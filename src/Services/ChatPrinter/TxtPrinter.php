@@ -28,14 +28,13 @@ class TxtPrinter implements ChatPrinterInterface
         $relativePath = sprintf('%s/%s_%d.txt',ChatPrinterConstants::CHAT_PRINTER, $currentUser->getLogin(), uniqid());
         $absolutePath = $this->filesManager->getAbsolutePath($relativePath);
         $this->fileWriter->open($absolutePath);
-        $this->fileWriter->setHeader($this->createHeaderText($currentUser, $startDate, $stopDate));
         
         $text  = "";
         foreach($messages as $i => $message) {
             $text .= $this->messageToText($message, $currentUser);
         }
 
-        $this->fileWriter->write($text);
+        $this->fileWriter->write($text, $this->createHeaderText($currentUser, $startDate, $stopDate));
 
         $this->fileWriter->close();
         $filePath = sprintf('%s/%s', 'uploads', $relativePath);

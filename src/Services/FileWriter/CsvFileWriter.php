@@ -16,14 +16,13 @@ class CsvFileWriter implements FileWriterInterface
         }  
     }
 
-    public function setHeader(string $headerText): void
-    {
-        $headers = explode(FileWriterConstants::CSV_DELIMITER, $headerText);
-        fputcsv($this->file, $headers);
-    }
-
-    public function write(string $text): void
+    public function write(string $text, string $headerText = null): void
     {   
+        if($headerText) {
+            $headers = explode(FileWriterConstants::CSV_DELIMITER, $headerText);
+            fputcsv($this->file, $headers);
+        }
+
         $linesArray = explode("\n", $text);
         foreach ($linesArray as $line) {
             $fields = explode(FileWriterConstants::CSV_DELIMITER, $line);

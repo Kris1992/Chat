@@ -4,13 +4,28 @@
             <% if (participant.user.id == currentUser) { %>
                 active-purple
             <% } %> 
-        ">
-            <% if (participant.user.imageFilename !== null) { %>
-                <span><img class="user-image image-circle float-left" src="<%= baseAsset %><%= participant.user.thumbImagePath %>" alt="User image"></span>
-            <% } else { %>
-                <span><img class="user-image image-circle float-left" src="<%= defaultUserImage %>" alt="User image"></span>
-            <% } %>
-            <span><strong><%= participant.user.login %></strong></span>
+        ">  
+            <div class="row">
+                <div class="col-lg-1">
+                    <% if (participant.user.imageFilename !== null) { %>
+                        <span><img class="user-image image-circle float-left" src="<%= baseAsset %><%= participant.user.thumbImagePath %>" alt="User image"></span>
+                    <% } else { %>
+                        <span><img class="user-image image-circle float-left" src="<%= defaultUserImage %>" alt="User image"></span>
+                    <% } %>
+                </div>
+                <div class="col-lg-7">
+                    <span>
+                        <strong><%= participant.user.login %></strong>
+                    </span>
+                </div>
+                <% if (participant.user.id != currentUser) { %>
+                    <div class="col-lg-3 align-self-center mx-0">
+                        <a href="#" data-toggle="tooltip" data-placement="top" title="Report" class="js-report-user" data-user-id="<%= participant.user.id %>">
+                            <span class="fas fa-exclamation-circle text-danger"></span>
+                        </a>
+                    </div>
+                <% } %> 
+            </div>
         </li>
     <% }); %>
 </script>

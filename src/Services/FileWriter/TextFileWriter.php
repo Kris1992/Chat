@@ -16,14 +16,17 @@ class TextFileWriter implements FileWriterInterface
         }  
     }
 
-    public function setHeader(string $headerText): void
-    {
-        fwrite($this->file, $headerText . PHP_EOL);
-    }
+    public function write(string $text, string $headerText = null): void
+    {   
 
-    public function write(string $text): void
-    {
-        fwrite($this->file, $text);
+        if ($headerText) {
+            $completeText = $headerText . PHP_EOL;
+            $completeText .= $text;
+            fwrite($this->file, $completeText);
+        } else {
+            fwrite($this->file, $text);
+        }
+        
     }
 
     public function close(): void

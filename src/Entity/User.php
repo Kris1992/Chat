@@ -92,10 +92,22 @@ class User implements UserInterface
      */
     private $invitedByFriends;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Report::class, mappedBy="reportSender", orphanRemoval=true)
+     */
+    private $sendedReports;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Report::class, mappedBy="reportedUser", orphanRemoval=true)
+     */
+    private $reports;
+
     public function __construct()
     {
         $this->invitedFriends = new ArrayCollection();
         $this->invitedByFriends = new ArrayCollection();
+        $this->sendedReports = new ArrayCollection();
+        $this->reports = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -360,6 +372,68 @@ class User implements UserInterface
         $criteria = FriendRepository::createNotRejectedFriendsByInviterCriteria($user);
 
         return $this->invitedByFriends->matching($criteria);
+    }
+
+    /**
+     * @return Collection|Report[]
+     */
+    public function getSendedReports(): Collection
+    {
+        return $this->sendedReports;
+    }
+
+    public function addSendedReport(Report $sendedReport): self
+    {
+        if (!$this->sendedReports->contains($sendedReport)) {
+            $this->sendedReports[] = $sendedReport;
+            $sendedReport->setReportSender($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSendedReport(Report $sendedReport): self
+    {
+        if ($this->sendedReports->contains($sendedReport)) {
+            $this->sendedReports->removeElement($sendedReport);
+            // set the owning side to null (unless already changed)
+            if ($sendedReport->getReportSender() === $this) {
+                $sendedReport->setReportSender(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Report[]
+     */
+    public function getReports(): Collection
+    {
+        return $this->reports;
+    }
+
+    public function addReport(Report $report): self
+    {
+        if (!$this->reports->contains($report)) {
+            $this->reports[] = $report;
+            $report->setReportedUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReport(Report $report): self
+    {
+        if ($this->reports->contains($report)) {
+            $this->reports->removeElement($report);
+            // set the owning side to null (unless already changed)
+            if ($report->getReportedUser() === $this) {
+                $report->setReportedUser(null);
+            }
+        }
+
+        return $this;
     }
 
 }
