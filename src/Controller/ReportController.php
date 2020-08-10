@@ -13,6 +13,7 @@ use App\Entity\User;
 
 class ReportController extends AbstractController
 {
+
     /**
      * @param   User                            $reportedUser
      * @param   Request                         $request
@@ -39,8 +40,8 @@ class ReportController extends AbstractController
         try {
 
             $report = $reportSystem->create($currentUser, $reportedUser, $data);
-            //$entityManager->persist($report);
-            //$entityManager->flush();
+            $entityManager->persist($report);
+            $entityManager->flush();
 
         } catch (\Exception $e) {
             return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $e->getMessage());

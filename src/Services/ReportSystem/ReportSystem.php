@@ -45,13 +45,15 @@ class ReportSystem implements ReportSystemInterface
             throw new \Exception('You cannot report yourself');
         }
         
-        $reportToday = $this->reportRepository->findOneByUsersInLastDay([
-            'reportSender' => $reportSender,
-            'reportedUser' => $reportedUser,
-            'createdAt' => new \DateTime('now')
-        ]);
+        $reportToday = $this->reportRepository->findOneByUsersAfterDate(
+            $reportSender,
+            $reportedUser,
+            new \DateTime('yesterday')
+        );
 
-        dump($reportToday);
+        if ($reportToday) {
+            throw new \Exception("You already report this user in last 24 hours");
+        }
 
         $reportModel = $this->reportModelFactory->createFromData($reportSender, $reportedUser, $reportData);
 

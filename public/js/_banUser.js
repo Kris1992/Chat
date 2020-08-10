@@ -1,13 +1,13 @@
 'use strict';
 
-const users = document.getElementById('list');
+const users = document.getElementById('js-ban-wrapper');
 
 if(users) {
 	users.addEventListener('click', event => {
         const anchor = event.target.closest('a');
 
         if(anchor) {
-            if(anchor.className === "ban-user") {
+            if(anchor.classList.contains("ban-user")) {
                 event.preventDefault();
                 const id = anchor.getAttribute('data-id');
                 const url = anchor.getAttribute("href");
@@ -50,7 +50,7 @@ if(users) {
                     },
                     allowOutsideClick: () => !Swal.isLoading()
                 });
-            } else if(anchor.className === "unban-user") {
+            } else if(anchor.classList.contains("unban-user")) {
                 event.preventDefault();
                 const id = anchor.getAttribute('data-id');
                 const url = anchor.getAttribute("href");

@@ -215,3 +215,7 @@ ul.sidebar-footer a {
         background-color: #ccc;
     }
 }
+
+a.red-link {
+    color: red;
+}

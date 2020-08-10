@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ReportRepository;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
+
 
 /**
  * @ORM\Entity(repositoryClass=ReportRepository::class)
@@ -20,11 +22,13 @@ class Report
 
     /**
      * @ORM\Column(type="string", length=20)
+     * @Groups({"report:show"})
      */
     private $type;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"report:show"})
      */
     private $description;
 

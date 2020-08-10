@@ -41,11 +41,13 @@ import { getStatusError } from './helpers/_errorHelper.js';
                 input: 'radio',
                 inputOptions: reportReasons,
                 inputValidator: (reason) => {
-                    if (!reason) {
-                        return 'You need to choose something!';
-                    } else {
-                        this.addDescription(reportedUser, reason);
-                    }
+                    return new Promise((resolve) => {
+                        if (!reason) {
+                            resolve('You need to choose something!');
+                        } else {
+                            this.addDescription(reportedUser, reason);
+                        }
+                    });
                 }
             });
         } 

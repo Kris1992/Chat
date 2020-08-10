@@ -15,7 +15,7 @@
         </div>
         <div class="table-responsive">
             <form action="{{ path('admin_account_ban_selected') }}" method="POST">
-                <table class="table table-hover" id="list">
+                <table class="table table-hover" id="js-ban-wrapper list">
                     <thead class="thead-dark">
                         <tr>
                             <th></th>
@@ -39,11 +39,13 @@
                             </th>
                             <th {% if pagination.isSorted('u.banTo') %} class="sorted" {% endif %}>
                                 {{ knp_pagination_sortable(pagination, 'Banned', 'u.banTo') }}
-                            </th>                            
+                            </th>
+                            <th>30 days reports</th>                           
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% set lastMonth = date('-30days') %}
                         {% for user in pagination %}
                             <tr>
                                 <td>
@@ -70,22 +72,29 @@
                                         <span class="text-primary fas fa-user-shield"></span>
                                     {% elseif date(user.banTo) > date() %}
                                         <div class="link-wrapper">
-                                            <a href="{{ path('admin_account_ban', { id : user.id } ) }}" class="unban-user" data-name="user" data-id="{{ user.id }}" title="Unban">
+                                            <a href="{{ path('admin_account_ban', { id : user.id } ) }}" class="unban-user" data-name="user" data-id="{{ user.id }}" data-toggle="tooltip" data-placement="top" title="Unban">
                                                 <span class="text-danger fas fa-ban"></span>
                                             </a>
                                         </div>
                                         {{ user.banTo | date('m/d/Y') }}
                                     {% else %}
                                         <div class="link-wrapper">
-                                            <a href="{{ path('admin_account_ban', { id : user.id } ) }}" class="ban-user" data-name="user" data-id="{{ user.id }}" title="Ban">
+                                            <a href="{{ path('admin_account_ban', { id : user.id } ) }}" class="ban-user" data-name="user" data-id="{{ user.id }}" data-toggle="tooltip" data-placement="top" title="Ban">
                                                 <span class="fas fa-ban"></span>
                                             </a>
                                         </div>
                                     {% endif %}
                                 </td>
+                                <td>
+                                    <div class="link-wrapper">
+                                        <a href="{{ path('admin_get_reports_user', { id : user.id } ) }}" class="red-link" data-toggle="tooltip" data-placement="top" title="Show reports">
+                                            {{ user.reportsAfterDate(lastMonth) | length }}
+                                        </a>
+                                    </div>
+                                </td>
                                 <td class="links-table">
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_account_edit', {id:user.id}) }}" title="Edit">
+                                        <a href="{{ path('admin_account_edit', {id:user.id}) }}" data-toggle="tooltip" data-placement="top" title="Edit">
                                             <span class="fa fa-pencil-alt"></span>
                                         </a>
                                     </div>
@@ -110,4 +119,12 @@
     {{ parent() }}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script type="text/javascript" src="{{ asset('js/_banUser.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+            $('[data-toggle="tooltip"]').on('click', function () {
+                $(this).tooltip('hide')
+            });
+        });
+    </script>
 {% endblock %}

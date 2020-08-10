@@ -31,6 +31,8 @@ class UserRepository extends ServiceEntityRepository
             return $this->searchByTermsQuery($searchTerms);
         }
         return $this->createQueryBuilder('u')
+            ->leftJoin('u.reports', 'r')
+            ->addSelect('r')
             ->getQuery()
         ;
     }
@@ -47,6 +49,8 @@ class UserRepository extends ServiceEntityRepository
             ->setParameters([
                 'searchTerms' => '%'.$searchTerms.'%'
             ])
+            ->leftJoin('u.reports', 'r')
+            ->addSelect('r')
             ->getQuery()
         ;
     }
