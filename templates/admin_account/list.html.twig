@@ -6,11 +6,12 @@
 {% block content_class %}{% endblock %}
 {% block content %}
 <div class="col-sm-12 text-center mt-5">
-    <a href="{{ path('app_register') }}" class="btn btn-primary float-right">
+    {% if pagination.getTotalItemCount > 0 %}
+        <a href="{{ path('app_register') }}" class="btn btn-primary float-right">
             Create <span class="fa fa-plus-circle"></span>
         </a>
         <h2 class="mb-3 font-weight-normal text-uppercase text-purple">All Accounts ({{ pagination.getTotalItemCount }})</h2>
-        <div class="col-sm-4 mx-auto mb-2">
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}
         </div>
         <div class="table-responsive">
@@ -113,6 +114,18 @@
             }) }}
             {% include 'paginator/per_page.html.twig' %}
         </div>
+    {% else %}
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">
+            All Accounts
+        </h2>
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        {% include 'empty_table.html.twig' %}
+        <a href="{{ path('app_register') }}" class="btn btn-primary mt-3">
+            Create <span class="fa fa-plus-circle"></span>
+        </a>
+    {% endif %}
 </div>
 {% endblock %}
 {% block javascripts %}

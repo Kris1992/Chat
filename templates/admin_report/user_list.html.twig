@@ -6,25 +6,25 @@
 {% block content_class %}{% endblock %}
 {% block content %}
 <div class="col-sm-12 text-center mt-5">
-    <div id="js-ban-wrapper">
-        {% if reportedUser.isAdmin %}
-            <a href="#ban" class="btn btn-primary float-right disabled" role="button">
-                <span class="fas fa-user-shield"></span>
-            </a>
-        {% elseif date(reportedUser.banTo) > date() %}
-            <a href="{{ path('admin_account_ban', { id : reportedUser.id } ) }}" class="unban-user btn btn-primary float-right" role="button" data-name="user" data-id="{{ reportedUser.id }}" data-toggle="tooltip" data-placement="top" title="Unban">
-                <span class="text-danger fas fa-ban"></span>
-                <span>Already banned to: {{ reportedUser.banTo | date('m/d/Y') }}</span>
-            </a>
-        {% else %}
-            <a href="{{ path('admin_account_ban', { id : reportedUser.id } ) }}" class="ban-user btn btn-primary float-right" role="button" data-name="user" data-id="{{ reportedUser.id }}" data-toggle="tooltip" data-placement="top" title="Ban">
-                <span class="fas fa-ban"></span>
-            </a>
-        {% endif %}
-    </div>
     {% if pagination.getTotalItemCount > 0 %}
+        <div id="js-ban-wrapper">
+            {% if reportedUser.isAdmin %}
+                <a href="#ban" class="btn btn-primary float-right disabled" role="button">
+                    <span class="fas fa-user-shield"></span>
+                </a>
+            {% elseif date(reportedUser.banTo) > date() %}
+                <a href="{{ path('admin_account_ban', { id : reportedUser.id } ) }}" class="unban-user btn btn-primary float-right" role="button" data-name="user" data-id="{{ reportedUser.id }}" data-toggle="tooltip" data-placement="top" title="Unban">
+                    <span class="text-danger fas fa-ban"></span>
+                    <span>Already banned to: {{ reportedUser.banTo | date('m/d/Y') }}</span>
+                </a>
+            {% else %}
+                <a href="{{ path('admin_account_ban', { id : reportedUser.id } ) }}" class="ban-user btn btn-primary float-right" role="button" data-name="user" data-id="{{ reportedUser.id }}" data-toggle="tooltip" data-placement="top" title="Ban">
+                    <span class="fas fa-ban"></span>
+                </a>
+            {% endif %}
+        </div>
         <h2 class="mb-3 font-weight-normal text-uppercase text-purple">{{ reportedUser.login }} Reports ({{ pagination.getTotalItemCount }})</h2>
-        <div class="col-sm-4 mx-auto mb-2">
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}
         </div>
         <div class="table-responsive">
@@ -76,7 +76,13 @@
             {% include 'paginator/per_page.html.twig' %}
         </div>
     {% else %}
-        <h2 class="mb-3 font-weight-normal text-uppercase text-purple"> {{ reportedUser.login }} wasn't reported yet</h2>
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">
+            {{ reportedUser.login }} Reports
+        </h2>
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        {% include 'empty_table.html.twig' %}
     {% endif %}    
 </div>
 {% endblock %}

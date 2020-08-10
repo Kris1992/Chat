@@ -6,62 +6,72 @@
 {% block content_class %}{% endblock %}
 {% block content %}
 <div class="col-sm-12 text-center mt-5">
-    <h2 class="mb-3 font-weight-normal text-uppercase text-purple">All Reports ({{ pagination.getTotalItemCount }})</h2>
-    <div class="col-sm-4 mx-auto mb-2">
-        {{ knp_pagination_filter(pagination, {}) }}
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover js-reports-wrapper" id="list">
-            <thead class="thead-dark">
-                <tr>
-                    <th {% if pagination.isSorted('r.id') %} class="sorted" {% endif %}>
-                        {{ knp_pagination_sortable(pagination, '#', 'r.id') }}
-                    </th>
-                    <th {% if pagination.isSorted('rs.login') %} class="sorted" {% endif %}>
-                        {{ knp_pagination_sortable(pagination, 'Reported By', 'rs.login') }}
-                    </th>
-                    <th {% if pagination.isSorted('ru.login') %} class="sorted" {% endif %}>
-                        {{ knp_pagination_sortable(pagination, 'Reported User', 'ru.login') }}
-                    </th>
-                    <th {% if pagination.isSorted('r.type') %} class="sorted" {% endif %}>
-                        {{ knp_pagination_sortable(pagination, 'Reason', 'r.type') }}
-                    </th>
-                    <th {% if pagination.isSorted('r.description') %} class="sorted" {% endif %}>
-                        {{ knp_pagination_sortable(pagination, 'Description', 'r.description') }}
-                    </th>
-                    <th {% if pagination.isSorted('r.createdAt') %} class="sorted" {% endif %}>
-                        {{ knp_pagination_sortable(pagination, 'Created At', 'r.createdAt') }}
-                    </th>                        
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for report in pagination %}
+    {% if pagination.getTotalItemCount > 0 %}
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">All Reports ({{ pagination.getTotalItemCount }})</h2>
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover js-reports-wrapper" id="list">
+                <thead class="thead-dark">
                     <tr>
-                        <td>{{ report.id }}</td>
-                        <td>{{ report.reportSender.login }}</td>
-                        <td>{{ report.reportedUser.login }}</td>
-                        <td>{{ report.type }}</td>
-                        <td>{{ report.description }}</td>
-                        <td>{{ report.createdAt | date('m/d/Y') }}</td>
-                        <td class="links-table">
-                            <div class="link-wrapper">
-                                <a href="#" class="js-show-report" role="button" data-report-id="{{ report.id }}" data-toggle="tooltip" data-placement="top" title="Show">
-                                    <span class="fas fa-info-circle"></span>
-                                </a>
-                            </div>
-                        </td>           
+                        <th {% if pagination.isSorted('r.id') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, '#', 'r.id') }}
+                        </th>
+                        <th {% if pagination.isSorted('rs.login') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Reported By', 'rs.login') }}
+                        </th>
+                        <th {% if pagination.isSorted('ru.login') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Reported User', 'ru.login') }}
+                        </th>
+                        <th {% if pagination.isSorted('r.type') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Reason', 'r.type') }}
+                        </th>
+                        <th {% if pagination.isSorted('r.description') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Description', 'r.description') }}
+                        </th>
+                        <th {% if pagination.isSorted('r.createdAt') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Created At', 'r.createdAt') }}
+                        </th>                        
+                        <th></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <div class="navigation">
-        {{ knp_pagination_render(pagination, null, {}, {
-            'align': 'center'
-        }) }}
-        {% include 'paginator/per_page.html.twig' %}
-    </div>
+                </thead>
+                <tbody>
+                    {% for report in pagination %}
+                        <tr>
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.reportSender.login }}</td>
+                            <td>{{ report.reportedUser.login }}</td>
+                            <td>{{ report.type }}</td>
+                            <td>{{ report.description }}</td>
+                            <td>{{ report.createdAt | date('m/d/Y') }}</td>
+                            <td class="links-table">
+                                <div class="link-wrapper">
+                                    <a href="#" class="js-show-report" role="button" data-report-id="{{ report.id }}" data-toggle="tooltip" data-placement="top" title="Show">
+                                        <span class="fas fa-info-circle"></span>
+                                    </a>
+                                </div>
+                            </td>           
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="navigation">
+            {{ knp_pagination_render(pagination, null, {}, {
+                'align': 'center'
+            }) }}
+            {% include 'paginator/per_page.html.twig' %}
+        </div>
+    {% else %}
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">
+            All Reports
+        </h2>
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        {% include 'empty_table.html.twig' %}
+    {% endif %}
 </div>
 {% endblock %}
 {% block javascripts %}
