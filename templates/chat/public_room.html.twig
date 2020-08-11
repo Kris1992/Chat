@@ -158,7 +158,7 @@
             let chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, chatId, lastSeenUrl, currentUser);
 
             let $optionsWrapper = $('#js-chat-options-modal');
-            let chatOptionsApi = new ChatOptionsApi($optionsWrapper, chatId);
+            let chatOptionsApi = new ChatOptionsApi($optionsWrapper, true, chatId);
 
             let $usersWrapper = $('#js-participants-container');
             let reportUserApi = new ReportUserApi($usersWrapper);

@@ -11,11 +11,15 @@ import { getStatusError } from './helpers/_errorHelper.js';
     class ChatOptionsApi
     {   
 
-        constructor($optionsWrapper, chatId = null)
+        constructor($optionsWrapper, isPublic, chatId = null, currentUser = null)
         {    
             this.$optionsWrapper = $optionsWrapper;
             this.chatId = chatId;
+            this.isPublic = isPublic;
+            this.currentUser = currentUser;
             
+            this.handleDocumentLoad();
+
             this.$optionsWrapper.on(
                 'click', 
                 ChatOptionsApi._selectors.printChatToImage,
@@ -35,19 +39,47 @@ import { getStatusError } from './helpers/_errorHelper.js';
                 printChatToImage: '#js-save-image',
                 printChatToFile: '#js-save-file',
                 chatButton: '.js-chat-button',
+                participantsManagmentWrapper: '#js-participants-managment-wrapper',
+                optionsModal: '#js-chat-options-modal',
+                addParticipant: '#js-add-participant',
+                removeParticipant: '#js-remove-participant',
+                printChatCollapse: '#js-choose-print-chat',
+                participantsManagmentCollapse: '#js-participants-managment'
+            }
+        }
+
+        handleDocumentLoad() {
+            if (this.isPublic) {
+                $(ChatOptionsApi._selectors.participantsManagmentWrapper).remove();
+            } else {
+                $(ChatOptionsApi._selectors.optionsModal).on('show.bs.modal', (event) => {
+                    this.handleOpenMenu();
+                });
+            }
+        }
+
+        handleOpenMenu() {
+            this.hideCollapse();
+            
+            let $activeChat = $(ChatOptionsApi._selectors.chatButton).filter(".active");
+            let ownerId = $activeChat.data('owner');
+            if (this.currentUser == ownerId) {
+                $(ChatOptionsApi._selectors.participantsManagmentWrapper).show();
+            } else {
+                $(ChatOptionsApi._selectors.participantsManagmentWrapper).hide();
             }
         }
 
         handleChatToImage(event) {
             event.preventDefault();
-            $("#js-chat-options-modal").modal("hide");
+            $(ChatOptionsApi._selectors.optionsModal).modal("hide");
                 
             this.choosePrintScreenOption(inputImagesOptions, 'Image');
         }
 
         handleChatToFile(event) {
             event.preventDefault();
-            $("#js-chat-options-modal").modal("hide");
+            $(ChatOptionsApi._selectors.optionsModal).modal("hide");
 
             this.choosePrintScreenOption(inputFilesOptions, 'File');
         }
@@ -180,7 +212,12 @@ import { getStatusError } from './helpers/_errorHelper.js';
             }).then(canvas => {
                 Canvas2Image.saveAsImage(canvas, null, null, option);
             });
-        }   
+        }
+
+        hideCollapse() {
+            $(ChatOptionsApi._selectors.participantsManagmentCollapse).collapse('hide');
+            $(ChatOptionsApi._selectors.printChatCollapse).collapse('hide');
+        } 
 
     }
 

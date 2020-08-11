@@ -7,7 +7,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" id="accordion">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card">
@@ -26,8 +26,24 @@
                                 </div>
                             </a>
                         </div>
+                        <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card" id="js-participants-managment-wrapper">
+                            <a data-toggle="collapse" href="#js-participants-managment" role="button" aria-expanded="false" aria-controls="js-participants-managment" class="stretched-link">
+                                <div class="card bg-transparent border-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h1 class="text-center">
+                                                <span class="fas fa-users"></span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-12 card-title text-center text-uppercase title-style">
+                                            <h6>Participants managment</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                    <div class="row collapse" id="js-choose-print-chat">
+                    <div class="row collapse" id="js-choose-print-chat" data-parent="#accordion">
                         <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card">
                             <a href="#" role="button" class="stretched-link" id="js-save-image">
                                 <div class="card bg-transparent border-0">
@@ -57,6 +73,40 @@
                                         <div class="col-12 card-title text-center text-uppercase title-style">
                                             <h6>Save as file</h6>
                                             <small>(All messages in given interval)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row collapse" id="js-participants-managment" data-parent="#accordion">
+                        <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card">
+                            <a href="#" role="button" class="stretched-link" id="js-add-participant">
+                                <div class="card bg-transparent border-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h1 class="text-center">
+                                                <span class="fas fa-user-plus"></span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-12 card-title text-center text-uppercase title-style">
+                                            <h6>Add participant</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-12 col-md-5 mx-auto p-3 my-3 link-card">
+                            <a href="#" role="button" class="stretched-link" id="js-remove-participant">
+                                <div class="card bg-transparent border-0">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h1 class="text-center">
+                                                <span class="fas fa-user-times"></span>
+                                            </h1>
+                                        </div>
+                                        <div class="col-12 card-title text-center text-uppercase title-style">
+                                            <h6>Remove participant</h6>
                                         </div>
                                     </div>
                                 </div>

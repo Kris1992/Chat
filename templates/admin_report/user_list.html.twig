@@ -55,12 +55,17 @@
                             <td>{{ report.id }}</td>
                             <td>{{ report.reportSender.login }}</td>
                             <td>{{ report.type }}</td>
-                            <td>{{ report.description }}</td>
+                            <td>{{ report.description | u.truncate(40, '...') }}</td>
                             <td>{{ report.createdAt | date('m/d/Y') }}</td>
                             <td class="links-table">
                                 <div class="link-wrapper">
                                     <a href="#" class="js-show-report" role="button" data-report-id="{{ report.id }}" data-toggle="tooltip" data-placement="top" title="Show">
                                         <span class="fas fa-info-circle"></span>
+                                    </a>
+                                </div>
+                                <div class="link-wrapper">
+                                    <a href="{{ path('admin_report_delete', {id: report.id}) }}" class="delete-item" data-name="user report" data-id="{{ report.id }}" data-toggle="tooltip" data-placement="top" title="Delete">
+                                        <span class="fa fa-trash-alt"></span>
                                     </a>
                                 </div>
                             </td>           
@@ -90,6 +95,8 @@
     {{ parent() }}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script type="text/javascript" src="{{ asset('js/_banUser.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/_deleteItem.js') }}"></script>
+
     <script type="module" src="{{ asset('js/helpers/_errorHelper.js') }}"></script>
     <script type="module" src="{{ asset('js/_reportApi.js') }}"></script>
     <script type="text/javascript">

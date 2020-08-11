@@ -39,7 +39,7 @@
                     <ul class="list-group" id="js-chats-container">
                         {% if chats %}
                             {% for chat in chats %}
-                                <button type="button" class="list-group-item list-group-item-action mt-1 js-chat-button {{ loop.first ? 'active' : '' }}" id="{{ chat.id }}">
+                                <button type="button" class="list-group-item list-group-item-action mt-1 js-chat-button {{ loop.first ? 'active' : '' }}" id="{{ chat.id }}" data-owner="{{ chat.owner.id }}">
                                     <div class="row no-gutters">
                                         <div class="col-sm-12 col-md-4">
                                             {% set break = false %}
@@ -197,7 +197,7 @@
             let chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, null, null, currentUser, false);
 
             let $optionsWrapper = $('#js-chat-options-modal');
-            let chatOptionsApi = new ChatOptionsApi($optionsWrapper);
+            let chatOptionsApi = new ChatOptionsApi($optionsWrapper, false, null, currentUser);
         });
     </script>
 {% endblock %}

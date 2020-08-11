@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\ReportRepository;
 use App\Entity\{User, Report};
 
@@ -81,5 +82,22 @@ class AdminReportController extends AbstractController
                 'groups' => ['report:show']
             ]
         );
+    }
+
+    /**
+     * @param   Report                      $report
+     * @param   EntityManagerInterface      $entityManager
+     * @return  Response
+     * @Route("/admin/report/{id}/delete", name="admin_report_delete",  methods={"DELETE"})
+     */
+    public function delete(Report $report, EntityManagerInterface $entityManager): Response
+    {
+        $entityManager->remove($report);
+        $entityManager->flush();
+
+        $response = new Response();
+        $this->addFlash('success','Report was deleted!');
+        $response->send();
+        return $response;
     }
 }
