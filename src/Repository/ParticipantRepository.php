@@ -70,5 +70,43 @@ class ParticipantRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
             ;
     }
+
+    /**
+     * findAllByUsersAndChat Find all participants of chat room by chat and given users
+     * @param  array    $users  Array with users objects 
+     * @param  Chat     $chat   Chat object which will be looking into
+     * @return Participant[]
+     */
+    public function findAllByUsersAndChat(array $users, Chat $chat)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.chat = :chat AND p.user IN(:users)')
+            ->setParameters([
+                'chat' => $chat,
+                'users' => $users
+            ])
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
+    /**
+     * findAllByIdsAndChat Find all participants of chat room by chat and given ids
+     * @param  array    $participantsIds    Array with participants ids
+     * @param  Chat     $chat               Chat object which will be looking into
+     * @return Participant[]
+     */
+    public function findAllByIdsAndChat(array $participantsIds, Chat $chat)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.chat = :chat AND p.id IN(:participantsIds)')
+            ->setParameters([
+                'chat' => $chat,
+                'participantsIds' => $participantsIds
+            ])
+            ->getQuery()
+            ->getResult()
+            ;
+    }
     
 }

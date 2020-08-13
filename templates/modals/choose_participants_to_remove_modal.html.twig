@@ -1,0 +1,55 @@
+<div class="modal fade" id="js-choose-participants-to-remove-modal" tabindex="-1" role="dialog" aria-labelledby="choose-participants-to-remove-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="choose-participants-to-remove-modal-title">
+                    Choose Participants to remove
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="#" method="POST" id="js-remove-participant-form">
+                <div class="modal-body">
+                    <div class="chat-item-container friends_list">
+                        <ul id="js-participants-to-remove-template-wrapper">
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="token" value="{{ csrf_token('private_chat_participant') }}"/>
+                    <button type="submit" class="btn btn-primary">Remove Participants</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/template" id="js-participants-modal-template"> 
+    <% _.each(participants, function(participant){ %>
+        <li class="list-group-item">
+            <div class="row align-items-center">
+                <div class="col-1">
+                    <div class="form-check">
+                        <input class="form-check-input position-static" type="checkbox" name="participants[]" value="<%= participant.id %>" aria-label="Choose participant">
+                    </div>
+                </div>
+                <div class="col-3 text-center">
+                    <% if (participant.user.imageFilename !== null) { %>
+                        <img class="user-image image-circle" src="<%= baseAsset %><%= participant.user.thumbImagePath %>" alt="User image">
+                    <% } else { %>
+                        <img class="user-image image-circle" src="<%= defaultUserImage %>" alt="User image">
+                    <% } %>
+                </div>
+                <div class="col-8">
+                    <div class="row">
+                        <div class="col-12">
+                            <span><strong><%= participant.user.login %></strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    <% }); %> 
+</script>
+

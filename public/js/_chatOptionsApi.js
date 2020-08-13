@@ -11,12 +11,14 @@ import { getStatusError } from './helpers/_errorHelper.js';
     class ChatOptionsApi
     {   
 
-        constructor($optionsWrapper, isPublic, chatId = null, currentUser = null)
+        constructor($optionsWrapper, isPublic, chatId = null, currentUser = null, defaultUserImage = null, baseAsset = null)
         {    
             this.$optionsWrapper = $optionsWrapper;
             this.chatId = chatId;
             this.isPublic = isPublic;
             this.currentUser = currentUser;
+            this.defaultUserImage = defaultUserImage;
+            this.baseAsset = baseAsset;
             
             this.handleDocumentLoad();
 
@@ -25,12 +27,22 @@ import { getStatusError } from './helpers/_errorHelper.js';
                 ChatOptionsApi._selectors.printChatToImage,
                 this.handleChatToImage.bind(this)
             );
-
             this.$optionsWrapper.on(
                 'click', 
                 ChatOptionsApi._selectors.printChatToFile,
                 this.handleChatToFile.bind(this)
             );
+            this.$optionsWrapper.on(
+                'click', 
+                ChatOptionsApi._selectors.addParticipant,
+                this.handleAddParticipantClicked.bind(this)
+            );
+            this.$optionsWrapper.on(
+                'click', 
+                ChatOptionsApi._selectors.removeParticipant,
+                this.handleRemoveParticipantClicked.bind(this)
+            );
+            
         }
 
         static get _selectors() {
@@ -44,7 +56,15 @@ import { getStatusError } from './helpers/_errorHelper.js';
                 addParticipant: '#js-add-participant',
                 removeParticipant: '#js-remove-participant',
                 printChatCollapse: '#js-choose-print-chat',
-                participantsManagmentCollapse: '#js-participants-managment'
+                participantsManagmentCollapse: '#js-participants-managment',
+                chooseFriendsToAddModal: '#js-choose-friends-to-add-modal',
+                friendsModalTemplate: '#js-friends-modal-template',
+                modalTemplateWrapper: '#js-friends-to-add-template-wrapper',
+                chooseParticipantsToRemoveModal: '#js-choose-participants-to-remove-modal',
+                participantsModalTemplate: '#js-participants-modal-template',
+                participantsModalTemplateWrapper: '#js-participants-to-remove-template-wrapper',
+                addParticipantForm: '#js-add-participant-form',
+                removeParticipantForm: '#js-remove-participant-form',
             }
         }
 
@@ -60,7 +80,9 @@ import { getStatusError } from './helpers/_errorHelper.js';
 
         handleOpenMenu() {
             this.hideCollapse();
-            
+            // If chatId is null -> private chat
+            this.setChatId();
+
             let $activeChat = $(ChatOptionsApi._selectors.chatButton).filter(".active");
             let ownerId = $activeChat.data('owner');
             if (this.currentUser == ownerId) {
@@ -82,6 +104,126 @@ import { getStatusError } from './helpers/_errorHelper.js';
             $(ChatOptionsApi._selectors.optionsModal).modal("hide");
 
             this.choosePrintScreenOption(inputFilesOptions, 'File');
+        }
+
+        handleAddParticipantClicked(event) {
+            event.preventDefault();
+            const friendsUrl = $(event.currentTarget).attr('href');
+            const participantsUrl = '/api/chat/' + this.chatId + '/other_participants';
+            
+            $(ChatOptionsApi._selectors.addParticipantForm).attr('action', '/chat/' + this.chatId + '/participant');
+
+            this.getUsersData(friendsUrl).then((friends) => {
+                if (friends.length > 0) {
+
+                    this.getUsersData(participantsUrl).then((participants) => {
+                        if (participants.length > 0) {
+                            $(ChatOptionsApi._selectors.optionsModal).modal("hide");
+                            this.prepareFriends(friends, participants);
+                        } else {
+                            this.showErrorMessage('Participants missing');
+                        }
+                    }).catch((errorData) => {
+                        this.showErrorMessage(errorData.title);
+                    });
+
+                } else {
+                    this.showErrorMessage('Invite some friends first to add them chat room');
+                }
+            }).catch((errorData) => {
+                this.showErrorMessage(errorData.title);
+            });
+        }
+
+        handleRemoveParticipantClicked(event) {
+            event.preventDefault();
+            console.log('delete');
+            const participantsUrl = '/api/chat/' + this.chatId + '/other_participants';
+
+            $(ChatOptionsApi._selectors.removeParticipantForm).attr('action', '/chat/' + this.chatId + '/participant/remove');
+            this.getUsersData(participantsUrl).then((participants) => {
+                if (participants.length > 0) {
+                    $(ChatOptionsApi._selectors.optionsModal).modal("hide");
+                    this.prepareParticipants(participants);
+                } else {
+                    this.showErrorMessage('Participants missing');
+                }
+            }).catch((errorData) => {
+                this.showErrorMessage(errorData.title);
+            });
+        }
+
+        getUsersData(url) {
+            return new Promise(function(resolve, reject) {
+                $.ajax({
+                    url,
+                    method: 'GET',
+                }).then(function(data) {
+                    resolve(data);
+                }).catch(function(jqXHR) {
+                    let errorData = getStatusError(jqXHR);
+                    if(errorData === null) {
+                        errorData = JSON.parse(jqXHR.responseText);
+                    }
+                    reject(errorData);
+                });
+            });
+        }
+
+        prepareFriends(friends, participants) {
+            let participantsIds = participants.map(participant => {
+                console.log(participant.isRemoved);
+                //Removed participants can be re-added
+                if (participant.isRemoved) {
+                    console.log(participant.user.id);
+                    return participant.user.id;
+                }
+            });
+
+            console.log(participantsIds);
+
+            friends = friends.filter(friend => {
+                if (!participantsIds.includes(friend.invitee.id) && !participantsIds.includes(friend.inviter.id)) {
+                    return true;
+                }
+            });
+
+            if (friends.length > 0) {
+                this.showFriendsList(friends);
+            } else {
+                this.showErrorMessage('Invite some friends first to add them chat room');
+            }
+        }
+
+        showFriendsList(friends) {
+            const tplText = $(ChatOptionsApi._selectors.friendsModalTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl({friends:friends, currentUser:this.currentUser, defaultUserImage:this.defaultUserImage, baseAsset:this.baseAsset});
+            $(ChatOptionsApi._selectors.modalTemplateWrapper).html($.parseHTML(html));
+            $(ChatOptionsApi._selectors.chooseFriendsToAddModal).modal("toggle");
+        }
+
+        prepareParticipants(participants) {
+            participants = participants.filter(participant => {
+                //Removed participants cannot be removed again
+                if (!participant.isRemoved) {
+                    return true;
+                }
+            });
+
+            if (participants.length > 0) {
+                this.showParticipantsList(participants);
+            } else {
+                this.showErrorMessage('There is no participants to remove.');
+            }
+        }
+
+        showParticipantsList(participants) {
+            const tplText = $(ChatOptionsApi._selectors.participantsModalTemplate).html();
+            const tpl = _.template(tplText);
+            const html = tpl({participants:participants, defaultUserImage:this.defaultUserImage, baseAsset:this.baseAsset});
+            $(ChatOptionsApi._selectors.participantsModalTemplateWrapper).html($.parseHTML(html));
+            $(ChatOptionsApi._selectors.chooseParticipantsToRemoveModal).modal("toggle");
         }
 
         async choosePrintScreenOption(inputOptions, type) {
@@ -150,12 +292,6 @@ import { getStatusError } from './helpers/_errorHelper.js';
                     });
                 },
                 preConfirm: () => {
-                    // If chatId is null -> private chat
-                    if (!this.chatId) {
-                        let $activeChat = $(ChatOptionsApi._selectors.chatButton).filter(".active");
-                        this.chatId = $activeChat.attr('id');
-                    }
-
                     return {
                         fileFormat: fileFormat,
                         chatId: this.chatId,
@@ -169,11 +305,7 @@ import { getStatusError } from './helpers/_errorHelper.js';
                 this.getFile(chatData).then((location) => {
                     this.downloadFile(location);
                 }).catch((errorData) => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: errorData.title,
-                    });
+                    this.showErrorMessage(errorData.title);
                 });
             }
         }
@@ -217,7 +349,22 @@ import { getStatusError } from './helpers/_errorHelper.js';
         hideCollapse() {
             $(ChatOptionsApi._selectors.participantsManagmentCollapse).collapse('hide');
             $(ChatOptionsApi._selectors.printChatCollapse).collapse('hide');
-        } 
+        }
+
+        showErrorMessage(errorMessage) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: `${errorMessage}`,
+            });
+        }
+
+        setChatId() {
+            if (!this.chatId) {
+                let $activeChat = $(ChatOptionsApi._selectors.chatButton).filter(".active");
+                this.chatId = $activeChat.attr('id');
+            }
+        }
 
     }
 

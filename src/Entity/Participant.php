@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ParticipantRepository;
@@ -16,6 +18,7 @@ class Participant
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"chat:participants"})
      */
     private $id;
 
@@ -37,6 +40,22 @@ class Participant
      * @ORM\Column(type="datetime")
      */
     private $lastSeenAt;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ParticipateTime::class, mappedBy="participant", orphanRemoval=true, cascade={"persist"})
+     */
+    private $participateTimes;
+
+    /**
+     * @ORM\Column(type="boolean")
+     * @Groups({"chat:participants"})
+     */
+    private $isRemoved;
+
+    public function __construct()
+    {
+        $this->participateTimes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -82,6 +101,49 @@ class Participant
     public function updateLastSeenAt(): self
     {
         $this->lastSeenAt = new \DateTime();
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ParticipateTime[]
+     */
+    public function getParticipateTimes(): Collection
+    {
+        return $this->participateTimes;
+    }
+
+    public function addParticipateTime(ParticipateTime $participateTime): self
+    {
+        if (!$this->participateTimes->contains($participateTime)) {
+            $this->participateTimes[] = $participateTime;
+            $participateTime->setParticipant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeParticipateTime(ParticipateTime $participateTime): self
+    {
+        if ($this->participateTimes->contains($participateTime)) {
+            $this->participateTimes->removeElement($participateTime);
+            // set the owning side to null (unless already changed)
+            if ($participateTime->getParticipant() === $this) {
+                $participateTime->setParticipant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getIsRemoved(): ?bool
+    {
+        return $this->isRemoved;
+    }
+
+    public function setIsRemoved(bool $isRemoved): self
+    {
+        $this->isRemoved = $isRemoved;
 
         return $this;
     }

@@ -21,7 +21,7 @@
                     <span class="align-middle">
                         <strong>Chats</strong>
                     </span>
-                    <button type="button" class="btn btn-sm btn-primary float-right" id="js-create-private-chat" data-url="{{ path('api_get_friend') }}" data-toggle="modal" data-target="#chooseFriendsModal">
+                    <button type="button" class="btn btn-sm btn-primary float-right" id="js-create-private-chat" data-url="{{ path('api_get_friend') }}" data-toggle="modal" data-target="#choose-friends-modal">
                         <h6><span class="fa fa-plus-circle"></span></h6>
                     </button>
                 </div>
@@ -169,6 +169,7 @@
 {{ include('js_templates/progress_bar.html.twig') }}
 {{ include('js_templates/private_chat.html.twig') }}
 {{ include('modals/choose_friends_modal.html.twig') }}
+{{ include('modals/choose_participants_to_remove_modal.html.twig') }}
 {{ include('modals/chat_options_modal.html.twig') }}
 <script>
     var defaultUserImage = "{{ asset('img/users/default.png') }}";
@@ -182,7 +183,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
-    <!--<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>-->
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas2image@1.0.5/canvas2image.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.1/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
@@ -197,7 +198,7 @@
             let chatApi = new ChatApi($wrapper, defaultUserImage, baseAsset, null, null, currentUser, false);
 
             let $optionsWrapper = $('#js-chat-options-modal');
-            let chatOptionsApi = new ChatOptionsApi($optionsWrapper, false, null, currentUser);
+            let chatOptionsApi = new ChatOptionsApi($optionsWrapper, false, null, currentUser, defaultUserImage, baseAsset);
         });
     </script>
 {% endblock %}

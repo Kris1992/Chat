@@ -10,15 +10,16 @@ use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseT
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
 use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
-use App\Services\ModelValidator\ModelValidatorInterface;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
+use App\Repository\{ChatRepository, ParticipantRepository, UserRepository};
 use App\Message\Command\{CheckUserActivityOnPublicChat, RemoveScreenFile};
+use App\Services\ParticipantSystem\ParticipantSystemInterface;
 use App\Services\Factory\ChatModel\ChatModelFactoryInterface;
+use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\Factory\Chat\ChatFactoryInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\ChatPrinter\ChatPrinter;
-use App\Repository\{ChatRepository, ParticipantRepository, UserRepository};
 use Symfony\Component\WebLink\Link;
 use App\Entity\Chat;
 
@@ -248,7 +249,7 @@ class ChatController extends AbstractController
             );
         }
 
-        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot update list of chats. Please refresh this page.');
+        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Cannot get list of participants. Please refresh this page.');
     }
 
     /**
@@ -309,6 +310,78 @@ class ChatController extends AbstractController
         $messageBus->dispatch($envelope);
 
         return new JsonResponse($link, Response::HTTP_OK);
+    }
+
+
+
+//participant
+    /**
+     * @param   Chat                            $chat
+     * @param   Request                         $request
+     * @param   ParticipantSystemInterface      $participantSystem
+     * @param   EntityManagerInterface          $entityManager
+     * @return  Response
+     * @Route("/chat/{id}/participant", name="chat_participant_add", methods={"POST"})
+     */
+    public function addParticipant(Chat $chat, Request $request, ParticipantSystemInterface $participantSystem, EntityManagerInterface $entityManager): Response
+    {
+                            //check user can manage chat !important
+
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $submittedToken = $request->request->get('token');
+
+        if($request->request->has('friends')) {
+            if ($this->isCsrfTokenValid('private_chat_participant', $submittedToken)) {
+                try {
+                    $chat = $participantSystem->add($chat, $request->request->get('friends'));
+                    $entityManager->flush();
+                } catch (\Exception $e) {
+                    $this->addFlash('danger', $e->getMessage());
+                    return $this->redirectToRoute('chat_private');
+                }
+
+                $this->addFlash('success','Participants were added to chat.');
+                return $this->redirectToRoute('chat_private');
+            }
+        }
+
+        $this->addFlash('danger','Adding participants to the chat room fails.');
+        return $this->redirectToRoute('chat_private');
+    }
+
+    /**
+     * @param   Chat                            $chat
+     * @param   Request                         $request
+     * @param   ParticipantSystemInterface      $participantSystem
+     * @param   EntityManagerInterface          $entityManager
+     * @return  Response
+     * @Route("/chat/{id}/participant/remove", name="chat_participant_remove", methods={"POST"})
+     */
+    public function removeParticipant(Chat $chat, Request $request, ParticipantSystemInterface $participantSystem, EntityManagerInterface $entityManager): Response
+    {
+        //check user can manage chat !important
+
+        $submittedToken = $request->request->get('token');
+
+        if($request->request->has('participants')) {
+            if ($this->isCsrfTokenValid('private_chat_participant', $submittedToken)) {
+                try {
+                    $chat = $participantSystem->remove($chat, $request->request->get('participants'));
+                    $entityManager->flush();
+                } catch (\Exception $e) {
+                    $this->addFlash('danger', $e->getMessage());
+                    return $this->redirectToRoute('chat_private');
+                }
+
+                $this->addFlash('success','Participants were removed from chat.');
+                return $this->redirectToRoute('chat_private');
+            }
+        }
+
+        $this->addFlash('danger','Removing participants from the chat room fails.');
+        return $this->redirectToRoute('chat_private');
     }
 
 }

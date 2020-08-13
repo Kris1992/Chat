@@ -2,7 +2,7 @@
 
 namespace App\Services\Factory\Participant;
 
-use App\Entity\{Chat, User, Participant};
+use App\Entity\{Chat, User, Participant, ParticipateTime};
 
 class ParticipantFactory implements ParticipantFactoryInterface 
 {
@@ -14,6 +14,8 @@ class ParticipantFactory implements ParticipantFactoryInterface
         $participant
             ->setUser($user)
             ->setChat($chat)
+            ->addParticipateTime(new ParticipateTime())
+            ->setIsRemoved(false)
             ->updateLastSeenAt()
             ;
 

@@ -24,6 +24,31 @@
     </div>
 </div>
 
+<div class="modal fade" id="js-choose-friends-to-add-modal" tabindex="-1" role="dialog" aria-labelledby="choose-friends-to-add-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="choose-friends-to-add-modal-title">Choose Friends</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="#" method="POST" id="js-add-participant-form">
+                <div class="modal-body">
+                    <div class="chat-item-container friends_list">
+                        <ul id="js-friends-to-add-template-wrapper">
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="token" value="{{ csrf_token('private_chat_participant') }}"/>
+                    <button type="submit" class="btn btn-primary">Add Participants</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script type="text/template" id="js-friends-modal-template"> 
     <% _.each(friends, function(friend){ %>
         <li class="list-group-item">
