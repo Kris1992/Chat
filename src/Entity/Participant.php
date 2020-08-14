@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\ParticipantRepository;
+use App\Repository\ParticipateTimeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -111,6 +113,18 @@ class Participant
     public function getParticipateTimes(): Collection
     {
         return $this->participateTimes;
+    }
+
+    /**
+     * getParticipateTimesBeforeDate Get All participateTimes before given date
+     * @param \DateTimeInterface                $date
+     * @return Collection|ParticipateTime[]
+     */
+    public function getParticipateTimesBeforeDate(\DateTimeInterface $date): Collection
+    {
+        $criteria = ParticipateTimeRepository::createBeforeDateCriteria($date);
+
+        return $this->participateTimes->matching($criteria);
     }
 
     public function addParticipateTime(ParticipateTime $participateTime): self

@@ -119,7 +119,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 if ($chatsContainer.has('button').length > 0) {
                     this.showLoadContentInfo($(ChatApi._selectors.messagesContainer));
                     this.chatId = $(ChatApi._selectors.chatsContainer).children().first().attr('id');
-                    this.loadMessages(this.chatId, 0).then((data) => {
+                    this.loadMessages(this.chatId, new Date()).then((data) => {
+                        console.log(data);
                         if (data.length > 0) {
                             this.showMessages(data);
                         }
@@ -196,7 +197,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
             this.clearMessages($(ChatApi._selectors.messagesContainer));
             this.showLoadContentInfo($(ChatApi._selectors.messagesContainer));
-            this.loadMessages(this.chatId, 0).then((data) => {
+            this.loadMessages(this.chatId, new Date()).then((data) => {
                 if (data.length > 0) {
                     this.showMessages(data);
                 }
@@ -466,15 +467,15 @@ import { isEmptyField } from './helpers/_validationHelper.js';
            
         }
 
-        loadMessages(chatId, offset) {
-            const offsetData = {offset: offset};
+        loadMessages(chatId, date) {
+            const lastMessageDate = {messageDate: date};
             const url = '/api/chat/'+chatId+'/get_messages';
 
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     url,
                     method: 'POST',
-                    data: JSON.stringify(offsetData)
+                    data: JSON.stringify(lastMessageDate)
                 }).then(function(data) {
                     resolve(data);
                 }).catch(function(jqXHR) {
@@ -503,8 +504,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         setObserver() {
-            let $messages = $(ChatApi._selectors.message);
-            let firstMessage = $messages.first().get(0);
+            let $firstMessage = $(ChatApi._selectors.message).first();
+            let firstMessageEl = $firstMessage.get(0);
     
             const intersectionCallback = (entries, observer) => {
                 if (entries[0].intersectionRatio <= 0) {
@@ -512,9 +513,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 }
 
                 if(entries[0].intersectionRatio > 0.85) {
-                    observer.unobserve(firstMessage);
+                    observer.unobserve(firstMessageEl);
 
-                    this.loadMessages(this.chatId, $messages.length).then((data) => {
+                    this.loadMessages(this.chatId, $firstMessage.data('date')).then((data) => {
                         if (data.length > 0) {
                             this.showMessages(data, false);
                         }
@@ -532,7 +533,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             };
 
             const intersectionObserver = new IntersectionObserver(intersectionCallback, intersectionOptions);
-            intersectionObserver.observe(firstMessage);
+            intersectionObserver.observe(firstMessageEl);
         }
 
         setChatsObserver() {
@@ -720,8 +721,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             }
         }
 
-        distributeMessage(message, $target, append = true) {
-            message['createdAt'] = this.formatDateTime(message['createdAt']);
+        distributeMessage(message, $target, append = true) {    
+            message['createdAtModified'] = this.formatDateTime(message['createdAt']);
             if (message['owner']['id'] == this.currentUser) {
                 this.showOwnMessage(message, $target, append);
             } else {

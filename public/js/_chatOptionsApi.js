@@ -171,16 +171,13 @@ import { getStatusError } from './helpers/_errorHelper.js';
         }
 
         prepareFriends(friends, participants) {
-            let participantsIds = participants.map(participant => {
-                console.log(participant.isRemoved);
+            let participantsIds = participants.filter(participant => {
                 //Removed participants can be re-added
-                if (participant.isRemoved) {
-                    console.log(participant.user.id);
-                    return participant.user.id;
+                if (!participant.isRemoved) {
+                    return true;
                 }
-            });
+            }).map(participant => participant.user.id);
 
-            console.log(participantsIds);
 
             friends = friends.filter(friend => {
                 if (!participantsIds.includes(friend.invitee.id) && !participantsIds.includes(friend.inviter.id)) {

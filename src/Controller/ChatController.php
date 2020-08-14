@@ -325,10 +325,8 @@ class ChatController extends AbstractController
      */
     public function addParticipant(Chat $chat, Request $request, ParticipantSystemInterface $participantSystem, EntityManagerInterface $entityManager): Response
     {
-                            //check user can manage chat !important
 
-        /** @var User $user */
-        $user = $this->getUser();
+        $this->denyAccessUnlessGranted('CHAT_MANAGE', $chat);
 
         $submittedToken = $request->request->get('token');
 
@@ -361,8 +359,8 @@ class ChatController extends AbstractController
      */
     public function removeParticipant(Chat $chat, Request $request, ParticipantSystemInterface $participantSystem, EntityManagerInterface $entityManager): Response
     {
-        //check user can manage chat !important
-
+        
+        $this->denyAccessUnlessGranted('CHAT_MANAGE', $chat);
         $submittedToken = $request->request->get('token');
 
         if($request->request->has('participants')) {

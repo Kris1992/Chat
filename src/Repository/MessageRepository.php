@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\Message;
+use App\Entity\{Message, Chat};
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Common\Collections\Criteria;
@@ -33,4 +33,29 @@ class MessageRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * findByChatAndPeriods  Find messages by chat and between given dates and limit [default 10]
+     * @param  Chat                 $chat           Chat object owner of messages
+     * @param  \DateTimeInterface   $startDate      Start date of period to looking in
+     * @param  \DateTimeInterface   $stopDate       Stop date of period to looking in
+     * @param  \DateTimeInterface   $lastDate       Last date of message (don't get this message just all before it)
+     * @param  int                  $limit          Integer with limit of messages to get [optional]
+     * @return array                                Return array of Messages
+     */
+    public function findByChatAndPeriods(Chat $chat, \DateTimeInterface $startDate, \DateTimeInterface $stopDate, \DateTimeInterface $lastDate, int $limit = 10): array
+    {   
+        return $this->createQueryBuilder('m')
+            ->andWhere('m.chat = :chat AND m.createdAt BETWEEN :startDate AND :stopDate AND m.createdAt < :lastDate')
+            ->setParameters([
+                'chat' => $chat,
+                'startDate' => $startDate,
+                'stopDate' => $stopDate,
+                'lastDate' => $lastDate
+            ])
+            ->orderBy('m.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

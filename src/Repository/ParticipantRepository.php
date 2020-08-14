@@ -34,17 +34,19 @@ class ParticipantRepository extends ServiceEntityRepository
 
     /**
      * findAllOthersParticipantsByChat Find all participants of chat room without given one
-     * @param  User     $user   User object which will be ignored    
-     * @param  Chat     $chat   Chat object which will be looking into
+     * @param  User     $user           User object which will be ignored    
+     * @param  Chat     $chat           Chat object which will be looking into
+     * @param  bool     $isRemoved      Boolean with is removed state [optional]
      * @return Participant[]
      */
-    public function findAllOthersParticipantsByChat(User $user, Chat $chat)
+    public function findAllOthersParticipantsByChat(User $user, Chat $chat, bool $isRemoved = false)
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.chat = :chat AND p.user != :user')
+            ->andWhere('p.chat = :chat AND p.user != :user AND p.isRemoved = :isRemoved')
             ->setParameters([
                 'chat' => $chat,
-                'user' => $user
+                'user' => $user,
+                'isRemoved' => $isRemoved
             ])
             ->getQuery()
             ->getResult()

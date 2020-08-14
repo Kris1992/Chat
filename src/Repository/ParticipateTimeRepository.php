@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\ParticipateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @method ParticipateTime|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,4 +20,17 @@ class ParticipateTimeRepository extends ServiceEntityRepository
         parent::__construct($registry, ParticipateTime::class);
     }
 
+    /**
+     * createBeforeDateCriteria Returns participate times before date
+     * @param \DateTimeInterface    $date      Date
+     * @return Criteria
+     */
+    public static function createBeforeDateCriteria(\DateTimeInterface $date): Criteria
+    {
+        return Criteria::create()
+            ->andWhere(Criteria::expr()->lte('startAt', $date))
+            ->orderBy(['startAt' => 'DESC'])
+            //->setMaxResults(2)
+        ;
+    }
 }

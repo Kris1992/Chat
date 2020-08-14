@@ -108,7 +108,7 @@ class MessageController extends AbstractController
         $topics = [
             sprintf('/chat/%d/message/typing', $chat->getId())
         ];
-
+        
         $othersParticipants = $participantRepository->findAllOthersParticipantsByChat($user, $chat);
         
         if ($othersParticipants) {
@@ -129,14 +129,15 @@ class MessageController extends AbstractController
     }
 
     /**
-     * @param   Request             $request
-     * @param   Chat                $chat
-     * @param   MessageRepository   $messageRepository
+     * @param   Request                 $request
+     * @param   Chat                    $chat
+     * @param   MessageRepository       $messageRepository
+     * @param   ParticipantRepository   $participantRepository
      * @return  Response
      * @throws  ApiBadRequestHttpException
      * @Route("/api/chat/{id}/get_messages", name="api_chat_get_messages", methods={"POST"})
      */
-    public function getMessages(Request $request, Chat $chat, MessageRepository $messageRepository): Response
+    public function getMessages(Request $request, Chat $chat, MessageRepository $messageRepository, ParticipantRepository $participantRepository): Response
     {   
         $this->denyAccessUnlessGranted('CHAT_VIEW', $chat);
 
@@ -146,14 +147,45 @@ class MessageController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        $messages = $messageRepository->findBy(['chat' => $chat], ['createdAt' => 'DESC'], 5, $data['offset']);
+        /** @var User $user */
+        $user = $this->getUser();
 
-        return $this->json(
-                $messages,
-                200,
-                [],
-                ['groups' => 'chat:message']
+        $participant = $participantRepository->findOneBy([
+            'chat' => $chat,
+            'user' => $user
+        ]);
+
+
+        $date = new \DateTime($data['messageDate']);
+        $date->setTimezone(new \DateTimeZone('Europe/Berlin'));
+
+        $times = $participant->getParticipateTimesBeforeDate($date);
+
+        $allMessages = [];
+        foreach ($times as $time) {
+
+            $messages = $messageRepository->findByChatAndPeriods(
+                $chat,
+                $time->getStartAt(),
+                $time->getStopAt() ?? new \DateTime(),
+                $date
             );
+
+            $allMessages = array_merge($allMessages, $messages);
+    
+            if (count($allMessages) >= 10 || $times->last() === $time) {
+                return $this->json(
+                    $allMessages,
+                    200,
+                    [],
+                    ['groups' => 'chat:message']
+                );
+            }
+        }
+        
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        //now we need date (not offest)
+        /*$messages = $messageRepository->findByChatAndPeriods(['chat' => $chat], ['createdAt' => 'DESC'], 5, $data['offset']);*/
 
     }
 
