@@ -220,8 +220,8 @@ class Chat
 
     /**
      * getOtherParticipants Get chat participants without given user 
-     * @param User      $user       User object which should be not included to participants list
-     * @return Collection|Participant[]
+     * @param   User      $user       User object which should be not included to participants list
+     * @return  Collection|Participant[]
      */
     public function getOtherParticipants(User $user): Collection
     {
@@ -230,6 +230,27 @@ class Chat
         return $this->participants->matching($criteria);
     }
 
+    /**
+     * isCurrentParticipantRemoved      Check is participant with given user removed
+     * @param   User      $user         User object which should be participant
+     * @return  ?bool                   Return bool or null if user is not a participant of chat
+     */
+    public function isCurrentParticipantRemoved(User $user): ?bool
+    {
+        foreach ($this->participants as $participant) {
+            if ($participant->getUser() ===  $user) {
+                return $participant->getIsRemoved();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * hasParticipant Check chat has participant with given user
+     * @param   User      $user       User object which should be participant
+     * @return  bool
+     */
     public function hasParticipant(User $user): bool
     {
         foreach ($this->participants as $participant) {

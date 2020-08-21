@@ -36,6 +36,8 @@ class MessageController extends AbstractController
      */
     public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
     {
+        //Check is user able to write messages
+        $this->denyAccessUnlessGranted('CHAT_WRITE', $chat);
 
         $data = json_decode($request->getContent(), true);
         
@@ -96,6 +98,9 @@ class MessageController extends AbstractController
      */
     public function typingMessage(Chat $chat, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
+        //Check is user able to write messages
+        $this->denyAccessUnlessGranted('CHAT_WRITE', $chat);
+        
         /** @var User $user */
         $user = $this->getUser();
         
@@ -184,8 +189,6 @@ class MessageController extends AbstractController
         }
         
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-        //now we need date (not offest)
-        /*$messages = $messageRepository->findByChatAndPeriods(['chat' => $chat], ['createdAt' => 'DESC'], 5, $data['offset']);*/
 
     }
 

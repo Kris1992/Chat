@@ -94,7 +94,7 @@ class ChatRepository extends ServiceEntityRepository
             ])
             ->orderBy('c.lastActivityAt', 'DESC')
             ->setFirstResult($offset)
-            ->setMaxResults(10)
+            ->setMaxResults(5)
             ->getQuery()
             ->getResult()
             ;

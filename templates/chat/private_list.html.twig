@@ -39,7 +39,9 @@
                     <ul class="list-group" id="js-chats-container">
                         {% if chats %}
                             {% for chat in chats %}
-                                <button type="button" class="list-group-item list-group-item-action mt-1 js-chat-button {{ loop.first ? 'active' : '' }}" id="{{ chat.id }}" data-owner="{{ chat.owner.id }}">
+                                {% set isRemoved = chat.currentParticipantRemoved(app.user) %}
+
+                                <button type="button" class="list-group-item list-group-item-action mb-3 js-chat-button {{ loop.first ? 'active' : '' }}" id="{{ chat.id }}" data-owner="{{ chat.owner.id }}" data-removed-participant="{{ isRemoved }}">
                                     <div class="row no-gutters">
                                         <div class="col-sm-12 col-md-4">
                                             {% set break = false %}
@@ -67,7 +69,9 @@
                                                 
                                                 {% for participant in chat.otherParticipants(app.user) %}
                                                     {% if not break %}
-                                                        {{ participant.user.login }}
+                                                        <span class="{{ participant.isRemoved ? 'text-danger' : '' }}">
+                                                            {{ participant.user.login }}
+                                                        </span>
                                                         {% if loop.index0 < 2 and not loop.last %}
                                                             ,
                                                         {% elseif loop.index0 >= 2 %}
@@ -79,34 +83,39 @@
                                             </strong></span>
                                         </div>
                                         <div class="col-12 border-top js-last-message my-1">
-                                            {% if chat.lastMessage %}
-                                            <small>
-                                                <div class="row">
-                                                    <div class="col-8 text-left">
-                                                        {% if chat.lastMessage.owner is same as(app.user) %}
-                                                            <span><strong>
-                                                                You
-                                                            </strong></span>
-                                                        {% else %}
-                                                            <span><strong>
-                                                                {{chat.lastMessage.owner.login }}
-                                                            </strong></span>
-                                                        {% endif %}
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <span><small>
-                                                            {% if date(chat.lastMessage.createdAt) < date('today') %}
-                                                                {{ chat.lastMessage.createdAt | date('m/d/Y g:ia') }}
+                                            {% if isRemoved %}
+                                                <small>
+                                                    <span class="fas fa-user-times"></span>
+                                                    You was removed from this chat.
+                                                </small>
+                                            {% elseif chat.lastMessage and not isRemoved %}
+                                                <small>
+                                                    <div class="row">
+                                                        <div class="col-8 text-left">
+                                                            {% if chat.lastMessage.owner is same as(app.user) %}
+                                                                <span><strong>
+                                                                    You
+                                                                </strong></span>
                                                             {% else %}
-                                                                {{ chat.lastMessage.createdAt | date(" g:ia") }}
+                                                                <span><strong>
+                                                                    {{chat.lastMessage.owner.login }}
+                                                                </strong></span>
                                                             {% endif %}
-                                                        </small></span>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <span><small>
+                                                                {% if date(chat.lastMessage.createdAt) < date('today') %}
+                                                                    {{ chat.lastMessage.createdAt | date('m/d/Y g:ia') }}
+                                                                {% else %}
+                                                                    {{ chat.lastMessage.createdAt | date(" g:ia") }}
+                                                                {% endif %}
+                                                            </small></span>
+                                                        </div>
+                                                        <div class="col-12 text-left">
+                                                            {{ chat.lastMessage.sanitazedContent | raw }}
+                                                        </div>
                                                     </div>
-                                                    <div class="col-12 text-left">
-                                                        {{ chat.lastMessage.sanitazedContent | raw }}
-                                                    </div>
-                                                </div>
-                                            </small>
+                                                </small>
                                             {% else %}
                                                 <small>No messages now. Write first one!</small>
                                             {% endif %}

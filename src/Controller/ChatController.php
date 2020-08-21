@@ -21,7 +21,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\ChatPrinter\ChatPrinter;
 use Symfony\Component\WebLink\Link;
-use App\Entity\Chat;
+use App\Entity\{Chat, User};
 
 /**
 * @IsGranted("ROLE_USER")
@@ -153,6 +153,36 @@ class ChatController extends AbstractController
         }
 
         $this->addFlash('danger','Cannot create this chat room.');
+        return $this->redirectToRoute('chat_private');
+    }
+
+    /**
+     * @param   EntityManagerInterface      $entityManager
+     * @param   ChatModelFactoryInterface   $chatModelFactory
+     * @param   ModelValidatorInterface     $modelValidator
+     * @param   ChatFactoryInterface        $chatFactory
+     * @return  Response
+     * @Route("/chat/private/create/user/{id}", name="chat_private_create_with_user", methods={"GET"})
+     */
+    public function createPrivateRoomWithUser(User $chatUser, EntityManagerInterface $entityManager, ChatModelFactoryInterface $chatModelFactory, ModelValidatorInterface $modelValidator, ChatFactoryInterface $chatFactory): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $chatModel = $chatModelFactory->createFromData($user, false, [$chatUser], null, null);
+        $isValid = $modelValidator->isValid($chatModel, "chat:private");
+
+        if ($isValid) {
+            $chat = $chatFactory->create($chatModel, $user);
+                    
+            $entityManager->persist($chat);
+            $entityManager->flush();   
+                    
+            $this->addFlash('success','Chat was created.');
+            return $this->redirectToRoute('chat_private');
+        } 
+
+        $this->addFlash('danger', $modelValidator->getErrorMessage());
         return $this->redirectToRoute('chat_private');
     }
 

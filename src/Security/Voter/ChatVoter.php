@@ -22,7 +22,7 @@ class ChatVoter extends Voter
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['CHAT_VIEW', 'CHAT_MANAGE'])
+        return in_array($attribute, ['CHAT_VIEW', 'CHAT_MANAGE', 'CHAT_WRITE'])
             && $subject instanceof Chat;
     }
 
@@ -37,6 +37,13 @@ class ChatVoter extends Voter
         switch ($attribute) {
             case 'CHAT_VIEW':
                 $participant = $this->participantRepository->findParticipantByUserAndChat($user, $subject);
+                
+                if ($participant) {
+                    return true;    
+                }
+            break;
+            case 'CHAT_WRITE':
+                $participant = $this->participantRepository->findParticipantByUserAndChatAndRemovedState($user, $subject);
                 
                 if ($participant) {
                     return true;    

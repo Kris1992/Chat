@@ -1,5 +1,5 @@
 <script type="text/template" id="js-private-chat-template">
-<button type="button" class="list-group-item list-group-item-action mt-1 js-chat-button" id=" <%= messageData.chat.id %>">
+<button type="button" class="list-group-item list-group-item-action mb-3 js-chat-button" id=" <%= messageData.chat.id %>" data-removed-participant="<%= isRemoved %>">
     <div class="row no-gutters">
         <div class="col-sm-12 col-md-4">
             <% _.some(participantsData, function(participant, index) { %>
@@ -21,9 +21,22 @@
             <span class="participants"><strong>
                 <% _.some(participantsData, function(participant, index) { %>
                     <% if (index === 0) { %>
-                        <%= participant.user.login %>
+                        <span class="
+                            <% if (participant.isRemoved) { %>
+                                text-danger
+                            <% } %>
+                        ">
+                            <%= participant.user.login %>
+                        </span>
                     <% } else if (index <= 2) { %>
-                        , <%= participant.user.login %>
+                        ,
+                        <span class="
+                            <% if (participant.isRemoved) { %>
+                                text-danger
+                            <% } %>
+                        ">
+                            <%= participant.user.login %>
+                        </span>
                     <% } else if (index > 2) { %>
                         and more...
                     <%
@@ -33,11 +46,16 @@
             </strong></span>
         </div>
         <div class="col-12 border-top js-last-message my-1">
-            <% if (messageData.content) { %>
+            <% if (isRemoved) { %>
+                <small>
+                    <span class="fas fa-user-times"></span>
+                    You was removed from this chat.
+                </small>
+            <% } else if (messageData.content) { %>
                 <small>
                     <div class="row">
                         <div class="col-8 text-left">
-                            <% if (messageData.owner.id === currentUser) { %>
+                            <% if (messageData.owner.id == currentUser) { %>
                                 <span><strong>
                                     You
                                 </strong></span>
@@ -68,7 +86,7 @@
 <small>
     <div class="row">
         <div class="col-8 text-left">
-            <% if (messageData.owner.id === currentUser) { %>
+            <% if (messageData.owner.id == currentUser) { %>
                 <span><strong>
                     You
                 </strong></span>

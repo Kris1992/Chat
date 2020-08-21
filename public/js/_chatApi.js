@@ -29,6 +29,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.typingEventSource = null;
             this.typingTimeout = null;
             this.showTyperTimeout = null;
+            this.isRemoved = false;
 
             this.handleDocumentLoad();
             
@@ -118,9 +119,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 const $chatsContainer = $(ChatApi._selectors.chatsContainer);
                 if ($chatsContainer.has('button').length > 0) {
                     this.showLoadContentInfo($(ChatApi._selectors.messagesContainer));
-                    this.chatId = $(ChatApi._selectors.chatsContainer).children().first().attr('id');
+                    let $activeChatButton =  $(ChatApi._selectors.chatsContainer).children().first();
+                    this.chatId = $activeChatButton.attr('id');
                     this.loadMessages(this.chatId, new Date()).then((data) => {
-                        console.log(data);
                         if (data.length > 0) {
                             this.showMessages(data);
                         }
@@ -128,6 +129,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                         this.showErrorMessage(errorData.title);
                     }).finally(() => {
                         $(ChatApi._selectors.messagesLoadInfo).remove();
+                        this.controlSendButton($activeChatButton);
                     });
 
                     this.setChatsObserver();
@@ -143,10 +145,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             let $textareaInput = $(ChatApi._selectors.textareaInput);
             var emojioneArea = $textareaInput.emojioneArea();
             
-            if (this.typingTimeout !== null) {
-                clearTimeout(this.typingTimeout); 
-                this.turnOnTypingEventListener();   
-            }
+            this.resetTypingEventListener();
             
             let message = $(ChatApi._selectors.uploadedAttachments).html();
             if (message) {
@@ -168,6 +167,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 emojioneArea[0].emojioneArea.setText('');
                 $(ChatApi._selectors.uploadedAttachments).html('');
                 this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
+                this.updateChatsList(message, $(ChatApi._selectors.chatsContainer));
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             });
@@ -191,6 +191,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             $(ChatApi._selectors.chatButton).removeClass('active');
             let $button = $(event.currentTarget);
             $button.addClass('active');
+
             this.chatId = $button.attr('id');
             this.closeEventSource();
             this.closeTypingEventSource();
@@ -207,6 +208,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 this.showErrorMessage(errorData.title);
             }).finally(() => {
                 $(ChatApi._selectors.messagesLoadInfo).remove();
+                this.controlSendButton($button);
+                this.resetTypingEventListener();
             });
         }
 
@@ -237,13 +240,22 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         handleTextAreaTyping() {
             $(ChatApi._selectors.textareaInput).emojioneArea()[0].emojioneArea.off('keypress');
             this.typingTimeout = setTimeout(this.turnOnTypingEventListener.bind(this), 20000);
-            this.sendTypingMessage();
+            if (!this.isRemoved) {
+                this.sendTypingMessage();
+            }
         }
 
         turnOnTypingEventListener() {
             $(ChatApi._selectors.textareaInput).emojioneArea()[0].emojioneArea.on("keypress", function(editor, event) {
                 this.handleTextAreaTyping();
             }.bind(this));
+        }
+
+        resetTypingEventListener() {
+            if (this.typingTimeout !== null) {
+                clearTimeout(this.typingTimeout); 
+                this.turnOnTypingEventListener();   
+            }
         }
 
         sendTypingMessage() {
@@ -360,7 +372,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
         openTypingEventSource() {
             this.typingHub = new URL(this.hubUrl);
-            this.typingHub.searchParams.append('topic', '/chat/'+this.chatId+'/message/typing');
+            this.typingHub.searchParams.append('topic', '/chat/' + this.chatId + '/message/typing');
             this.typingEventSource = new EventSource(this.typingHub, {
                 withCredentials: true
             });
@@ -417,22 +429,11 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         setLastMessage(messageData, $target) {
-            messageData.content = this.sanitazeContent(messageData.content);
             messageData.createdAt = this.formatDateTime(messageData.createdAt);
             const tplText = $(ChatApi._selectors.lastMessageTemplate).html();
             const tpl = _.template(tplText);
             const html = tpl({messageData: messageData, currentUser:this.currentUser});
             $target.html($.parseHTML(html));
-        }
-
-        sanitazeContent(content) {
-            if (content.match(/<img [^>]*src="[^"]*"[^>]*>/gm)) {
-                content = '<span class="fas fa-file-image"></span> Sent image.';
-            } else if(content.match(/<a class="uploaded-file"[^>]/gm)) {
-                content = '<span class="fas fa-file-alt"></span> Sent file.';
-            }
-            
-            return content;
         }
 
         getParticipants(chatId) {
@@ -455,10 +456,14 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         setNewPrivateChat(messageData, participantsData, $chatsContainer, append = false) {
+            let isParticipantRemoved = participantsData.filter((participant) => {
+                return participant.user.id == this.currentUser;
+            }).map(participant => participant.isRemoved);
+        
             messageData.createdAt = this.formatDateTime(messageData.createdAt);
             const tplText = $(ChatApi._selectors.newPrivateChatTemplate).html();
             const tpl = _.template(tplText);
-            const html = tpl({messageData: messageData, participantsData: participantsData, currentUser: this.currentUser, defaultUserImage: this.defaultUserImage, baseAsset: this.baseAsset});
+            const html = tpl({messageData: messageData, participantsData: participantsData, currentUser: this.currentUser, defaultUserImage: this.defaultUserImage, baseAsset: this.baseAsset, isRemoved: isParticipantRemoved[0]});
             if (!append) {
                 $chatsContainer.prepend($.parseHTML(html));
             } else {
@@ -552,7 +557,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
                     //Chats may be changed (e.g creating new one)
                     let $actualChats = $(ChatApi._selectors.chatButton);
-
                     this.loadChats($actualChats.length).then((data) => {
                         if (data.length > 0) {
                             
@@ -579,7 +583,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             };
 
             const intersectionOptions = {
-                threshold: 1,
+                threshold: 0.85,
                 rootMargin: '0px 0px 0px 0px'
             };
 
@@ -816,6 +820,33 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                     reject(errorData);
                 });
             });
+        }
+
+        controlSendButton($activeChatButton) {
+            if ($activeChatButton.data('removed-participant')) {
+                this.isRemoved = true;
+                this.disableButton($(ChatApi._selectors.sendButton));
+                this.showAlertMessage($(ChatApi._selectors.messagesContainer));
+            } else {
+                this.isRemoved = false;
+                this.enableButton($(ChatApi._selectors.sendButton));
+            }
+        }
+
+        disableButton($button) {
+            $button.attr("disabled", true);
+        }
+
+        enableButton($button) {
+            $button.attr("disabled", false);
+        }
+
+        showAlertMessage($target, message = '<span class="fas fa-user-times"></span> You was removed from this chat.', type = 'danger', id = 'js-removed-message') {
+            let content = `
+                <div class="alert alert-` + type + `" role="alert" id="` + id + `"> 
+                    <strong>` + message + `</strong>
+                </div>`;
+            $target.append($.parseHTML(content));
         }
     }
 
