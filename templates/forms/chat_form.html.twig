@@ -7,7 +7,8 @@
 }}
     {% if chatForm.id is defined %}
         {{ form_row(chatForm.id, {
-            label: false,
+            label: 'ID: ',
+            attr: { class: 'form-id-js' }
         }) }}
     {% endif %}
 
@@ -15,6 +16,35 @@
         label : false,
         attr: { placeholder: 'Title' }
     }) }}
+
+    {% if chatForm.imageFile is defined %}
+        {{ form_row(chatForm.imageFile, {
+            'label' : 'Chat image: ',
+            attr: {
+                'placeholder': 'Select a chat image',
+            }
+        }) }}
+        
+        {% if chatForm.vars.data.imageFilename is defined and chatForm.vars.data.imageFilename is not null %}
+            <div class="mb-3" id="uploaded_image">
+                <p>Already uploaded:</p>
+                <div class="imageForm-container position-relative mx-auto">
+                    <img class="imageForm rounded border border-white" src="{{ uploaded_asset(chatForm.vars.data.thumbImagePath) }}" alt="Chat image">
+                    <div class="image-toolbar">
+                        <a href="{{ uploaded_asset(chatForm.vars.data.imagePath) }}" target="_blank">
+                            <span class="fa fa-search-plus position-absolute link-show"></span>
+                        </a>
+                        <a 
+                            href="{{ path('api_admin_delete_chat_image', { id: chatForm.vars.data.id }) }}"
+                            id="delete-image"
+                        >
+                            <span class="fa fa-trash position-absolute link-delete"></span>
+                        </a> 
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 
     {{ form_row(chatForm.description, {
         label : false,

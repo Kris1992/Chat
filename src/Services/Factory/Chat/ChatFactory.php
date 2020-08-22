@@ -2,13 +2,28 @@
 
 namespace App\Services\Factory\Chat;
 
+use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\HttpFoundation\File\File;
 use App\Model\Chat\ChatModel;
 use App\Entity\{Chat, User};
 
 class ChatFactory implements ChatFactoryInterface 
 {
 
-    public function create(ChatModel $chatModel, User $owner): Chat
+    /** @var ImagesManagerInterface */
+    private $attachmentImagesManager;
+
+    /**
+     * ChatFactory Constructor
+     * 
+     * @param ImagesManagerInterface $attachmentImagesManager
+     */
+    public function __construct(ImagesManagerInterface $attachmentImagesManager)  
+    {
+        $this->attachmentImagesManager = $attachmentImagesManager;
+    }
+
+    public function create(ChatModel $chatModel, User $owner, ?File $uploadedImage): Chat
     {
 
         /* From admin area only public chat rooms */
@@ -31,6 +46,17 @@ class ChatFactory implements ChatFactoryInterface
                 $chat
                     ->addParticipant($participant)
                 ;
+            }
+        }
+
+        if ($uploadedImage) {
+            $newFilename = $this->attachmentImagesManager->uploadImage(
+                $uploadedImage, 
+                $chat->getImageFilename(), 
+                $chat->getOwner()->getLogin());
+            
+            if ($newFilename) {
+                $chat->setImageFilename($newFilename);
             }
         }
             

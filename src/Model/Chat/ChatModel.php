@@ -4,6 +4,7 @@ namespace App\Model\Chat;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\{ArrayCollection, Collection};
+use App\Services\ImagesManager\ImagesConstants;
 use App\Entity\{User, Participant};
 
 class ChatModel
@@ -47,6 +48,8 @@ class ChatModel
      * )
      */
     private $description;
+
+    private $imageFilename;
 
     public function __construct()
     {
@@ -137,6 +140,28 @@ class ChatModel
         }
 
         return $this;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return ImagesConstants::CHATS_IMAGES.'/'.$this->getOwner()->getLogin().'/'.$this->getImageFilename();
+    }
+
+    public function getThumbImagePath(): ?string
+    {
+        return ImagesConstants::CHATS_IMAGES.'/'.$this->getOwner()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }

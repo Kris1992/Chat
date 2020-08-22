@@ -137,7 +137,7 @@ class ChatController extends AbstractController
                 $isValid = $modelValidator->isValid($chatModel, "chat:private");
 
                 if ($isValid) {
-                    $chat = $chatFactory->create($chatModel, $user);
+                    $chat = $chatFactory->create($chatModel, $user, null);
                     
                     $entityManager->persist($chat);
                     $entityManager->flush();   
@@ -173,7 +173,7 @@ class ChatController extends AbstractController
         $isValid = $modelValidator->isValid($chatModel, "chat:private");
 
         if ($isValid) {
-            $chat = $chatFactory->create($chatModel, $user);
+            $chat = $chatFactory->create($chatModel, $user, null);
                     
             $entityManager->persist($chat);
             $entityManager->flush();   
@@ -342,9 +342,7 @@ class ChatController extends AbstractController
         return new JsonResponse($link, Response::HTTP_OK);
     }
 
-
-
-//participant
+                                            //participant
     /**
      * @param   Chat                            $chat
      * @param   Request                         $request

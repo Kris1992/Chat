@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use App\Services\Factory\ChatModel\ChatModelFactoryInterface;
-use Symfony\Component\HttpFoundation\{Response, Request};
+use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
+use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Services\Factory\Chat\ChatFactoryInterface;
 use App\Services\Updater\Chat\ChatUpdaterInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -66,7 +68,7 @@ class AdminChatController extends AbstractController
 
             /** @var User $user */
             $user = $this->getUser();
-            $chat = $chatFactory->create($chatModel, $user);
+            $chat = $chatFactory->create($chatModel, $user, $form['imageFile']->getData());
             
             $entityManager->persist($chat);
             $entityManager->flush();
@@ -101,7 +103,7 @@ class AdminChatController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $chat = $chatUpdater->update($chatModel, $chat);
+            $chat = $chatUpdater->update($chatModel, $chat, $form['imageFile']->getData());
             $entityManager->flush();
             $this->addFlash('success', 'Chat is updated!');
 
@@ -166,6 +168,44 @@ class AdminChatController extends AbstractController
 
         $this->addFlash('warning','Nothing to delete.');
         return $this->redirectToRoute('admin_chat');
+    }
+
+     /**
+     * @param   Request                     $request
+     * @param   Chat                        $chat
+     * @param   JsonErrorResponseFactory    $jsonErrorFactory
+     * @param   ImagesManagerInterface      $attachmentImagesManager
+     * @param   EntityManagerInterface      $entityManager
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
+     * @Route("/api/admin/chat/{id}/delete_image", name="api_admin_delete_chat_image",
+     * methods={"DELETE"})
+     */
+    public function deleteChatImageAction(Request $request, Chat $chat, JsonErrorResponseFactory $jsonErrorFactory, ImagesManagerInterface $attachmentImagesManager, EntityManagerInterface $entityManager): Response
+    {
+
+        $data = json_decode($request->getContent(), true);
+
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+        
+        $chatId = $chat->getId();
+        
+        //double check that everything is ok
+        if($chatId === intval($data['id'])) {
+            $imageFilename = $chat->getImageFilename();
+            if(!empty($imageFilename)) {
+                $result = $attachmentImagesManager->deleteImage($imageFilename, $chat->getOwner()->getLogin());
+                if ($result) {
+                    $chat->setImageFilename(null);
+                    $entityManager->flush();
+                    return new JsonResponse(null, Response::HTTP_OK);    
+                }
+            }
+        }
+
+        return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'Image not found.');
     }
 
 }

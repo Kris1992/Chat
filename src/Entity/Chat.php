@@ -72,6 +72,11 @@ class Chat
      */
     private $lastActivityAt;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageFilename;
+
     public function __construct()
     {
         $this->messages = new ArrayCollection();
@@ -265,6 +270,18 @@ class Chat
     public function getLastActivityAt(): ?\DateTimeInterface
     {
         return $this->lastActivityAt;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
     }
 
 }

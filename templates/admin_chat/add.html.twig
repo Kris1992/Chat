@@ -4,6 +4,10 @@
 
 {% block section_class %}addChat{% endblock %} 
 {% block content_class %}justify-content-center align-items-center{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/_forms.css') }}">
+{% endblock %}
 {% block content %}
 <div class="col-sm-6 text-center my-3">
     {{ include('forms/chat_form.html.twig', {

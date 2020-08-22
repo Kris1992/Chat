@@ -24,15 +24,18 @@ class ChatModelFactory implements ChatModelFactoryInterface
 
         $chatModel = new ChatModel();
         $chatModel
+            ->setId($chat->getId())
             ->setTitle($chat->getTitle())
             ->setDescription($chat->getDescription())
             ->setIsPublic($chat->getIsPublic())
             ->setOwner($chat->getOwner())
+            ->setImageFilename($chat->getImageFilename())
             ;
 
         return $chatModel;
     }
 
+//test it
     public function createFromData(User $owner, bool $isPublic, ?array $users, ?string $title, ?string $description): ChatModel
     {
         $chatModel = new ChatModel();

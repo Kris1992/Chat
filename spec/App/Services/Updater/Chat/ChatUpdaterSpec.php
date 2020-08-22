@@ -3,12 +3,19 @@
 namespace spec\App\Services\Updater\Chat;
 
 use App\Services\Updater\Chat\{ChatUpdater, ChatUpdaterInterface};
+use App\Services\ImagesManager\ImagesManagerInterface;
 use PhpSpec\ObjectBehavior;
 use App\Model\Chat\ChatModel;
 use App\Entity\Chat;
 
 class ChatUpdaterSpec extends ObjectBehavior
 {
+
+    function let(ImagesManagerInterface $attachmentImagesManager)
+    {
+        $this->beConstructedWith($attachmentImagesManager);
+    }
+
     function it_is_initializable()
     {
         $this->shouldHaveType(ChatUpdater::class);
@@ -34,7 +41,7 @@ class ChatUpdaterSpec extends ObjectBehavior
             ->setDescription('Chat description')
             ;
 
-        $chat = $this->update($chatModel, $chat);
+        $chat = $this->update($chatModel, $chat, null);
         $chat->shouldBeAnInstanceOf(Chat::class);
         $chat->getTitle()->shouldReturn('Chat model title');
         $chat->getDescription()->shouldReturn('Chat model description');
