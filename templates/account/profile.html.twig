@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Profile{% endblock %}
+
+{% block section_class %}profileUser{% endblock %} 
+{% block content_class %}justify-content-center align-items-center{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+{% block content %}
+    <div class="col-md-8 text-center my-3" id="js-contacts-wrapper">
+        <div class="card card-shadow">
+            <div class="card-body">
+                <div class="row">
+                    {% if app.user is not same as (user) %}
+                        <div class="col-12">
+                            {% set currentInviteHim = user.invitedByFriend(app.user)|first %}
+                            {% set heWasInvitedByCurrent = user.invitedFriend(app.user)|first %}
+
+                            <h5 class="float-right">
+                                {% if not currentInviteHim and not heWasInvitedByCurrent %}
+                                    <a class="js-friend text-decoration-none" href="{{ path('api_friend_invite', { id: user.id }) }}" data-toggle="tooltip" data-placement="top" title="Add to friend">
+                                        <span class="fas fa-user-plus"></span>
+                                    </a>
+                                {% elseif currentInviteHim.status is defined and currentInviteHim.status is same as('Pending') %}
+                                    <span class="fas fa-user-clock" data-toggle="tooltip" data-placement="top" title="Invitation was sent"></span>
+                                {% elseif heWasInvitedByCurrent.status is defined and heWasInvitedByCurrent.status is same as('Pending') %}
+                                    <a class="text-decoration-none" href="{{ path('friend_requests') }}" data-toggle="tooltip" data-placement="top" title="Show invitation">
+                                        <span class="fas fa-envelope"></span>
+                                    </a>
+                                {% else %}
+                                    <span class="text-success fas fa-user-friends" data-toggle="tooltip" data-placement="top" title="It's already your friend"></span>
+                                    <a class="text-decoration-none" href="{{ path('chat_private_create_with_user', {id: user.id}) }}" data-toggle="tooltip" data-placement="top" title="Start conversation">
+                                        <span class="fas fa-comment-dots"></span>
+                                    </a>
+                                {% endif %}
+                            </h5> 
+                        </div>
+                    {% endif %}
+                    <div class="col-12">
+                        {% if user.imageFilename %}
+                            <a href="{{ uploaded_asset(user.imagePath) }}" target="_blank">
+                                <img class="img-fluid image-circle image-border" src="{{ uploaded_asset(user.thumbImagePath) }}" width="100" height="100">
+                            </a>
+                        {% else %}
+                            <a href="{{ asset('img/users/default.png') }}" target="_blank">
+                                <img class="img-fluid image-circle image-border" src="{{ asset('img/users/default.png') }}" width="100" height="100">
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-12 my-3 font-oswald">
+                        <span class="d-block">                        
+                            <strong>
+                                <h3>{{ user.login }}</h3>
+                            </strong>
+                        </span>
+                        <span class="d-block">
+                            <h6 class="text-muted">
+                                {{ user.gender }}
+                            </h6>
+                        </span>
+                        <span class="d-block">
+                            <small>
+                                <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                            </small>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-6 text-left">
+                        <small class="text-muted">
+                            <strong>Joined at:</strong> 
+                            {{ user.agreedTermsAt | date('m/d/Y') }}
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <small class="text-muted">
+                            <strong>Last seen:</strong>
+                                {% if app.user is same as (user) %}
+                                    <span class="text-success">You are online now</span>
+                                {% else %}
+                                    {{ time_diff(user.lastActivity) }}
+                                {% endif %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script type="module" src="{{ asset('js/helpers/_errorHelper.js') }}"></script>
+    <script type="module" src="{{ asset('js/_contactApi.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var $wrapper = $('#js-contacts-wrapper');
+            var contactApi = new ContactApi($wrapper);
+        });
+    </script>
+{% endblock %}

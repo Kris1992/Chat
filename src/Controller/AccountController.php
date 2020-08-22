@@ -18,9 +18,8 @@ use App\Security\LoginFormAuthenticator;
 use App\Services\Mailer\MailingSystemInterface;
 use App\Repository\{UserRepository, PasswordTokenRepository, FriendRepository};
 use Doctrine\ORM\EntityManagerInterface;
-use App\Form\UserFormType;
-use App\Entity\PasswordToken;
-use App\Form\RenewPasswordFormType;
+use App\Form\{UserFormType, RenewPasswordFormType};
+use App\Entity\{User, PasswordToken};
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class AccountController extends AbstractController
@@ -58,6 +57,20 @@ class AccountController extends AbstractController
 
         return $this->render('account/edit.html.twig', [
             'userForm' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @param   User        $user
+     * @return  Response
+     * @Route("/account/{id}", name="account_profile", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function profile(User $user): Response
+    {
+
+        return $this->render('account/profile.html.twig', [
+            'user' => $user
         ]);
     }
 

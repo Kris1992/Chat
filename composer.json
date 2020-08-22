@@ -8,6 +8,7 @@
         "google/recaptcha": "^1.2",
         "knplabs/knp-paginator-bundle": "^5.2",
         "knplabs/knp-snappy-bundle": "^1.7",
+        "knplabs/knp-time-bundle": "^1.13",
         "lcobucci/jwt": "^3.3",
         "oneup/flysystem-bundle": "^3.4",
         "phpspec/phpspec": "^6.1",

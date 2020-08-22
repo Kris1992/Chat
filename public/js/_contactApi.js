@@ -13,10 +13,11 @@ import { getStatusError } from './helpers/_errorHelper.js';
     class ContactApi
     {   
 
-        constructor($wrapper)
+        constructor($wrapper, $checkActivity = false)
         {
             
             this.$wrapper = $wrapper;
+            this.$checkActivity = $checkActivity;
 
             this.handleDocumentLoad();
             
@@ -46,7 +47,9 @@ import { getStatusError } from './helpers/_errorHelper.js';
 
         handleDocumentLoad() {
             this.setTooltips();
-            const counter = setInterval(this.startObserveActivity.bind(this), 30000);
+            if (checkActivity) {
+                const counter = setInterval(this.startObserveActivity.bind(this), 30000);
+            }
         }
 
         handleSendInvitation(event) {

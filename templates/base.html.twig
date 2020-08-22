@@ -32,14 +32,12 @@
                                 Rooms
                             </a>
                         </li>
-                        <!--
                         <li>
-                            <a href="" class="menu-item">
-                                <span class="fas fa-briefcase"></span>
+                            <a href="{{ path('account_profile', { id: app.user.id }) }}" class="menu-item">
+                                <span class="fas fa-portrait"></span>
                                 Profile
                             </a>
                         </li>
-                        -->
                         <li>
                             <a href="{{ path('account_edit') }}" class="menu-item {{ app.request.get('_route') == 'account_edit' ? 'active' }}">
                                 <span class="fas fa-user-cog"></span>

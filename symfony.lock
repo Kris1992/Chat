@@ -144,6 +144,9 @@
             "config/packages/knp_snappy.yaml"
         ]
     },
+    "knplabs/knp-time-bundle": {
+        "version": "v1.13.0"
+    },
     "lcobucci/jwt": {
         "version": "3.3.2"
     },

@@ -31,16 +31,18 @@
                         <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card">
                             <div class="row">
                                 <div class="col-2">
-                                    <a href="">
-                                        {% if user.imageFilename %}
-                                            <img class="img-fluid image-circle" src="{{ uploaded_asset(user.thumbImagePath) }}">
-                                        {% else %}
-                                            <img class="img-fluid image-circle" src="{{ asset('img/users/default.png') }}">
-                                        {% endif %}   
-                                    </a>
+                                    {% if user.imageFilename %}
+                                        <a href="{{ uploaded_asset(user.imagePath) }}" target="_blank">
+                                            <img class="img-fluid image-circle image-border" src="{{ uploaded_asset(user.thumbImagePath) }}">
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ asset('img/users/default.png') }}" target="_blank">
+                                            <img class="img-fluid image-circle image-border" src="{{ asset('img/users/default.png') }}">
+                                        </a>
+                                    {% endif %} 
                                 </div>
                                 <div class="col-6 align-self-center">
-                                    <a href="">
+                                    <a href="{{ path('account_profile', { id: user.id }) }}">
                                         <h5 class="text-orange">
                                             {{ user.login }}
                                         </h5>
@@ -53,19 +55,19 @@
 
                                     {% if not currentInviteHim and not heWasInvitedByCurrent %}
                                         <h5>
-                                            <a class="js-friend" href="{{ path('api_friend_invite', { id: user.id }) }}"><span class="fas fa-user-plus"></span></a>
+                                            <a class="js-friend" href="{{ path('api_friend_invite', { id: user.id }) }}"><span class="fas fa-user-plus" data-toggle="tooltip" data-placement="top" title="Add to friend"></span></a>
                                         </h5>
                                     {% elseif currentInviteHim.status is defined and currentInviteHim.status is same as('Pending') %}
                                         <h5>
-                                            <span class="fas fa-user-clock"></span>
+                                            <span class="fas fa-user-clock" data-toggle="tooltip" data-placement="top" title="Invitation was sent"></span>
                                         </h5>
                                     {% elseif heWasInvitedByCurrent.status is defined and heWasInvitedByCurrent.status is same as('Pending') %}
                                         <h5>
-                                            <a href="{{ path('friend_requests') }}"><span class="fas fa-envelope"></span></a>
+                                            <a href="{{ path('friend_requests') }}"><span class="fas fa-envelope" data-toggle="tooltip" data-placement="top" title="Show invitation"></span></a>
                                         </h5>
                                     {% else %}
                                         <h5>
-                                            <span class="text-success fas fa-user-friends"></span>
+                                            <span class="text-success fas fa-user-friends" data-toggle="tooltip" data-placement="top" title="It's your friend"></span>
                                         </h5>
                                     {% endif %}
                                 </div>
@@ -103,7 +105,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var $wrapper = $('#js-contacts-wrapper');
-            var contactApi = new ContactApi($wrapper);
+            var contactApi = new ContactApi($wrapper, true);
         });
     </script>
 {% endblock %}

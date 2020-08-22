@@ -214,6 +214,11 @@ class User implements UserInterface
         $this->agreedTermsAt = new \DateTime();
     }
 
+    public function getAgreedTermsAt(): ?\DateTimeInterface
+    {
+        return $this->agreedTermsAt;
+    }
+
     public function getGender(): ?string
     {
         return $this->gender;

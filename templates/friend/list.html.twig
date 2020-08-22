@@ -9,7 +9,7 @@
 {% block section_class %}contacts{% endblock %} 
 {% block content_class %}{% endblock %}
 {% block content %}
-    <div class="col-sm-12 text-center mt-5">
+    <div class="col-sm-12 text-center mt-5" id="js-contacts-wrapper">
         <div class="row">
             <div class="col-sm-12">
                 <h2 class="mb-3 d-inline-block font-weight-normal text-uppercase text-purple">Contacts</h2>
@@ -33,16 +33,18 @@
                         <div class="col-sm-12 col-md-5 p-3 mx-auto my-2 link-card js-card">
                             <div class="row">
                                 <div class="col-2">
-                                    <a href="">
-                                        {% if user.imageFilename %}
-                                            <img class="img-fluid image-circle" src="{{ uploaded_asset(user.thumbImagePath) }}">
-                                        {% else %}
-                                            <img class="img-fluid image-circle" src="{{ asset('img/users/default.png') }}">
-                                        {% endif %}   
-                                    </a>
+                                    {% if user.imageFilename %}
+                                        <a href="{{ uploaded_asset(user.imagePath) }}" target="_blank">
+                                            <img class="img-fluid image-circle image-border" src="{{ uploaded_asset(user.thumbImagePath) }}">
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ asset('img/users/default.png') }}" target="_blank">
+                                            <img class="img-fluid image-circle image-border" src="{{ asset('img/users/default.png') }}">
+                                        </a>
+                                    {% endif %}   
                                 </div>
                                 <div class="col-7 align-self-center">
-                                    <a href="">
+                                    <a href="{{ path('account_profile', { id: user.id }) }}">
                                         <h5 class="text-orange">
                                             {{ user.login }}
                                         </h5>
@@ -99,7 +101,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var $wrapper = $('#js-contacts-wrapper');
-            var contactApi = new ContactApi($wrapper);
+            var contactApi = new ContactApi($wrapper, true);
         });
     </script>
 {% endblock %}

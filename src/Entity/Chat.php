@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
 use App\Repository\ParticipantRepository;
 use App\Repository\MessageRepository;
+use App\Services\ImagesManager\ImagesConstants;
 
 /**
  * @ORM\Entity(repositoryClass=ChatRepository::class)
@@ -282,6 +283,16 @@ class Chat
         $this->imageFilename = $imageFilename;
 
         return $this;
+    }
+
+    public function getImagePath(): ?string
+    {
+        return ImagesConstants::CHATS_IMAGES.'/'.$this->getOwner()->getLogin().'/'.$this->getImageFilename();
+    }
+
+    public function getThumbImagePath(): ?string
+    {
+        return ImagesConstants::CHATS_IMAGES.'/'.$this->getOwner()->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getImageFilename();
     }
 
 }
