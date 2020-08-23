@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Criteria;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Services\ImagesManager\ImagesConstants;
-use App\Repository\{UserRepository, FriendRepository, ReportRepository};
+use App\Repository\{UserRepository, FriendRepository};
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -416,18 +416,6 @@ class User implements UserInterface
     public function getReports(): Collection
     {
         return $this->reports;
-    }
-
-    /**
-     * getReportsAfterDate Get all reports after given date
-     * @param   \DateTimeInterface    $date   Date after which look for reports
-     * @return  Collection|Report
-     */
-    public function getReportsAfterDate(\DateTimeInterface $date): Collection
-    {
-        $criteria = ReportRepository::createAfterDateCriteria($date);
-
-        return $this->reports->matching($criteria);
     }
 
     public function addReport(Report $report): self

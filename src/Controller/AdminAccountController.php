@@ -123,6 +123,7 @@ class AdminAccountController extends AbstractController
             if ($this->isCsrfTokenValid('ban_multiple', $submittedToken)) {
                 $ids = $request->request->get('banId');
                 $users = $userRepository->findAllByIds($ids);
+
                 if($users) {
                     foreach ($users as $user) {
                         if (!$user->isAdmin()) {
@@ -165,10 +166,8 @@ class AdminAccountController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
         
-        $userId = $user->getId();
-        
         //double check that everything is ok
-        if($userId === intval($data['id'])) {
+        if($user->getId() === intval($data['id'])) {
             $imageFilename = $user->getImageFilename();
             if(!empty($imageFilename)) {
                 $result = $userImagesManager->deleteImage($imageFilename, $user->getLogin());

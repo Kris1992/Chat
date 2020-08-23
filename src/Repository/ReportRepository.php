@@ -101,18 +101,6 @@ class ReportRepository extends ServiceEntityRepository
     }
 
     /**
-     * createAfterDateCriteria Returns reports after given date
-     * @param  \DateTimeInterface    $date   Date after which look for reports
-     * @return Criteria
-     */
-    public static function createAfterDateCriteria(\DateTimeInterface $date): Criteria
-    {
-        return Criteria::create()
-            ->andWhere(Criteria::expr()->gte('createdAt', $date))
-        ;
-    }
-
-    /**
      * findOneByUsersAfterDate Find one report by users and between now and given date
      * @param  User                 $reportSender   User object whose send report
      * @param  User                 $reportedUser   User object whose was reported

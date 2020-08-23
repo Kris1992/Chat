@@ -144,12 +144,11 @@ class AdminChatController extends AbstractController
         $submittedToken = $request->request->get('token');
         if($request->request->has('deleteId')) {
             if ($this->isCsrfTokenValid('delete_multiple', $submittedToken)) {
-                $ids = $request->request->get('deleteId');
 
                 /* Admin can delete only public chat rooms */
-                $chats = $chatRepository->findAllPublicByIds($ids);
-                if($chats) {
+                $chats = $chatRepository->findAllPublicByIds($request->request->get('deleteId'));
 
+                if($chats) {
                     foreach ($chats as $chat) {
                         $entityManager->remove($chat);
                     }
@@ -190,10 +189,8 @@ class AdminChatController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
         
-        $chatId = $chat->getId();
-        
         //double check that everything is ok
-        if($chatId === intval($data['id'])) {
+        if($chat->getId() === intval($data['id'])) {
             $imageFilename = $chat->getImageFilename();
             if(!empty($imageFilename)) {
                 $result = $attachmentImagesManager->deleteImage($imageFilename, $chat->getOwner()->getLogin());

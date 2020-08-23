@@ -23,6 +23,7 @@
                             <th {% if pagination.isSorted('c.id') %} class="sorted" {% endif %}>
                                 {{ knp_pagination_sortable(pagination, '#', 'c.id') }}
                             </th>
+                            <th>Image</th>
                             <th {% if pagination.isSorted('c.title') %} class="sorted" {% endif %}>
                                 {{ knp_pagination_sortable(pagination, 'Title', 'c.title') }}
                             </th>
@@ -42,6 +43,13 @@
                                     <input type="checkbox" name="deleteId[]" value="{{ room.id }}">
                                 </td>
                                 <td>{{ room.id }}</td>
+                                <td>
+                                    {% if room.imageFilename %}
+                                        <img class="img-fluid" src="{{ uploaded_asset(room.thumbImagePath) }}" width="75" height="75" alt="Chat image">
+                                    {% else %}
+                                        <img class="img-fluid" src="//placehold.it/75" width="75" height="75" alt="Chat image">
+                                    {% endif %}   
+                                </td>
                                 <td>{{ room.title }}</td>
                                 <td>{{ room.description |u.truncate(20, '...') }}</td>
                                 <td>

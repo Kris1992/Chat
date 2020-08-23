@@ -41,46 +41,48 @@
                             <th {% if pagination.isSorted('u.banTo') %} class="sorted" {% endif %}>
                                 {{ knp_pagination_sortable(pagination, 'Banned', 'u.banTo') }}
                             </th>
-                            <th>30 days reports</th>                           
+                            <th {% if pagination.isSorted('monthReports') %} class="sorted" {% endif %}>
+                                {{ knp_pagination_sortable(pagination, 'Month reports', 'monthReports') }}
+                            </th>
+                            <!--<th>30 days reports</th> -->                          
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% set lastMonth = date('-30days') %}
                         {% for user in pagination %}
                             <tr>
                                 <td>
-                                    {% if user.isAdmin %}
+                                    {% if user[0].isAdmin %}
                                         <input type="checkbox" disabled="disabled">
                                     {% else %}
-                                        <input type="checkbox" name="banId[]" value="{{ user.id }}">
+                                        <input type="checkbox" name="banId[]" value="{{ user[0].id }}">
                                     {% endif %}
                                 </td>
-                                <td>{{ user.id }}</td>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.login }}</td>
+                                <td>{{ user[0].id }}</td>
+                                <td>{{ user[0].email }}</td>
+                                <td>{{ user[0].login }}</td>
                                 <td>
-                                    {% for role in user.roles %}
+                                    {% for role in user[0].roles %}
                                         <div class="role-wrapper">
                                             <span>{{ role }}</span>
                                         </div>
                                     {% endfor %}
                                 </td>
-                                <td>{{ user.gender }}</td>
-                                <td>{{ user.lastActivity | date('m/d/Y') }}</td>
+                                <td>{{ user[0].gender }}</td>
+                                <td>{{ user[0].lastActivity | date('m/d/Y') }}</td>
                                 <td>
-                                    {% if user.isAdmin %}
+                                    {% if user[0].isAdmin %}
                                         <span class="text-primary fas fa-user-shield"></span>
-                                    {% elseif date(user.banTo) > date() %}
+                                    {% elseif date(user[0].banTo) > date() %}
                                         <div class="link-wrapper">
-                                            <a href="{{ path('admin_account_ban', { id : user.id } ) }}" class="unban-user" data-name="user" data-id="{{ user.id }}" data-toggle="tooltip" data-placement="top" title="Unban">
+                                            <a href="{{ path('admin_account_ban', { id: user[0].id } ) }}" class="unban-user" data-name="user" data-id="{{ user[0].id }}" data-toggle="tooltip" data-placement="top" title="Unban">
                                                 <span class="text-danger fas fa-ban"></span>
                                             </a>
                                         </div>
-                                        {{ user.banTo | date('m/d/Y') }}
+                                        {{ user[0].banTo | date('m/d/Y') }}
                                     {% else %}
                                         <div class="link-wrapper">
-                                            <a href="{{ path('admin_account_ban', { id : user.id } ) }}" class="ban-user" data-name="user" data-id="{{ user.id }}" data-toggle="tooltip" data-placement="top" title="Ban">
+                                            <a href="{{ path('admin_account_ban', { id: user[0].id } ) }}" class="ban-user" data-name="user" data-id="{{ user[0].id }}" data-toggle="tooltip" data-placement="top" title="Ban">
                                                 <span class="fas fa-ban"></span>
                                             </a>
                                         </div>
@@ -88,14 +90,14 @@
                                 </td>
                                 <td>
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_get_reports_user', { id : user.id } ) }}" class="red-link" data-toggle="tooltip" data-placement="top" title="Show reports">
-                                            {{ user.reportsAfterDate(lastMonth) | length }}
+                                        <a href="{{ path('admin_get_reports_user', { id: user[0].id } ) }}" class="red-link" data-toggle="tooltip" data-placement="top" title="Show reports">
+                                            {{ user.monthReports }}
                                         </a>
                                     </div>
                                 </td>
                                 <td class="links-table">
                                     <div class="link-wrapper">
-                                        <a href="{{ path('admin_account_edit', {id:user.id}) }}" data-toggle="tooltip" data-placement="top" title="Edit">
+                                        <a href="{{ path('admin_account_edit', {id: user[0].id}) }}" data-toggle="tooltip" data-placement="top" title="Edit">
                                             <span class="fa fa-pencil-alt"></span>
                                         </a>
                                     </div>

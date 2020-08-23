@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query;
 
 /**
@@ -27,12 +28,19 @@ class UserRepository extends ServiceEntityRepository
      */
     public function findAllQuery(string $searchTerms): Query
     {   
+
         if ($searchTerms) {
             return $this->searchByTermsQuery($searchTerms);
         }
+
         return $this->createQueryBuilder('u')
-            ->leftJoin('u.reports', 'r')
-            ->addSelect('r')
+            ->leftJoin('u.reports', 'r', Expr\Join::WITH, 'r.createdAt BETWEEN :lastMonth AND :now')
+            ->addSelect('COUNT(r.id) AS monthReports')
+            ->setParameters([
+                'lastMonth' => new \Datetime('last month'),
+                'now' => new \DateTime('now'),
+            ])
+            ->groupBy('u.id')
             ->getQuery()
         ;
     }
@@ -46,11 +54,14 @@ class UserRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('u')
             ->where('u.email LIKE :searchTerms OR u.login LIKE :searchTerms')
+            ->leftJoin('u.reports', 'r', Expr\Join::WITH, 'r.createdAt BETWEEN :lastMonth AND :now')
+            ->addSelect('COUNT(r.id) AS monthReports')
             ->setParameters([
-                'searchTerms' => '%'.$searchTerms.'%'
+                'searchTerms' => '%'.$searchTerms.'%',
+                'lastMonth' => new \Datetime('last month'),
+                'now' => new \DateTime('now'),
             ])
-            ->leftJoin('u.reports', 'r')
-            ->addSelect('r')
+            ->groupBy('u.id')
             ->getQuery()
         ;
     }

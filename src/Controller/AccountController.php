@@ -7,18 +7,17 @@ use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseT
 use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Csrf\{CsrfTokenManagerInterface, CsrfToken};
-use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
+use App\Repository\{UserRepository, PasswordTokenRepository, FriendRepository};
+use App\Services\PasswordTokenGenerator\PasswordTokenGeneratorInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
 use App\Services\Factory\UserModel\UserModelFactoryInterface;
 use App\Services\Updater\User\UserUpdaterInterface;
 use App\Services\ImagesManager\ImagesManagerInterface;
+use App\Services\PasswordReseter\PasswordReseterInterface;
 use App\Security\LoginFormAuthenticator;
-use App\Services\Mailer\MailingSystemInterface;
-use App\Repository\{UserRepository, PasswordTokenRepository, FriendRepository};
-use Doctrine\ORM\EntityManagerInterface;
 use App\Form\{UserFormType, RenewPasswordFormType};
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{User, PasswordToken};
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
@@ -76,67 +75,41 @@ class AccountController extends AbstractController
 
     /**
      * @param   Request                     $request
-     * @param   CsrfTokenManagerInterface   $csrfTokenManager
-     * @param   UserRepository              $userRepository
-     * @param   MailingSystemInterface      $mailer
-     * @param   EntityManagerInterface      $entityManager
+     * @param   PasswordReseterInterface    $passwordReseter
      * @return  Response
-     * @throws  InvalidCsrfTokenException
      * @Route("/password/reset", name="app_reset_password", methods={"POST", "GET"})
      */
-    public function resetPassword(Request $request, CsrfTokenManagerInterface $csrfTokenManager, UserRepository $userRepository, MailingSystemInterface $mailer, EntityManagerInterface $entityManager): Response
+    public function resetPassword(Request $request, PasswordReseterInterface $passwordReseter): Response
     {
+
         if($request->isMethod('POST')) {
-            $formData = [
-                'email' => $request->request->get('email'),
-                'csrf_token' => $request->request->get('_csrf_token')
-            ];
 
-            $token = new CsrfToken('authenticate', $formData['csrf_token']);
-            if (!$csrfTokenManager->isTokenValid($token)) {
-                throw new InvalidCsrfTokenException();
-            }
+            try {
+                $passwordReseter->reset(
+                    $request->request->get('email'), 
+                    $request->request->get('_csrf_token')
+                );
 
-            $user = $userRepository->findOneBy(['email' => $formData['email']]);
-            
-            if (!$user) {
-                $this->addFlash('warning', 'E-mail not found in database!');    
-            } else {
-                $passTokenOld = $user->getPasswordToken();
-                if($passTokenOld) {
-                    $entityManager->remove($passTokenOld);
-                }
-                $passToken = new PasswordToken($user);
-                $user->setPasswordToken($passToken);
-                $entityManager->persist($passToken);
-                $entityManager->flush();
-
-                $mailer->sendResetPasswordMessage($user);
                 $this->addFlash('success', 'Check your email! We send message to you.');
+            } catch (\Exception $e) {
+                $this->addFlash('warning', $e->getMessage());
             }
+
         }
 
         return $this->render('account/reset_password.html.twig');
     }
 
     /**
-     * @param   EntityManagerInterface $entityManager
+     * @param   PasswordTokenGeneratorInterface $passwordTokenGenerator
      * @return  Response
      * @Route("/password/change", name="app_change_password", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function changePassword(EntityManagerInterface $entityManager): Response
+    public function changePassword(PasswordTokenGeneratorInterface $passwordTokenGenerator): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        $passTokenOld = $user->getPasswordToken();
-        if($passTokenOld) {
-            $entityManager->remove($passTokenOld);
-        }
-        $passToken = new PasswordToken($user);
-        $user->setPasswordToken($passToken);
-        $entityManager->persist($passToken);
-        $entityManager->flush();
+
+        $passToken = $passwordTokenGenerator->generate($this->getUser());
 
         return $this->redirectToRoute('app_renew_password', ['token' => $passToken->getToken()]);
     }
@@ -212,9 +185,7 @@ class AccountController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        $userId = $user->getId();
-
-        if($userId === intval($data['id'])) {
+        if($user->getId() === intval($data['id'])) {
             $imageFilename = $user->getImageFilename();
             if(!empty($imageFilename)) {
                 $result = $userImagesManager->deleteImage($imageFilename, $user->getLogin());
@@ -236,7 +207,7 @@ class AccountController extends AbstractController
      * @Route("/api/account/update_last_activity", name="api_account_last_activity", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function updateLastActivity(EntityManagerInterface $entityManager, FriendRepository $friendRepository): Response
+    public function updateLastActivityAction(EntityManagerInterface $entityManager, FriendRepository $friendRepository): Response
     {
 
         /** @var User $user */
@@ -257,7 +228,7 @@ class AccountController extends AbstractController
      * @Route("/api/account/get_last_activities", name="api_account_get_last_activities", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function getLastActivities(Request $request, UserRepository $userRepository): Response
+    public function getLastActivitiesAction(Request $request, UserRepository $userRepository): Response
     {
         
         $data = json_decode($request->getContent(), true);
