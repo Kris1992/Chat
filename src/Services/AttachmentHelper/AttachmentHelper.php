@@ -16,16 +16,18 @@ class AttachmentHelper implements AttachmentHelperInterface
         $this->attachmentRepository = $attachmentRepository;
     }
 
-    public function getAttachmentsFilenames(string $content): ?array
+    public function getAttachmentsFilenames(?string $content): ?array
     {
+        if ($content) {
+            $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
+            preg_match_all($pattern, $content, $matches);
+            if ($matches[0]) {
+                $filenames = array_map(function($match) {
+                    return basename($match);
+                }, $matches[1]);
 
-        $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
-        preg_match_all($pattern, $content, $matches);
-        if ($matches[0]) {
-            $filenames = array_map(function($match) {
-                return basename($match);
-            }, $matches[1]);
-            return $filenames;
+                return $filenames;
+            }
         }
        
         return null;

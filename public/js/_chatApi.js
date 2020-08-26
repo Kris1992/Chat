@@ -148,7 +148,8 @@ import { isEmptyField } from './helpers/_validationHelper.js';
             this.resetTypingEventListener();
             
             let message = $(ChatApi._selectors.uploadedAttachments).html();
-            if (message) {
+
+            if (!isEmptyField(message)) {
                 message = message + '</br>' + emojioneArea[0].emojioneArea.getText();
             } else {
                 message = emojioneArea[0].emojioneArea.getText();

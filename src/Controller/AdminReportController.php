@@ -39,13 +39,13 @@ class AdminReportController extends AbstractController
             'pagination' => $pagination
         ]);
     }
+
     /**
      * @param   User                            $reportedUser
      * @param   ReportRepository                $reportRepository
      * @param   PaginatorInterface              $paginator
      * @param   Request                         $request
      * @return  Response
-     * 
      * @Route("admin/report/user/{id}", name="admin_get_reports_user", methods={"GET"})
      */
     public function getReportsByUser(User $reportedUser, ReportRepository $reportRepository, PaginatorInterface $paginator, Request $request): Response
@@ -68,10 +68,9 @@ class AdminReportController extends AbstractController
     /**
      * @param   Report                          $report
      * @return  Response
-     * 
      * @Route("api/admin/report/{id}", name="api_admin_get_report", methods={"GET"})
      */
-    public function getReport(Report $report): Response
+    public function getReportAction(Report $report): Response
     {
 
         return $this->json(
@@ -100,4 +99,5 @@ class AdminReportController extends AbstractController
         $response->send();
         return $response;
     }
+    
 }

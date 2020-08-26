@@ -11,15 +11,16 @@ use App\Services\Factory\Participant\ParticipantFactoryInterface;
 use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use App\Repository\{ChatRepository, ParticipantRepository, UserRepository};
-use App\Message\Command\{CheckUserActivityOnPublicChat, RemoveScreenFile};
+use App\Message\Command\CheckUserActivityOnPublicChat;
+use App\Services\ChatCreatorSystem\ChatCreatorSystemInterface;
 use App\Services\ParticipantSystem\ParticipantSystemInterface;
+use App\Services\ChatPrinterSystem\ChatPrinterSystemInterface;
 use App\Services\Factory\ChatModel\ChatModelFactoryInterface;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use App\Services\Factory\Chat\ChatFactoryInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Services\ChatPrinter\ChatPrinter;
 use Symfony\Component\WebLink\Link;
 use App\Entity\{Chat, User};
 
@@ -100,11 +101,8 @@ class ChatController extends AbstractController
      */
     public function privateList(ChatRepository $chatRepository): Response
     {
-
-        /** @var User $user */
-        $user = $this->getUser();
         
-        $chats = $chatRepository->findPrivateChatsByUser($user, 0);
+        $chats = $chatRepository->findPrivateChatsByUser($this->getUser(), 0);
 
         return $this->render('chat/private_list.html.twig', [
             'chats' => $chats
@@ -112,77 +110,52 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @param   Request                     $request
-     * @param   EntityManagerInterface      $entityManager
-     * @param   UserRepository              $userRepository
-     * @param   ChatModelFactoryInterface   $chatModelFactory
-     * @param   ModelValidatorInterface     $modelValidator
-     * @param   ChatFactoryInterface        $chatFactory
+     * @param   Request                         $request
+     * @param   ChatCreatorSystemInterface      $chatCreatorSystem
      * @return  Response
      * @Route("/chat/private/create", name="chat_private_create", methods={"POST"})
      */
-    public function createPrivateRoom(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, ChatModelFactoryInterface $chatModelFactory, ModelValidatorInterface $modelValidator, ChatFactoryInterface $chatFactory): Response
+    public function createPrivateRoom(Request $request, ChatCreatorSystemInterface $chatCreatorSystem): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
 
         $submittedToken = $request->request->get('token');
 
-        if($request->request->has('friends')) {
-            if ($this->isCsrfTokenValid('private_chat', $submittedToken)) {
-                $usersIds = $request->request->get('friends');
-                $users = $userRepository->findAllByIds($usersIds);
-
-                $chatModel = $chatModelFactory->createFromData($user, false, $users, null, null);
-                $isValid = $modelValidator->isValid($chatModel, "chat:private");
-
-                if ($isValid) {
-                    $chat = $chatFactory->create($chatModel, $user, null);
-                    
-                    $entityManager->persist($chat);
-                    $entityManager->flush();   
-                    
-                    $this->addFlash('success','Chat was created.');
-                    return $this->redirectToRoute('chat_private');
-                } else {
-                    $this->addFlash('danger', $modelValidator->getErrorMessage());
-                    return $this->redirectToRoute('chat_private');
-                }
-
+        try {
+            if (
+                !$request->request->has('friends')  || 
+                !$this->isCsrfTokenValid('private_chat', $submittedToken)
+            ) {
+                throw new \Exception("Cannot create this chat room.");
             }
+
+            $chatCreatorSystem->create($this->getUser(), $request->request->get('friends'));
+            $this->addFlash('success','Chat was created.');
+
+        } catch (\Exception $e) {
+            $this->addFlash('danger', $e->getMessage());
         }
 
-        $this->addFlash('danger','Cannot create this chat room.');
         return $this->redirectToRoute('chat_private');
     }
 
     /**
-     * @param   EntityManagerInterface      $entityManager
-     * @param   ChatModelFactoryInterface   $chatModelFactory
-     * @param   ModelValidatorInterface     $modelValidator
-     * @param   ChatFactoryInterface        $chatFactory
+     * @param   int                             $chatUserId
+     * @param   ChatCreatorSystemInterface      $chatCreatorSystem
      * @return  Response
      * @Route("/chat/private/create/user/{id}", name="chat_private_create_with_user", methods={"GET"})
      */
-    public function createPrivateRoomWithUser(User $chatUser, EntityManagerInterface $entityManager, ChatModelFactoryInterface $chatModelFactory, ModelValidatorInterface $modelValidator, ChatFactoryInterface $chatFactory): Response
+    public function createPrivateRoomWithUser(int $id, ChatCreatorSystemInterface $chatCreatorSystem): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
 
-        $chatModel = $chatModelFactory->createFromData($user, false, [$chatUser], null, null);
-        $isValid = $modelValidator->isValid($chatModel, "chat:private");
+        try {
 
-        if ($isValid) {
-            $chat = $chatFactory->create($chatModel, $user, null);
-                    
-            $entityManager->persist($chat);
-            $entityManager->flush();   
-                    
+            $chatCreatorSystem->create($this->getUser(), [$id]);
             $this->addFlash('success','Chat was created.');
-            return $this->redirectToRoute('chat_private');
-        } 
 
-        $this->addFlash('danger', $modelValidator->getErrorMessage());
+        } catch (\Exception $e) {
+            $this->addFlash('danger', $e->getMessage());
+        }
+
         return $this->redirectToRoute('chat_private');
     }
 
@@ -193,7 +166,7 @@ class ChatController extends AbstractController
      * @throws  ApiBadRequestHttpException
      * @Route("/api/chat/private", name="api_get_chats", methods={"POST"})
      */
-    public function getChats(Request $request, ChatRepository $chatRepository): Response
+    public function getChatsAction(Request $request, ChatRepository $chatRepository): Response
     {   
 
         $data = json_decode($request->getContent(), true);
@@ -202,9 +175,7 @@ class ChatController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        /** @var User $user */
-        $user = $this->getUser();
-        $chats = $chatRepository->findPrivateChatsByUser($user, $data['offset']);
+        $chats = $chatRepository->findPrivateChatsByUser($this->getUser(), $data['offset']);
 
         return $this->json(
                 $chats,
@@ -228,12 +199,13 @@ class ChatController extends AbstractController
      * @return  Response
      * @Route("/api/chat/{id}/update_participant", name="api_chat_update_participant", methods={"POST"})
      */
-    public function updateParticipant(Chat $chat, EntityManagerInterface $entityManager, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
+    public function updateParticipantAction(Chat $chat, EntityManagerInterface $entityManager, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
 
-        /** @var User $user */
-        $user = $this->getUser();
-        $participant = $participantRepository->findParticipantByUserAndChat($user, $chat);
+        $participant = $participantRepository->findParticipantByUserAndChat(
+            $this->getUser(), 
+            $chat
+        );
         
         if ($participant) {
             $participant->updateLastSeenAt();
@@ -260,12 +232,10 @@ class ChatController extends AbstractController
      * @return  Response
      * @Route("/api/chat/{id}/other_participants", name="api_chat_get_other__participants", methods={"GET"})
      */
-    public function getParticipants(Chat $chat, JsonErrorResponseFactory $jsonErrorFactory): Response
+    public function getParticipantsAction(Chat $chat, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
 
-        /** @var User $user */
-        $user = $this->getUser();
-        $participants = $chat->getOtherParticipants($user);
+        $participants = $chat->getOtherParticipants($this->getUser());
 
         if ($participants) {
 
@@ -287,7 +257,7 @@ class ChatController extends AbstractController
      * @return  Response
      * @Route("/api/chat/hub_url", name="api_hub_url", methods={"GET"})
      */
-    public function getHubUrl(Request $request): Response
+    public function getHubUrlAction(Request $request): Response
     {
         $hubUrl = $this->getParameter('mercure.default_hub');
         $this->addLink($request, new Link('mercure', $hubUrl));
@@ -298,14 +268,15 @@ class ChatController extends AbstractController
     /**
      * @param   Chat                            $chat
      * @param   Request                         $request
-     * @param   ChatPrinter                     $chatPrinter
+     * @param   ChatPrinterSystemInterface      $chatPrinterSystem
      * @param   JsonErrorResponseFactory        $jsonErrorFactory
-     * @param   MessageBusInterface             $messageBus
+     * @throws  ApiBadRequestHttpException
      * @return  Response
      * @Route("/api/chat/{id}/file", name="api_get_chat_data_file", methods={"POST"})
      */
-    public function getChatDataAsFile(Chat $chat, Request $request, ChatPrinter $chatPrinter, JsonErrorResponseFactory $jsonErrorFactory, MessageBusInterface $messageBus): Response
+    public function getChatDataAsFileAction(Chat $chat, Request $request, ChatPrinterSystemInterface $chatPrinterSystem, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
+
         $this->denyAccessUnlessGranted('CHAT_VIEW', $chat);
 
         $data = json_decode($request->getContent(), true);
@@ -314,32 +285,21 @@ class ChatController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        $startAt = new \DateTime($data['startAt']);
-        $stopAt = new \DateTime($data['stopAt']);
-
-        $messages = $chat->getMessagesBetween($startAt, $stopAt);
-
-        if ($messages->isEmpty()) {
-            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, 'There is no messages to print in given interval.');        
-        }
-
-        /** @var User $user */
-        $user = $this->getUser();
-
         try {
-            $concretePrinter = $chatPrinter->choosePrinter($data['fileFormat']);
-            $link = $concretePrinter->printToFile($messages, $user, $startAt, $stopAt);
+
+            $link = $chatPrinterSystem->printToFile(
+                $chat,
+                $this->getUser(),
+                new \DateTime($data['startAt']),
+                new \DateTime($data['stopAt']), 
+                $data['fileFormat']
+            );
+
         } catch (\Exception $e) {
             return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_NOT_FOUND_ERROR, null, $e->getMessage());
         }
 
-        $message = new RemoveScreenFile(basename($link));
-        $envelope = new Envelope($message, [
-            new DelayStamp(900000)//15 minutes delay 
-        ]);
-        $messageBus->dispatch($envelope);
-
-        return new JsonResponse($link, Response::HTTP_OK);
+        return new JsonResponse($link, Response::HTTP_OK);  
     }
 
                                             //participant

@@ -30,10 +30,13 @@ class FriendController extends AbstractController
      */
     public function list(FriendRepository $friendRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        /** @var User $currentUser */
-        $currentUser = $this->getUser();
+
         $searchTerms = $request->query->getAlnum('filterValue');
-        $friendQuery = $friendRepository->findAllQueryByStatus($searchTerms, $currentUser, 'Accepted');
+        $friendQuery = $friendRepository->findAllQueryByStatus(
+            $searchTerms, 
+            $this->getUser(), 
+            'Accepted'
+        );
 
         $pagination = $paginator->paginate(
             $friendQuery, /* query NOT result */
@@ -61,10 +64,8 @@ class FriendController extends AbstractController
     public function search(UserRepository $userRepository, PaginatorInterface $paginator, Request $request, FriendRepository $friendRepository): Response
     {   
         
-        /** @var User $currentUser */
-        $currentUser = $this->getUser();
         $searchTerms = $request->query->getAlnum('filterValue');
-        $userQuery = $userRepository->findAllQuery($searchTerms, $currentUser);
+        $userQuery = $userRepository->findAllQuery($searchTerms, false);
 
         $pagination = $paginator->paginate(
             $userQuery, /* query NOT result */
@@ -88,9 +89,8 @@ class FriendController extends AbstractController
      */
     public function requestslist(FriendRepository $friendRepository): Response
     {
-        /** @var User $currentUser */
-        $currentUser = $this->getUser();
-        $friendRequests = $friendRepository->findAllToAccept($currentUser);
+        
+        $friendRequests = $friendRepository->findAllToAccept($this->getUser());
     
         return $this->render('friend/requests_list.html.twig', [
             'friendRequests' => $friendRequests
@@ -147,9 +147,7 @@ class FriendController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        /** @var User $currentUser */
-        $currentUser = $this->getUser();
-        if ($friend->getInvitee() === $currentUser) {
+        if ($friend->getInvitee() === $this->getUser()) {
             $friend = $friendUpdater->update($friend, $data['status']);
             $entityManager->flush();
             return new JsonResponse(null, Response::HTTP_OK);
@@ -163,12 +161,10 @@ class FriendController extends AbstractController
      * @return  Response
      * @Route("/api/friend", name="api_get_friend", methods={"GET"})
      */
-    public function getFriends(FriendRepository $friendRepository): Response
+    public function getFriendsAction(FriendRepository $friendRepository): Response
     {  
 
-        /** @var User $currentUser */
-        $currentUser = $this->getUser();
-        $friends = $friendRepository->findAllByStatus($currentUser, 'Accepted');
+        $friends = $friendRepository->findAllByStatus($this->getUser(), 'Accepted');
         
         return $this->json(
             $friends,

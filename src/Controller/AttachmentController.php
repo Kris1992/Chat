@@ -3,16 +3,12 @@
 namespace App\Controller;
 
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
+use App\Services\AttachmentUploadSystem\AttachmentUploadSystemInterface;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use App\Services\AttachmentManager\AttachmentManagerInterface;
 use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Messenger\{MessageBusInterface, Envelope};
-use Symfony\Component\Messenger\Stamp\DelayStamp;
-use App\Message\Command\CheckIsAttachmentUsed;
-use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use Hateoas\HateoasBuilder;
 
@@ -21,63 +17,34 @@ use Hateoas\HateoasBuilder;
 **/
 class AttachmentController extends AbstractController
 {
+
     /**
-     * @param   string                      $type
-     * @param   Request                     $request
-     * @param   AttachmentManagerInterface  $attachmentManager
-     * @param   JsonErrorResponseFactory    $jsonErrorFactory
-     * @param   EntityManagerInterface      $entityManager
-     * @param   MessageBusInterface         $messageBus
+     * @param   string                              $type
+     * @param   Request                             $request
+     * @param   AttachmentUploadSystemInterface     $attachmentUploadSystem
+     * @param   JsonErrorResponseFactory            $jsonErrorFactory
      * @return  Response
      * @throws  ApiBadRequestHttpException
      * @Route("/api/attachment/{type}", name="api_upload_attachment", methods={"POST"})
      */
-    public function upload(string $type, Request $request, AttachmentManagerInterface $attachmentManager, JsonErrorResponseFactory $jsonErrorFactory, EntityManagerInterface $entityManager, MessageBusInterface $messageBus): Response
+    public function upload(string $type, Request $request, AttachmentUploadSystemInterface $attachmentUploadSystem, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
 
         $submittedToken = $request->request->get('token');
+
         if (!$this->isCsrfTokenValid('upload', $submittedToken)) {
             return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Wrong token.');
         }
 
-        switch ($type) {
-            case 'image':
-                $file = $request->files->get('uploadImage');
-                break;
-            case 'file':
-                $file = $request->files->get('uploadFile');
-                break;
-            default:
-                return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_INVALID_REQUEST_BODY_FORMAT, null, 'Invalid request.');
-        }
-
-        if (!$file) {
-            throw new ApiBadRequestHttpException('Invalid JSON.');
-        }
-        
         try {
-            $attachment = $attachmentManager->create($user, null, $file, ucfirst($type));
+            $attachment = $attachmentUploadSystem->upload($this->getUser(), null , $request, $type);
+        } catch (\UnexpectedValueException $e) {
+            return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_INVALID_REQUEST_BODY_FORMAT, null, $e->getMessage());
+        } catch (ApiBadRequestHttpException $e) {
+            throw $e;
         } catch (\Exception $e) {
-
             return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, $e->getMessage());
         }
-        
-        $entityManager->persist($attachment);
-        $entityManager->flush();
-
-        //Check attachment is handled by message after 1 hour
-        $attachmentUsedMessage = new CheckIsAttachmentUsed(
-            $attachment->getId(),
-            $user->getLogin()
-        );
-
-        $envelope = new Envelope($attachmentUsedMessage, [
-            new DelayStamp(3600000)//1 hour delay 
-        ]);
-
-        $messageBus->dispatch($envelope);
 
         $hateoasBuilder = HateoasBuilder::create()->build();
         $serializedAttachment = $hateoasBuilder->serialize($attachment, 'json', SerializationContext::create()->setGroups(['attachment:show']));

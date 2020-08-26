@@ -23,47 +23,66 @@ class UserRepository extends ServiceEntityRepository
 
     /**
      * findAllQuery Find all Users or if searchTerms are not empty find all users with following data
-     * @param  string $searchTerms Search word
+     * @param  string   $searchTerms    Search word
+     * @param  bool     $addReports     Is reports needed [optional]
      * @return Query
      */
-    public function findAllQuery(string $searchTerms): Query
+    public function findAllQuery(string $searchTerms, bool $addReports = true): Query
     {   
 
         if ($searchTerms) {
-            return $this->searchByTermsQuery($searchTerms);
+            return $this->searchByTermsQuery($searchTerms, $addReports);
+        }
+
+        if ($addReports) {
+            return $this->createQueryBuilder('u')
+                ->leftJoin('u.reports', 'r', Expr\Join::WITH, 'r.createdAt BETWEEN :lastMonth AND :now')
+                ->addSelect('COUNT(r.id) AS monthReports')
+                ->setParameters([
+                    'lastMonth' => new \Datetime('last month'),
+                    'now' => new \DateTime('now'),
+                ])
+                ->groupBy('u.id')
+                ->getQuery()
+            ;
         }
 
         return $this->createQueryBuilder('u')
-            ->leftJoin('u.reports', 'r', Expr\Join::WITH, 'r.createdAt BETWEEN :lastMonth AND :now')
-            ->addSelect('COUNT(r.id) AS monthReports')
-            ->setParameters([
-                'lastMonth' => new \Datetime('last month'),
-                'now' => new \DateTime('now'),
-            ])
-            ->groupBy('u.id')
             ->getQuery()
         ;
     }
 
     /**
      * searchByTermsQuery Find all users with following data
-     * @param  string $searchTerms Search word
+     * @param  string   $searchTerms      Search word
+     * @param  bool     $addReports     Is reports needed
      * @return Query
      */
-    public function searchByTermsQuery(string $searchTerms): Query
+    public function searchByTermsQuery(string $searchTerms, bool $addReports): Query
     {
+        if ($addReports) {
+            return $this->createQueryBuilder('u')
+                ->where('u.email LIKE :searchTerms OR u.login LIKE :searchTerms')
+                ->leftJoin('u.reports', 'r', Expr\Join::WITH, 'r.createdAt BETWEEN :lastMonth AND :now')
+                ->addSelect('COUNT(r.id) AS monthReports')
+                ->setParameters([
+                    'searchTerms' => '%'.$searchTerms.'%',
+                    'lastMonth' => new \Datetime('last month'),
+                    'now' => new \DateTime('now'),
+                ])
+                ->groupBy('u.id')
+                ->getQuery()
+            ;
+        }
+
         return $this->createQueryBuilder('u')
             ->where('u.email LIKE :searchTerms OR u.login LIKE :searchTerms')
-            ->leftJoin('u.reports', 'r', Expr\Join::WITH, 'r.createdAt BETWEEN :lastMonth AND :now')
-            ->addSelect('COUNT(r.id) AS monthReports')
             ->setParameters([
                 'searchTerms' => '%'.$searchTerms.'%',
-                'lastMonth' => new \Datetime('last month'),
-                'now' => new \DateTime('now'),
             ])
-            ->groupBy('u.id')
             ->getQuery()
         ;
+
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Services\AttachmentManager;
+namespace App\Services\AttachmentCreator;
 
 use App\Services\Factory\AttachmentModel\AttachmentModelFactoryInterface;
 use App\Services\Factory\Attachment\AttachmentFactoryInterface;
@@ -9,7 +9,7 @@ use App\Services\ModelValidator\ModelValidatorInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Entity\{Message, User, Attachment};
 
-class AttachmentManager implements AttachmentManagerInterface 
+class AttachmentCreator implements AttachmentCreatorInterface 
 {
 
     /** @var ModelValidatorInterface */
@@ -22,7 +22,7 @@ class AttachmentManager implements AttachmentManagerInterface
     private $attachmentFactory;
 
     /**
-     * AttachmentManager Constructor
+     * AttachmentCreator Constructor
      * 
      * @param ModelValidatorInterface $modelValidator
      * @param AttachmentModelFactoryInterface $attachmentModelFactory

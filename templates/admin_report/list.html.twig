@@ -40,8 +40,16 @@
                     {% for report in pagination %}
                         <tr>
                             <td>{{ report.id }}</td>
-                            <td>{{ report.reportSender.login }}</td>
-                            <td>{{ report.reportedUser.login }}</td>
+                            <td>
+                                <a href="{{ path('account_profile', { id: report.reportSender.id }) }}">
+                                    {{ report.reportSender.login }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('account_profile', { id: report.reportedUser.id }) }}">
+                                    {{ report.reportedUser.login }}
+                                </a>
+                            </td>
                             <td>{{ report.type }}</td>
                             <td>{{ report.description | u.truncate(40, '...') }}</td>
                             <td>{{ report.createdAt | date('m/d/Y') }}</td>

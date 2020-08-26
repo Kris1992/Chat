@@ -12,10 +12,10 @@ interface AttachmentHelperInterface
 
     /**
      * getAttachments Get array of attachments filenames from content string
-     * @param   string      $content    String with content of message
-     * @return  array|null              Return array of attachments filenames or null
+     * @param   ?string      $content       String with content of message or null
+     * @return  array|null                  Return array of attachments filenames or null
      */
-    public function getAttachmentsFilenames(string $content): ?array;
+    public function getAttachmentsFilenames(?string $content): ?array;
     
     /**
      * getAttachments Get array of attachment objects from filenames  

@@ -20,12 +20,11 @@ class ReportController extends AbstractController
      * @param   ReportSystemInterface           $reportSystem
      * @param   JsonErrorResponseFactory        $jsonErrorFactory
      * @param   EntityManagerInterface          $entityManager
-     * @return  Response
      * @throws  ApiBadRequestHttpException
-     * 
+     * @return  Response
      * @Route("api/report/user/{id}", name="api_report_user", methods={"POST"})
      */
-    public function reportUser(User $reportedUser, Request $request, ReportSystemInterface $reportSystem, JsonErrorResponseFactory $jsonErrorFactory, EntityManagerInterface $entityManager): Response
+    public function reportUserAction(User $reportedUser, Request $request, ReportSystemInterface $reportSystem, JsonErrorResponseFactory $jsonErrorFactory, EntityManagerInterface $entityManager): Response
     {
         
         $data = json_decode($request->getContent(), true);
@@ -34,12 +33,9 @@ class ReportController extends AbstractController
             throw new ApiBadRequestHttpException('Invalid JSON.');    
         }
 
-        /** @var User $user */
-        $currentUser = $this->getUser();
-
         try {
 
-            $report = $reportSystem->create($currentUser, $reportedUser, $data);
+            $report = $reportSystem->create($this->getUser(), $reportedUser, $data);
             $entityManager->persist($report);
             $entityManager->flush();
 

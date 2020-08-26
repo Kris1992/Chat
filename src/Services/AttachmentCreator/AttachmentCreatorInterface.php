@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Services\AttachmentManager;
+namespace App\Services\AttachmentCreator;
 
 use Symfony\Component\HttpFoundation\File\File;
 use App\Entity\{Message, User, Attachment};
@@ -8,7 +8,7 @@ use App\Entity\{Message, User, Attachment};
 /**
  *  Take care about all process of creating message attachment
  */
-interface AttachmentManagerInterface
+interface AttachmentCreatorInterface
 {   
     /**
      * create Create message attachment object

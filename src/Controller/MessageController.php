@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
+use App\Services\MessageCreatorSystem\MessageCreatorSystemInterface;
 use App\Exception\Api\ApiBadRequestHttpException;
 use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
 use App\Services\ModelValidator\ModelValidatorInterface;
@@ -22,20 +23,18 @@ class MessageController extends AbstractController
     /**
      * @param   Chat                            $chat
      * @param   Request                         $request
-     * @param   EntityManagerInterface          $entityManager
      * @param   PublisherInterface              $publisher
      * @param   SerializerInterface             $serializer
      * @param   ParticipantRepository           $participantRepository
      * @param   JsonErrorResponseFactory        $jsonErrorFactory
-     * @param   MessageModelFactoryInterface    $messageModelFactory
-     * @param   ModelValidatorInterface         $modelValidator
-     * @param   MessageFactoryInterface         $messageFactory
+     * @param   MessageCreatorSystemInterface   $messageCreatorSystem
      * @return  Response
      * @throws  ApiBadRequestHttpException
      * @Route("/api/chat/{id}/message", name="api_chat_message", methods={"POST"})
      */
-    public function addMessage(Chat $chat, Request $request, EntityManagerInterface $entityManager, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory): Response
+    public function addMessageAction(Chat $chat, Request $request, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageCreatorSystemInterface $messageCreatorSystem): Response
     {
+
         //Check is user able to write messages
         $this->denyAccessUnlessGranted('CHAT_WRITE', $chat);
 
@@ -47,14 +46,9 @@ class MessageController extends AbstractController
 
         /** @var User $user */
         $user = $this->getUser();
-        $messageModel = $messageModelFactory->createFromData($data['content'], $user, $chat);
-        $isValid = $modelValidator->isValid($messageModel);
-        if ($isValid) {
-            $message = $messageFactory->create($messageModel);
-            $chat->addMessage($message);
-            $chat->setLastMessage($message);
-            $entityManager->flush();
-
+        
+        try {
+            $message = $messageCreatorSystem->create($data['content'], $user, $chat);
             $serializedMessage = $serializer->serialize(
                 $message,
                 'json', ['groups' => 'chat:message']
@@ -65,7 +59,7 @@ class MessageController extends AbstractController
             ];
 
             $othersParticipants = $participantRepository->findAllOthersParticipantsByChat($user, $chat);
-            
+
             if ($othersParticipants) {
                 foreach ($othersParticipants as $participant) {
                     $topics[] = sprintf('/%s', $participant->getUser()->getLogin());
@@ -81,10 +75,11 @@ class MessageController extends AbstractController
         
             $publisher->__invoke($update);
             
-            return new JsonResponse($serializedMessage, Response::HTTP_CREATED); 
+        } catch (\Exception $e) {
+            return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $e->getMessage());
         }
-
-        return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $modelValidator->getErrorMessage());
+        
+        return new JsonResponse($serializedMessage, Response::HTTP_CREATED);
     }
 
     /**

@@ -12,7 +12,7 @@ interface ChatPrinterInterface
 {   
 
     /**
-     * create   Create workout from workout model 
+     * printToFile  Print messages to file
      * @param   Collection              $messages       Collection with messages
      * @param   User                    $currentUser    Current user object
      * @param   \DateTimeInterface      $startDate      Start date of messages
