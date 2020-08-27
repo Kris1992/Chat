@@ -35,7 +35,7 @@ class AttachmentController extends AbstractController
         if (!$this->isCsrfTokenValid('upload', $submittedToken)) {
             return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_ACTION_FAILED, null, 'Wrong token.');
         }
-
+        
         try {
             $attachment = $attachmentUploadSystem->upload($this->getUser(), null , $request, $type);
         } catch (\UnexpectedValueException $e) {

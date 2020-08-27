@@ -36,7 +36,6 @@ class AttachmentFileUploader implements AttachmentFileUploaderInterface
             case 'File':
                 $directory =  AttachmentsConstants::CHATS_FILES.'/'.$subdirectory;
                 return $this->filesManager->upload($file, $directory);
-
             default:
                 throw new \Exception("Unsupported attachment type. Contact with admin.");
         }

@@ -8,13 +8,9 @@ use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use App\Services\MessageCreatorSystem\MessageCreatorSystemInterface;
 use App\Exception\Api\ApiBadRequestHttpException;
-use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
-use App\Services\ModelValidator\ModelValidatorInterface;
-use App\Services\Factory\Message\MessageFactoryInterface;
 use Symfony\Component\Mercure\{PublisherInterface, Update};
 use Symfony\Component\Serializer\SerializerInterface;
 use App\Repository\{ParticipantRepository, MessageRepository};
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Chat;
 
 class MessageController extends AbstractController

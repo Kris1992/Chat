@@ -13,6 +13,7 @@ interface AttachmentFileDeleterInterface
      * @param  string $subdirectory String with subdirectory
      * @param  string $filename     String with filename
      * @param  string $type         String with type of attachment e.g image
+     * @throws \Exception           Throws an exception when type is not supported
      * @return bool                 Return true if deleted otherwise return false
      */
     public function delete(string $subdirectory, string $filename, string $type): bool;

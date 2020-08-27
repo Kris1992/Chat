@@ -42,4 +42,11 @@ class AttachmentHelperSpec extends ObjectBehavior
         $filenames->shouldReturn(null);
     }
 
+    function it_should_return_null_when_content_is_null()
+    {
+        $content = null;
+        $filenames = $this->getAttachmentsFilenames($content);
+        $filenames->shouldReturn(null);
+    }
+
 }

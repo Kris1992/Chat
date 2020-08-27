@@ -14,6 +14,14 @@ class AttachmentDeletedEvent
     /** @var string */
     private $type;
 
+    /**
+     * AttachmentDeletedEvent Constructor
+     * 
+     * @param string $subdirectory
+     * @param string $filename
+     * @param string $type
+     * 
+     */
     public function __construct(string $subdirectory, string $filename, string $type)
     {
         $this->subdirectory = $subdirectory;

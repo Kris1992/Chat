@@ -15,6 +15,12 @@ class Mailer implements MailingSystemInterface
     /** @var MailerInterface */
     private $mailer;
 
+    /**
+     * MailerInterface Constructor
+     * 
+     * @param MailerInterface $mailer
+     * 
+     */
     public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;

@@ -15,6 +15,7 @@ interface ChatPrinterSystemInterface
      * @param   User                    $currentUser        User object whose print part of chat
      * @param   \DateTimeInterface      $startDate          Start date of messages
      * @param   \DateTimeInterface      $stopDate           Stop date of messages
+     * @param   string                  $fileFormat         String with format of file to print into
      * @throws  \Exception                                  Throws \Exception when print chat messages fails
      * @return  string                                      String with link to file
      */

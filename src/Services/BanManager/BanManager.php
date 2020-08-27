@@ -13,7 +13,7 @@ class BanManager implements BanManagerInterface
     public function ban(User $user, int $option): User
     {
         if ($user->isAdmin() || $user->isBanned() || !isset($this->fields[$option])) {
-            throw new \Exception("Cannot ban this user");
+            throw new \Exception("Cannot ban this user.");
         }
 
         $user->setBanTo(new \DateTime('now '.$this->fields[$option]));
@@ -25,7 +25,7 @@ class BanManager implements BanManagerInterface
     public function unBan(User $user): User
     {
         if (!$user->isBanned()) {
-            throw new \Exception("Cannot unban this user");
+            throw new \Exception("Cannot unban this user.");
         }
 
         $user->setBanTo(null);

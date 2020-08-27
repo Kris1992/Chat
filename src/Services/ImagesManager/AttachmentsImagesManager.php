@@ -79,7 +79,6 @@ class AttachmentsImagesManager implements ImagesManagerInterface
         return false;
     }
 
-
     public function getPublicPath(string $path): string
     {
         return $this->requestStackContext

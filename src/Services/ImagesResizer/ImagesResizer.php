@@ -69,7 +69,6 @@ class ImagesResizer implements ImagesResizerInterface
                     $absoluteTempPath = $this->uploadsDirectory.'/'.$tempPath;
                     $this->publicFilesystem->createDir($tempPath);
                     
-
                     $iterator = 1;
 
                     foreach ($gifDecoder->GIFGetFrames() as $frame) {

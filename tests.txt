@@ -5,3 +5,4 @@ php bin/console messenger:consume async_priority_high async
 ./vendor/bin/phpspec run
 java -jar selenium-server-standalone-3.0.0.jar
 ./vendor/bin/behat --tags=new
+

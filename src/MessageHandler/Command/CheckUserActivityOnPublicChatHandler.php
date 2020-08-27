@@ -21,6 +21,12 @@ class CheckUserActivityOnPublicChatHandler implements  MessageSubscriberInterfac
     /** @var EntityManagerInterface */
     private $entityManager;
 
+    /**
+     * CheckUserActivityOnPublicChatHandler Constructor 
+     * @param MessageBusInterface       $eventBus
+     * @param ParticipantRepository     $participantRepository
+     * @param EntityManagerInterface    $entityManager
+     */
     public function __construct(MessageBusInterface $messageBus, ParticipantRepository $participantRepository, EntityManagerInterface $entityManager)
     {
         $this->messageBus = $messageBus;

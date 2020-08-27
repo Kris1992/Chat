@@ -25,6 +25,13 @@ class CheckIsAttachmentUsedHandler implements  MessageSubscriberInterface
     /** @var LoggerInterface */
     private $logger;
 
+    /**
+     * CheckIsAttachmentUsedHandler Constructor 
+     * @param MessageBusInterface       $eventBus
+     * @param AttachmentRepository      $attachmentRepository
+     * @param EntityManagerInterface    $entityManager
+     * @param LoggerInterface           $logger
+     */
     public function __construct(MessageBusInterface $eventBus, AttachmentRepository $attachmentRepository, EntityManagerInterface $entityManager, LoggerInterface $logger)
     {
         $this->eventBus = $eventBus;

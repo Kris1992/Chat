@@ -7,7 +7,7 @@ use App\Entity\Report;
 
 class ReportFactory implements ReportFactoryInterface 
 {
-    //TESTS
+    
     public function create(ReportModel $reportModel): Report
     {
         $report = new Report();

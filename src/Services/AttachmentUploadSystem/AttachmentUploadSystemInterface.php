@@ -13,7 +13,7 @@ interface AttachmentUploadSystemInterface
     /**
      * upload Upload, validate and save message attachment object
      * @param   User            $user           User object whose is owner of message
-     * @param   Message         $message        Message object which is owner of attachment
+     * @param   ?Message        $message        Message object which is owner of attachment or null
      * @param   Request         $request        Request with file object
      * @param   string          $type           String with type of attachment e.g image
      * @return  Attachment                      Return attachment object

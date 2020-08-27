@@ -51,5 +51,5 @@ class ChatFactorySpec extends ObjectBehavior
         $chat->getOwner()->getLogin()->shouldReturn('exampleUser');
 
     }
-
+    
 }

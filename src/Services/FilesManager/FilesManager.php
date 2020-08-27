@@ -74,9 +74,9 @@ class FilesManager implements FilesManagerInterface
 
         } catch(\Exception $e) {
             $this->logger->alert(sprintf('File "%s" cannot be deleted.', $filePath));
-            
-            return false;
         }
+        
+        return false;
     }
 
     public function getAbsolutePath(string $path): string

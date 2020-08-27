@@ -13,6 +13,10 @@ class RemoveScreenFileHandler implements  MessageSubscriberInterface
     /** @var FilesManagerInterface */
     private $filesManager;    
 
+    /**
+     * RemoveScreenFileHandler Constructor 
+     * @param FilesManagerInterface       $filesManager
+     */
     public function __construct(FilesManagerInterface $filesManager)
     {
         $this->filesManager = $filesManager;

@@ -14,6 +14,12 @@ class ChatModelFactory implements ChatModelFactoryInterface
      */
     private $participantFactory;
 
+    /**
+     * ChatModelFactory Constructor
+     * 
+     * @param ParticipantFactoryInterface $participantFactory
+     * 
+     */
     public function __construct(ParticipantFactoryInterface $participantFactory)
     {
         $this->participantFactory = $participantFactory;

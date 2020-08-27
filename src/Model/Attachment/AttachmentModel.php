@@ -16,7 +16,8 @@ use App\Entity\{Message, User};
  */
 class AttachmentModel
 {
-    
+    const VALID_TYPES = ['Image', 'File'];
+
     private $id;
 
     private $message;
@@ -31,6 +32,9 @@ class AttachmentModel
      */
     private $filename;
 
+    /**
+     * @Assert\Choice(choices=AttachmentModel::VALID_TYPES, message="This is not a valid type.")
+     */
     private $type;
 
     public function getId(): ?int

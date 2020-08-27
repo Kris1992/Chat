@@ -12,6 +12,10 @@ class RemoveAttachmentWhenAttachemtIsDeleted implements MessageHandlerInterface
     /** @var AttachmentFileDeleterInterface */
     private $attachmentFileDeleter;
 
+    /**
+     * RemoveAttachmentWhenAttachemtIsDeleted Constructor 
+     * @param AttachmentFileDeleterInterface       $attachmentFileDeleter
+     */
     public function __construct(AttachmentFileDeleterInterface $attachmentFileDeleter)
     {
         $this->attachmentFileDeleter = $attachmentFileDeleter;
@@ -19,6 +23,16 @@ class RemoveAttachmentWhenAttachemtIsDeleted implements MessageHandlerInterface
 
     public function __invoke(AttachmentDeletedEvent $event)
     {
-        $this->attachmentFileDeleter->delete($event->getSubdirectory(), $event->getFilename(), $event->getType());
+        $isRemoved = $this->attachmentFileDeleter->delete(
+            $event->getSubdirectory(),
+            $event->getFilename(),
+            $event->getType()
+        );
+
+        if (!$isRemoved) {
+            throw new \Exception(sprintf("Cannot delete attachment: %s/%s", $event->getSubdirectory(), $event->getFilename()));
+            
+        }
+
     }
 }

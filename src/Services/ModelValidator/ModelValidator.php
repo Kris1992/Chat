@@ -21,6 +21,12 @@ class ModelValidator implements ModelValidatorInterface
     /** @var bool */
     private $isValid;
 
+    /**
+     * ChatModelFactory Constructor
+     * 
+     * @param ValidatorInterface $validator
+     * 
+     */
     public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;

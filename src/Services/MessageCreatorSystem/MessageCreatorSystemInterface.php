@@ -14,8 +14,8 @@ interface MessageCreatorSystemInterface
      * @param   ?string          $messageContent     String with content of message
      * @param   ?User            $user               User object whose is owner of message
      * @param   ?Chat            $chat               Chat object to save message in
-     * @throws  \Exception                          Throws \Exception when create message fails
-     * @return  Message                             Return message object
+     * @throws  \Exception                           Throws \Exception when create message fails
+     * @return  Message                              Return message object
      */
     public function create(?string $messageContent, ?User $user, ?Chat $chat): Message;
 

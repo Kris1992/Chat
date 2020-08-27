@@ -5,7 +5,7 @@ namespace App\Services\ChatCreatorSystem;
 use App\Entity\{User, Chat};
 
 /**
- *  Take care about all process of create chat
+ *  Take care about all process of create private chat
  */
 interface ChatCreatorSystemInterface
 {   

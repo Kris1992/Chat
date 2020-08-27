@@ -16,6 +16,12 @@ class PdfPrinter implements ChatPrinterInterface
     /** @var Pdf */
     private $pdf;
 
+    /**
+     * PdfPrinter Constructor
+     * 
+     * @param Environment $twig
+     * @param Pdf $pdf
+     */
     public function __construct(Environment $twig, Pdf $pdf)
     {
         $this->twig = $twig;

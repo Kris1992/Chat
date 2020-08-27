@@ -67,7 +67,7 @@ class AttachmentUploadSystem implements AttachmentUploadSystemInterface
         );
 
         $envelope = new Envelope($attachmentUsedMessage, [
-            new DelayStamp(3600000)//1 hour delay 
+            new DelayStamp(120000)//3600000)//1 hour delay 
         ]);
 
         $this->messageBus->dispatch($envelope);

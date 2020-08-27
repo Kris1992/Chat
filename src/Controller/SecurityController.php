@@ -17,6 +17,7 @@ use App\Form\UserFormType;
 
 class SecurityController extends AbstractController
 {
+    
     /**
      * @param   AuthenticationUtils $authenticationUtils
      * @return  Response

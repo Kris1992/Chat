@@ -12,6 +12,11 @@ class MessageModelFactory implements MessageModelFactoryInterface
     /** @var AttachmentHelperInterface */
     private $attachmentHelper;
 
+    /**
+     * MessageModelFactory Constructor
+     * 
+     * @param AttachmentHelperInterface $attachmentHelper
+     */
     public function __construct(AttachmentHelperInterface $attachmentHelper)
     {
         $this->attachmentHelper = $attachmentHelper;

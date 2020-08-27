@@ -11,6 +11,12 @@ class AttachmentHelper implements AttachmentHelperInterface
     /** @var AttachmentRepository */
     private $attachmentRepository;
 
+    /**
+     * AttachmentHelper Constructor
+     *
+     *@param AttachmentRepository $attachmentRepository
+     *
+     */
     public function __construct(AttachmentRepository $attachmentRepository)
     {
         $this->attachmentRepository = $attachmentRepository;

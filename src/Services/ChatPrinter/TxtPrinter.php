@@ -16,6 +16,12 @@ class TxtPrinter implements ChatPrinterInterface
     /** @var FileWriterInterface */
     private $fileWriter;
 
+    /**
+     * TxtPrinter Constructor
+     * 
+     * @param FilesManagerInterface $filesManager
+     * @param FileWriterInterface $fileWriter
+     */
     public function __construct(FilesManagerInterface $filesManager, FileWriterInterface $fileWriter)
     {
         $this->filesManager = $filesManager;

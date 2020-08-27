@@ -7,9 +7,10 @@ use App\Entity\User;
 
 class ReportModelFactory implements ReportModelFactoryInterface 
 {
-    //TESTS
+
     public function createFromData(?User $reportSender, ?User $reportedUser, ?array $reportData): ReportModel
     {
+
         $reportModel = new ReportModel();
         $reportModel
             ->setType($reportData['type'])

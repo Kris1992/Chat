@@ -16,7 +16,7 @@
         </div>
         <div class="table-responsive">
             <form action="{{ path('admin_account_ban_selected') }}" method="POST">
-                <table class="table table-hover" id="js-ban-wrapper list">
+                <table class="table table-hover" id="js-ban-wrapper">
                     <thead class="thead-dark">
                         <tr>
                             <th></th>
@@ -43,8 +43,7 @@
                             </th>
                             <th {% if pagination.isSorted('monthReports') %} class="sorted" {% endif %}>
                                 {{ knp_pagination_sortable(pagination, 'Month reports', 'monthReports') }}
-                            </th>
-                            <!--<th>30 days reports</th> -->                          
+                            </th>                        
                             <th></th>
                         </tr>
                     </thead>
@@ -60,7 +59,11 @@
                                 </td>
                                 <td>{{ user[0].id }}</td>
                                 <td>{{ user[0].email }}</td>
-                                <td>{{ user[0].login }}</td>
+                                <td>
+                                    <a href="{{ path('account_profile', { id: user[0].id }) }}">
+                                        {{ user[0].login }}
+                                    </a>
+                                </td>
                                 <td>
                                     {% for role in user[0].roles %}
                                         <div class="role-wrapper">

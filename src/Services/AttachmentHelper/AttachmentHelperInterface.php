@@ -11,7 +11,7 @@ interface AttachmentHelperInterface
 {   
 
     /**
-     * getAttachments Get array of attachments filenames from content string
+     * getAttachmentsFilenames Get array of attachments filenames from content string
      * @param   ?string      $content       String with content of message or null
      * @return  array|null                  Return array of attachments filenames or null
      */

@@ -26,7 +26,7 @@ class ReportSystem implements ReportSystemInterface
     /**
      * ReportSystem Constructor
      * 
-     * @param ReportRepository   $reportRepository
+     * @param ReportRepository              $reportRepository
      * @param ReportModelFactoryInterface   $reportModelFactory
      * @param ModelValidatorInterface       $modelValidator
      * @param ReportFactoryInterface        $reportFactory

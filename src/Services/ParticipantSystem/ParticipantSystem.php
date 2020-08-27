@@ -67,9 +67,9 @@ class ParticipantSystem implements ParticipantSystemInterface
 
     public function remove(Chat $chat, ?array $participantsIds): Chat
     {
-        dump($participantsIds);
+
         $existingParticipants = $this->participantRepository->findAllByIdsAndChat($participantsIds, $chat);
-        dump($existingParticipants);
+        
         if (!$existingParticipants) {
             throw new \Exception('Participants to remove not found.');
         }

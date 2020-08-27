@@ -22,6 +22,13 @@ class ChatPrinter
     /** @var FilesManagerInterface */
     private $filesManager;
 
+    /**
+     * ChatPrinter Constructor
+     * 
+     * @param Environment $twig
+     * @param Pdf $pdf
+     * @param FilesManagerInterface $filesManager
+     */
     public function __construct(Environment $twig, Pdf $pdf, FilesManagerInterface $filesManager)
     {
         $this->twig = $twig;
@@ -37,7 +44,6 @@ class ChatPrinter
                 $fileWriter = FileWriter::chooseWriter(ChatPrinterConstants::TXT_PRINTER);
                 return new TxtPrinter($this->filesManager, $fileWriter);
             case ChatPrinterConstants::CSV_PRINTER:
-                //throw new \Exception("This is new feature. Able to use in next patch");
                 $fileWriter = FileWriter::chooseWriter(ChatPrinterConstants::CSV_PRINTER);
                 return new CsvPrinter($this->filesManager, $fileWriter);
             default:
