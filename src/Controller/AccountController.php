@@ -32,6 +32,7 @@ class AccountController extends AbstractController
      * @return  Response
      * @Route("/account/edit", name="account_edit", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
+     * @IsGranted("ENTER_SITE")
      */
     public function edit(Request $request, EntityManagerInterface $entityManager, UserModelFactoryInterface $userModelFactory, UserUpdaterInterface $userUpdater): Response
     {
@@ -64,6 +65,7 @@ class AccountController extends AbstractController
      * @return  Response
      * @Route("/account/{id}", name="account_profile", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @IsGranted("ENTER_SITE")
      */
     public function profile(User $user): Response
     {
@@ -105,6 +107,7 @@ class AccountController extends AbstractController
      * @return  Response
      * @Route("/password/change", name="app_change_password", methods={"GET"})
      * @IsGranted("ROLE_USER")
+     * @IsGranted("ENTER_SITE")
      */
     public function changePassword(PasswordTokenGeneratorInterface $passwordTokenGenerator): Response
     {
@@ -173,6 +176,7 @@ class AccountController extends AbstractController
      * @throws  ApiBadRequestHttpException
      * @Route("/api/account/delete_image", name="api_delete_account_image", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
+     * @IsGranted("ENTER_SITE")
      */
     public function deleteImageAction(Request $request, JsonErrorResponseFactory $jsonErrorFactory, ImagesManagerInterface $userImagesManager, EntityManagerInterface $entityManager): Response
     {
@@ -206,6 +210,7 @@ class AccountController extends AbstractController
      * @return  Response
      * @Route("/api/account/update_last_activity", name="api_account_last_activity", methods={"POST"})
      * @IsGranted("ROLE_USER")
+     * @IsGranted("ENTER_SITE")
      */
     public function updateLastActivityAction(EntityManagerInterface $entityManager, FriendRepository $friendRepository): Response
     {
@@ -227,6 +232,7 @@ class AccountController extends AbstractController
      * @throws  ApiBadRequestHttpException
      * @Route("/api/account/get_last_activities", name="api_account_get_last_activities", methods={"POST", "GET"})
      * @IsGranted("ROLE_USER")
+     * @IsGranted("ENTER_SITE")
      */
     public function getLastActivitiesAction(Request $request, UserRepository $userRepository): Response
     {

@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=MessageRepository::class)
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"message" = "Message", "petitionMessage" = "PetitionMessage",  "chatMessage" = "ChatMessage"})
  */
 class Message
 {
@@ -41,13 +44,6 @@ class Message
      * @Groups({"chat:message", "chat:list"})
      */
     private $createdAt;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Chat::class, inversedBy="messages")
-     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     * @Groups({"chat:message"})
-     */
-    private $chat;
 
     /**
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="message", orphanRemoval=true, cascade={"persist", "refresh", "remove"})
@@ -114,18 +110,6 @@ class Message
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
-    }
-
-    public function getChat(): ?Chat
-    {
-        return $this->chat;
-    }
-
-    public function setChat(?Chat $chat): self
-    {
-        $this->chat = $chat;
-
-        return $this;
     }
 
     /**

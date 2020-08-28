@@ -102,12 +102,18 @@ class User implements UserInterface
      */
     private $reports;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Petition::class, mappedBy="petitioner", orphanRemoval=true)
+     */
+    private $petitions;
+
     public function __construct()
     {
         $this->invitedFriends = new ArrayCollection();
         $this->invitedByFriends = new ArrayCollection();
         $this->sendedReports = new ArrayCollection();
         $this->reports = new ArrayCollection();
+        $this->petitions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -435,6 +441,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($report->getReportedUser() === $this) {
                 $report->setReportedUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Petition[]
+     */
+    public function getPetitions(): Collection
+    {
+        return $this->petitions;
+    }
+
+    public function addPetition(Petition $petition): self
+    {
+        if (!$this->petitions->contains($petition)) {
+            $this->petitions[] = $petition;
+            $petition->setPetitioner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePetition(Petition $petition): self
+    {
+        if ($this->petitions->contains($petition)) {
+            $this->petitions->removeElement($petition);
+            // set the owning side to null (unless already changed)
+            if ($petition->getPetitioner() === $this) {
+                $petition->setPetitioner(null);
             }
         }
 

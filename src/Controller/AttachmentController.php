@@ -14,6 +14,7 @@ use Hateoas\HateoasBuilder;
 
 /**
 * @IsGranted("ROLE_USER")
+* @IsGranted("ENTER_SITE")
 **/
 class AttachmentController extends AbstractController
 {

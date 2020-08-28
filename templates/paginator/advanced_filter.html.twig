@@ -1,0 +1,21 @@
+<form method="GET" action="{{ action }}" enctype="application/x-www-form-urlencoded">
+
+    {% if fields|length > 1 %}
+        <select name="{{ filterFieldName }}">
+            {% for field, label in fields %}
+                <option value="{{ field }}"{% if selectedField == field %} selected="selected"{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    {% else %}
+        <input type="hidden" name="{{ filterFieldName }}" value="{{ fields|keys|first }}" />
+    {% endif %}
+
+    <div class="input-group">
+        <input type="text" value="{{ selectedValue }}" name="searchValue" class="form-control" placeholder="{% if placeholder is defined %} {{ placeholder }} {% else %} Search... {% endif %}">
+            <div class="input-group-append">
+                <button class="btn btn-primary" name="Search" type="submit">
+                    <span class="fa fa-search"></span>
+                </button>
+            </div>
+    </div>
+</form>

@@ -17,6 +17,7 @@ use App\Entity\{User, Friend};
 
 /**
 * @IsGranted("ROLE_USER")
+* @IsGranted("ENTER_SITE")
 **/
 class FriendController extends AbstractController
 {

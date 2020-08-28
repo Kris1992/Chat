@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,6 +12,9 @@ use App\Services\ReportSystem\ReportSystemInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 
+/**
+* @IsGranted("ENTER_SITE")
+**/
 class ReportController extends AbstractController
 {
 

@@ -4,15 +4,19 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
 use App\Services\MessageCreatorSystem\MessageCreatorSystemInterface;
 use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\Mercure\{PublisherInterface, Update};
 use Symfony\Component\Serializer\SerializerInterface;
-use App\Repository\{ParticipantRepository, MessageRepository};
+use App\Repository\{ParticipantRepository, ChatMessageRepository};
 use App\Entity\Chat;
 
+/**
+* @IsGranted("ENTER_SITE")
+**/
 class MessageController extends AbstractController
 {
 
@@ -28,7 +32,7 @@ class MessageController extends AbstractController
      * @throws  ApiBadRequestHttpException
      * @Route("/api/chat/{id}/message", name="api_chat_message", methods={"POST"})
      */
-    public function addMessageAction(Chat $chat, Request $request, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageCreatorSystemInterface $messageCreatorSystem): Response
+    public function addChatMessageAction(Chat $chat, Request $request, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageCreatorSystemInterface $messageCreatorSystem): Response
     {
 
         //Check is user able to write messages
@@ -44,7 +48,7 @@ class MessageController extends AbstractController
         $user = $this->getUser();
         
         try {
-            $message = $messageCreatorSystem->create($data['content'], $user, $chat);
+            $message = $messageCreatorSystem->create($data['content'], $user, $chat, null);
             $serializedMessage = $serializer->serialize(
                 $message,
                 'json', ['groups' => 'chat:message']
@@ -127,13 +131,13 @@ class MessageController extends AbstractController
     /**
      * @param   Request                 $request
      * @param   Chat                    $chat
-     * @param   MessageRepository       $messageRepository
+     * @param   ChatMessageRepository   $chatMessageRepository
      * @param   ParticipantRepository   $participantRepository
      * @return  Response
      * @throws  ApiBadRequestHttpException
      * @Route("/api/chat/{id}/get_messages", name="api_chat_get_messages", methods={"POST"})
      */
-    public function getMessages(Request $request, Chat $chat, MessageRepository $messageRepository, ParticipantRepository $participantRepository): Response
+    public function getChatMessagesAction(Request $request, Chat $chat, ChatMessageRepository $chatMessageRepository, ParticipantRepository $participantRepository): Response
     {   
         $this->denyAccessUnlessGranted('CHAT_VIEW', $chat);
 
@@ -160,7 +164,7 @@ class MessageController extends AbstractController
         $allMessages = [];
         foreach ($times as $time) {
 
-            $messages = $messageRepository->findByChatAndPeriods(
+            $messages = $chatMessageRepository->findByChatAndPeriods(
                 $chat,
                 $time->getStartAt(),
                 $time->getStopAt() ?? new \DateTime(),

@@ -26,6 +26,7 @@ use App\Entity\{Chat, User};
 
 /**
 * @IsGranted("ROLE_USER")
+* @IsGranted("ENTER_SITE")
 **/
 class ChatController extends AbstractController
 {

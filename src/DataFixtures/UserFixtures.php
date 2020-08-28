@@ -2,19 +2,25 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\User;
-use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use App\Services\ImagesManager\ImagesManagerInterface;
+use Symfony\Component\HttpFoundation\File\File;
+use Doctrine\Common\Persistence\ObjectManager;
+use App\Entity\User;
 
 class UserFixtures extends BaseFixture
 {
 
-    /** @var UserPasswordEncoderInterface Password Encoder */
+    /** @var UserPasswordEncoderInterface */
 	private $passwordEncoder;
 
-    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
+    /** @var ImagesManagerInterface */
+    private $userImageManager;
+
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder, ImagesManagerInterface $userImageManager)
     {
         $this->passwordEncoder = $passwordEncoder;
+        $this->userImageManager = $userImageManager;
     }
 
     protected function loadData(ObjectManager $manager)
@@ -36,6 +42,8 @@ class UserFixtures extends BaseFixture
                 ->agreeToTerms()
                 ; 
 
+            $user = $this->randomizeUploadImage($user);
+
             return $user;
         });
 
@@ -55,12 +63,39 @@ class UserFixtures extends BaseFixture
                 ->setLastActivity(new \DateTime())
                 ->agreeToTerms()
                 ;
-            
+
+            $user = $this->randomizeUploadImage($user);
+
             return $user;
         });
 
 
         $manager->flush();
+    }
+
+    private function randomizeUploadImage(User $user, int $chanceTrue = 50): User
+    {
+        //In test env we do need waste of time to upload images
+        if ($_ENV['APP_ENV'] !== 'test') {
+            if ($this->faker->boolean($chanceTrue)) {
+                $imageFilename = $this->uploadFakeImage($user->getLogin());
+                $user
+                    ->setImageFilename($imageFilename)
+                ;
+            }
+        }
+
+        return $user;
+    }
+
+    private function uploadFakeImage(string $subdirectory): string
+    {
+        $randomImage = 'image'.$this->faker->numberBetween(0, 3).'.jpg';
+        $imagePath = __DIR__.'/users_images/'.$randomImage;
+
+        return $this->userImageManager
+            ->uploadImage(new File($imagePath), null, $subdirectory)
+            ;
     }
 
 }

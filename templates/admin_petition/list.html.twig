@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Petitions{% endblock %}
+
+{% block section_class %}petitions{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content %}
+
+{% do pagination.setFiltrationTemplate('paginator/advanced_filter.html.twig') %}
+
+<div class="col-sm-12 text-center mt-5">
+    {% if pagination.getTotalItemCount > 0 %}
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Users petitions ({{ pagination.getTotalItemCount }})</h2>
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+                <div class="list my-3">
+                {% for petition in pagination %}
+                    <div class="row border-bottom chat-card border-primary position-relative">
+                        <div class="col-md-1 align-self-center my-2">
+                            {{ petition.id }}
+                        </div>
+                        <div class="col-md-1 align-self-center my-2">
+                            <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petition.type }) }}">
+                                {{ petition.type }}        
+                            </a>
+                        </div>
+                        <div class="col-md-3 text-left align-self-center">
+                            <a href="{{ path('account_profile', { id: petition.petitioner.id }) }}">
+                                {{ petition.petitioner.login }}
+                            </a>
+                        </div>
+                        <div class="col-md-4 text-left align-self-center">
+                            <div class="col-sm-12">
+                                <span>{{ petition.title }}</span>
+                            </div>
+                            <div class="col-sm-12">
+                                <span>
+                                    <small class="text-muted">
+                                        last message
+                                    </small>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 align-self-center">
+                            <span class="text-uppercase">
+                                <small class="text-muted">
+                                    {{ time_diff(petition.createdAt) }}
+                                </small>
+                            </span>
+                        </div>
+                        <div class="col-md-1 align-self-center">
+                            <div class="link-wrapper">
+                                <a href="{{path('admin_petition_show', { id: petition.id })}}" data-toggle="tooltip" data-placement="top" title="Show">
+                                    <span class="fas fa-eye"></span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        <div class="navigation">
+            {{ knp_pagination_render(pagination, null, {}, {
+                'align': 'center'
+            }) }}
+            {% include 'paginator/per_page.html.twig' %}
+        </div>
+    {% else %}
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">
+            Petitions
+        </h2>
+        <div class="col-sm-12 col-md-4 mx-auto mb-2">
+            {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        {% include 'empty_table.html.twig' %}
+    {% endif %}
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip({trigger: 'hover'});
+            $('[data-toggle="tooltip"]').on('click', function () {
+                $(this).tooltip('hide')
+            });
+        });
+    </script>
+{% endblock %}

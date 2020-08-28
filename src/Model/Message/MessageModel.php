@@ -4,7 +4,7 @@ namespace App\Model\Message;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\{ArrayCollection, Collection};
-use App\Entity\{User, Chat, Attachment};
+use App\Entity\{User, Chat, Attachment, Petition};
 
 class MessageModel
 {
@@ -12,19 +12,28 @@ class MessageModel
     private $id;
 
 	/**
-     * @Assert\NotBlank(message="Please enter a message")
+     * @Assert\NotBlank(message="Please enter a message", groups={"chat:message", "petition:message"})
      */
     private $content;
 
     /**
-     * @Assert\NotBlank(message="Owner of message not found")
+     * @Assert\NotBlank(message="Owner of message not found", groups={"chat:message", "petition:message"})
      */
     private $owner;
 
     /**
-     * @Assert\NotBlank(message="Chat for this message not found")
+     * @Assert\NotBlank(message="Chat for this message not found", groups={"chat:message"})
+     * @Assert\IsNull(message="Invalid type of message", groups={"petition:message"})
      */
     private $chat;
+
+    /**
+     * @Assert\NotBlank(message="Petition for this message not found", groups={"petition:message"})
+     * @Assert\IsNull(message="Invalid type of message", groups={"chat:message"})
+     */
+    private $petition;
+
+    private $readedAt;
 
     private $attachments;
 
@@ -103,6 +112,30 @@ class MessageModel
         if ($this->attachments->contains($attachment)) {
             $this->attachments->removeElement($attachment);
         }
+
+        return $this;
+    }
+
+    public function getPetition(): ?Petition
+    {
+        return $this->petition;
+    }
+
+    public function setPetition(?Petition $petition): self
+    {
+        $this->petition = $petition;
+
+        return $this;
+    }
+
+    public function getReadedAt(): ?\DateTimeInterface
+    {
+        return $this->readedAt;
+    }
+
+    public function setReadedAt(?\DateTimeInterface $readedAt): self
+    {
+        $this->readedAt = $readedAt;
 
         return $this;
     }

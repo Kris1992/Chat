@@ -65,6 +65,13 @@
                                     Dashboard
                                 </a>
                             </li>
+                        {% else %}
+                            <li>
+                                <a href="{{ path('support') }}" class="menu-item {{ app.request.get('_route') starts with 'support' ? 'active' }}">
+                                    <span class="fas fa-life-ring"></span>
+                                    Support
+                                </a>
+                            </li>
                         {% endif %}
                     </ul>
                     <ul class="list-unstyled sidebar-footer">

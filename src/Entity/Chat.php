@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ChatRepository;
 use App\Repository\ParticipantRepository;
-use App\Repository\MessageRepository;
+use App\Repository\ChatMessageRepository;
 use App\Services\ImagesManager\ImagesConstants;
 
 /**
@@ -49,13 +49,13 @@ class Chat
     private $owner;
 
     /**
-     * @ORM\OneToOne(targetEntity=Message::class, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=ChatMessage::class, cascade={"persist", "remove"})
      * @Groups({"chat:list"})
      */
     private $lastMessage;
 
     /**
-     * @ORM\OneToMany(targetEntity=Message::class, mappedBy="chat", orphanRemoval=true, cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=ChatMessage::class, mappedBy="chat", orphanRemoval=true, cascade={"persist", "remove"})
      */
     private $messages;
 
@@ -137,12 +137,12 @@ class Chat
         return $this;
     }
 
-    public function getLastMessage(): ?Message
+    public function getLastMessage(): ?ChatMessage
     {
         return $this->lastMessage;
     }
 
-    public function setLastMessage(?Message $lastMessage): self
+    public function setLastMessage(?ChatMessage $lastMessage): self
     {
         $this->lastMessage = $lastMessage;
 
@@ -150,14 +150,14 @@ class Chat
     }
 
     /**
-     * @return Collection|Message[]
+     * @return Collection|ChatMessage[]
      */
     public function getMessages(): Collection
     {
         return $this->messages;
     }
 
-    public function addMessage(Message $message): self
+    public function addMessage(ChatMessage $message): self
     {
         if (!$this->messages->contains($message)) {
             $this->messages[] = $message;
@@ -167,7 +167,7 @@ class Chat
         return $this;
     }
 
-    public function removeMessage(Message $message): self
+    public function removeMessage(ChatMessage $message): self
     {
         if ($this->messages->contains($message)) {
             $this->messages->removeElement($message);
@@ -188,7 +188,7 @@ class Chat
      */
     public function getMessagesBetween(\DateTimeInterface $startDate, \DateTimeInterface $stopDate): Collection
     {
-        $criteria = MessageRepository::createBetweenDatesCriteria($startDate, $stopDate);
+        $criteria = ChatMessageRepository::createBetweenDatesCriteria($startDate, $stopDate);
 
         return $this->messages->matching($criteria);
     }

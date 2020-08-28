@@ -1,5 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
+{% block title %}Chat{% endblock %}
 
+{% block section_class %}mainPage{% endblock %} 
+{% block content_class %}{% endblock %}
+{% block content %}
+<div class="col-sm-12 text-center my-auto">
+    <div class="row">
+        {% if is_granted('ROLE_USER') %}
+            {% if app.user.isBanned %}
+                <div class="col-md-8 mx-auto mt-5">
+                    <div class="card">
+                        <div class="card-header text-center text-danger">
+                            <h3>
+                                <strong>Error</strong>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-purple">Account disabled</h5>
+                            <p class="card-text">
+                                Your account has been temporary disabled for violating our terms. We understand your account is important to you. So if you think this was a mistake, contact with support.
+                            </p>
+                            <a href="#" class="btn btn-primary">Contact with support</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+    </div>
+</div>
 {% endblock %}

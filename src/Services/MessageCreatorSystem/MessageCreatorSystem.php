@@ -3,10 +3,10 @@
 namespace App\Services\MessageCreatorSystem;
 
 use App\Services\Factory\MessageModel\MessageModelFactoryInterface;
-use App\Services\Factory\Message\MessageFactoryInterface;
-use App\Services\ModelValidator\ModelValidatorInterface;
+use App\Services\Factory\Message\MessageFactory;
+use App\Services\ModelValidator\{ModelValidatorInterface, ModelValidatorChooser};
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{User, Chat, Message};
+use App\Entity\{User, Chat, Message, Petition};
 
 class MessageCreatorSystem implements MessageCreatorSystemInterface 
 {
@@ -17,8 +17,8 @@ class MessageCreatorSystem implements MessageCreatorSystemInterface
     /** @var ModelValidatorInterface */
     private $modelValidator;
 
-    /** @var MessageFactoryInterface */
-    private $messageFactory;
+    /** @var ModelValidatorChooser */
+    private $validatorChooser;
 
     /** @var EntityManagerInterface */
     private $entityManager;
@@ -28,28 +28,33 @@ class MessageCreatorSystem implements MessageCreatorSystemInterface
      * 
      * @param MessageModelFactoryInterface $messageModelFactory
      * @param ModelValidatorInterface $modelValidator
-     * @param MessageFactoryInterface $messageFactory
+     * @param ModelValidatorChooser $validatorChooser
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, MessageFactoryInterface $messageFactory, EntityManagerInterface $entityManager)  
+    public function __construct(MessageModelFactoryInterface $messageModelFactory, ModelValidatorInterface $modelValidator, ModelValidatorChooser $validatorChooser, EntityManagerInterface $entityManager)  
     {
         $this->messageModelFactory = $messageModelFactory;
         $this->modelValidator = $modelValidator;
-        $this->messageFactory = $messageFactory;
+        $this->validatorChooser = $validatorChooser;
         $this->entityManager = $entityManager;
     }
 
-    public function create(?string $messageContent, ?User $user, ?Chat $chat): Message
+    public function create(?string $messageContent, ?User $user, ?Chat $chat, ?Petition $petition, string $messageType = 'ChatMessage'): Message
     {
-        $messageModel = $this->messageModelFactory->createFromData($messageContent, $user, $chat);
+        $messageModel = $this->messageModelFactory->createFromData($messageContent, $user, $chat, $petition);
 
-        $isValid = $this->modelValidator->isValid($messageModel);
+
+        $isValid = $this->modelValidator->isValid(
+            $messageModel, 
+            $this->validatorChooser->chooseValidationGroup($messageType)
+        );
 
         if (!$isValid) {
             throw new \Exception($this->modelValidator->getErrorMessage());
         }
         
-        $message = $this->messageFactory->create($messageModel);
+        $messageFactory = MessageFactory::chooseFactory($messageType);
+        $message = $messageFactory->create($messageModel);
         $chat->addMessage($message);
         $chat->setLastMessage($message);
         $this->entityManager->flush();   

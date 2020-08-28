@@ -168,7 +168,9 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 emojioneArea[0].emojioneArea.setText('');
                 $(ChatApi._selectors.uploadedAttachments).html('');
                 this.distributeMessage(message, $(ChatApi._selectors.messagesContainer));
-                this.updateChatsList(message, $(ChatApi._selectors.chatsContainer));
+                if (!this.isPublic) {
+                    this.updateChatsList(message, $(ChatApi._selectors.chatsContainer));
+                }
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
             });

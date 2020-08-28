@@ -13,9 +13,9 @@ interface ParticipantFactoryInterface
     /**
      * create Create participants of chat room
      * @param  User             $user       User object whose is participate chat
-     * @param  Chat             $chat       Chat object
+     * @param  ?Chat            $chat       Chat object or null
      * @return Participant                  Return participant object
      */
-    public function create(User $user, Chat $chat): Participant;
+    public function create(User $user, ?Chat $chat): Participant;
 
 }

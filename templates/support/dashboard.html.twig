@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Support{% endblock %}
+
+{% block section_class %}support{% endblock %} 
+{% block content_class %}viewh-75{% endblock %}
+{% block content %}
+<div class="col-sm-12 text-center my-auto">
+    <div class="row">
+        <div class="col-sm-12">
+            <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Support Area</h2>
+        </div>
+    </div>
+    <div class="row justify-content-around">
+        <div class="col-sm-12">
+            <h5 class="mb-3 font-weight-normal text-uppercase text-orange text-left">
+                Browse categories
+            </h5>
+        </div>
+        <div class="col-md-5 p-3 my-3 link-card">
+            <a href="{{ path('support_petition') }}" class="stretched-link">
+                <div class="card bg-transparent border-0">
+                    <div class="row no-gutters">
+                        <div class="col-md-6 my-auto">
+                            <div class="card-block px-2">
+                                <h5 class="card-title text-left text-uppercase">
+                                    Petitions (NEXT PATCH)
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="fas fa-8x fa-mail-bulk"></span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

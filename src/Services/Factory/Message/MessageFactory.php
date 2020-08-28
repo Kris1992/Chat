@@ -2,33 +2,22 @@
 
 namespace App\Services\Factory\Message;
 
-use App\Model\Message\MessageModel;
-use App\Entity\Message;
+/**
+ *  Manage ConcreteFactory
+ */
+class MessageFactory
+{   
 
-class MessageFactory implements MessageFactoryInterface 
-{
-    
-    public function create(MessageModel $messageModel): Message
-    {
-        
-        $message = new Message();
-        $message
-            ->setContent($messageModel->getContent())
-            ->setOwner($messageModel->getOwner())
-            ->setChat($messageModel->getChat())
-            ;
-
-        $attachments = $messageModel->getAttachments();
-        
-        if ($attachments) {
-            foreach ($attachments as $attachment) {
-                $message
-                    ->addAttachment($attachment)
-                    ;
-            }
+    const CHAT_MESSAGE_FACTORY="ChatMessage";
+    const PETITION_MESSAGE_FACTORY="PetitionMessage";
+ 
+    public static function chooseFactory($factoryName) {
+        switch($factoryName) {
+            case self::CHAT_MESSAGE_FACTORY:
+                return new ChatMessageFactory();
+            default:
+                throw new \Exception("Unsupported type of message factory");
         }
-
-        return $message;
     }
-
 }
+
