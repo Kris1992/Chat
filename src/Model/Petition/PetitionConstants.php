@@ -7,5 +7,10 @@ namespace App\Model\Petition;
  */
 class PetitionConstants
 {
-    const VALID_TYPES = ['Ban', 'Other'];
+    const VALID_TYPES = ['Ban', 'Feature', 'Other'];
+    const TYPES_DESC = [
+        'Ban' => 'Ban',
+        'New features' => 'Feature',
+        'Other problems' => 'Other',
+    ];
 }

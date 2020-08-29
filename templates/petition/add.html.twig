@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat - Add Petition{% endblock %}
+
+{% block section_class %}petitionAdd{% endblock %} 
+{% block content_class %}justify-content-center align-items-center{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/_forms.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-6 text-center my-3">
+    {{ include('forms/petition_form.html.twig', {
+        header_text: 'New petition',
+        button_text: 'Send'
+    }) }}
+</div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

@@ -6,60 +6,69 @@
 {% block content_class %}{% endblock %}
 {% block content %}
 
-{% do pagination.setFiltrationTemplate('paginator/advanced_filter.html.twig') %}
-
 <div class="col-sm-12 text-center mt-5">
     {% if pagination.getTotalItemCount > 0 %}
-        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">Your petitions ({{ pagination.getTotalItemCount }})</h2>
+        <h2 class="mb-3 font-weight-normal text-uppercase text-purple">
+            Your petitions ({{ pagination.getTotalItemCount }})
+        </h2>
+        <a href="{{ path('support_petition_add') }}" class="d-inline-block btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Create new petition">
+            Create
+            <span class="fas fa-plus-circle"></span>
+        </a>
         <div class="col-sm-12 col-md-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}
         </div>
-                <div class="list my-3">
-                {% for petition in pagination %}
-                    <div class="row border-bottom chat-card border-primary position-relative">
-                        <div class="col-md-1 align-self-center my-2">
-                            <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petition.type }) }}">
-                                {{ petition.type }}        
-                            </a>
-                        </div>
-                        <div class="col-md-4 text-left align-self-center">
-                            <div class="col-sm-12">
-                                <span>{{ petition.title }}</span>
-                            </div>
-                            <div class="col-sm-12">
-                                <span>
-                                    <small class="text-muted">
-                                        last message
-                                    </small>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-2 align-self-center">
-                            <span class="text-uppercase">
-                                <small class="text-muted">
-                                    {{ time_diff(petition.createdAt) }}
-                                </small>
-                            </span>
-                        </div>
-                        <div class="col-md-1 align-self-center">
-                            <div class="link-wrapper">
-                                <a href="{{path('admin_petition_show', { id: petition.id })}}" data-toggle="tooltip" data-placement="top" title="Show">
-                                    <span class="fas fa-eye"></span>
-                                </a>
-                            </div>
-                        </div>
+            <div class="list my-3">
+                <div class="row">
+                    <div class="col-sm-12 text-left">
+                        <span>Sort by:</span>
+                        <span {% if pagination.isSorted('p.type') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Reason', 'p.type') }}
+                        </span>
+                        <span class="text-muted">||</span>
+                        <span {% if pagination.isSorted('p.createdAt') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Date', 'p.createdAt') }}
+                        </span>
+                        <span class="text-muted">||</span>
+                        <span {% if pagination.isSorted('p.isOpened') %} class="sorted" {% endif %}>
+                            {{ knp_pagination_sortable(pagination, 'Closed', 'p.isOpened') }}
+                        </span>
                     </div>
-                {% endfor %}
+                    {% for petition in pagination %}
+                        <div class="col-md-4 my-3">
+                            <div class="card text-center {{ petition.isOpened ? '' : 'text-white bg-dark' }}">
+                                <h5 class="card-header text-orange">
+                                    {{ petition.type }}
+                                </h5>
+                                <div class="card-body">
+                                    <h5 class="card-title text-purple">
+                                        {{ petition.title | u.truncate(40, '...') }}
+                                    </h5>
+                                    <p class="card-text text-muted">
+                                        {{ petition.description | u.truncate(40, '...') }}
+                                    </p>
+                                    <a href="#" class="btn btn-primary">View</a>
+                                </div>
+                                <div class="card-footer text-muted">
+                                    {{ time_diff(petition.createdAt) }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         <div class="navigation">
             {{ knp_pagination_render(pagination, null, {}, {
                 'align': 'center'
             }) }}
-            {% include 'paginator/per_page.html.twig' %}
+            {{ include('paginator/per_page.html.twig', {
+                span_color: 'text-primary',
+                per_page: [6,12,18]
+            }) }}
         </div>
     {% else %}
         <h2 class="mb-3 font-weight-normal text-uppercase text-purple">
-            Petitions
+            Your petitions
         </h2>
         <div class="col-sm-12 col-md-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}

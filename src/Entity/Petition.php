@@ -31,6 +31,11 @@ class Petition
     private $type;
 
     /**
+     * @ORM\Column(type="text")
+     */
+    private $description;
+
+    /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="petitions")
      * @ORM\JoinColumn(nullable=false)
      */
@@ -46,6 +51,11 @@ class Petition
      * @ORM\OneToMany(targetEntity=PetitionMessage::class, mappedBy="petition", orphanRemoval=true)
      */
     private $petitionMessages;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isOpened;
 
     public function __construct()
     {
@@ -77,6 +87,18 @@ class Petition
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -125,6 +147,18 @@ class Petition
                 $petitionMessage->setPetition(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIsOpened(): ?bool
+    {
+        return $this->isOpened;
+    }
+
+    public function setIsOpened(bool $isOpened): self
+    {
+        $this->isOpened = $isOpened;
 
         return $this;
     }

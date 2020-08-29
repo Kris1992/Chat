@@ -76,7 +76,7 @@ class PetitionRepository extends ServiceEntityRepository
     }
 
     /**
-     * searchByTermsAndUserQuery Find public chats with following data
+     * searchByTermsAndUserQuery Find petitions belongs to user with following data
      * @param  User     $user           User object
      * @param  string   $searchTerms    Search word
      * @return Query
@@ -84,7 +84,7 @@ class PetitionRepository extends ServiceEntityRepository
     public function searchByTermsAndUserQuery(User $user, string $searchTerms): Query
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.petitioner = :user p.title LIKE :searchTerms OR p.type LIKE :searchTerms')
+            ->andWhere('p.petitioner = :user AND (p.title LIKE :searchTerms OR p.type LIKE :searchTerms)')
             ->setParameters([
                 'user' => $user,
                 'searchTerms' => '%'.$searchTerms.'%'

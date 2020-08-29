@@ -1,0 +1,38 @@
+{% block petition_form %}
+<h2 class="mb-3 font-weight-normal text-uppercase text-purple">{{ header_text }}</h2>
+    
+{{ form_start(petitionForm, {
+        attr: { class: 'align-items-center justify-content-center' }
+    }) 
+}}
+
+    {{ form_row(petitionForm.title, {
+        label : false,
+        attr: { placeholder: 'Title' }
+    }) }}
+
+    {{ form_row(petitionForm.type, {
+        label : 'Choose reason:'
+    }) }}
+
+    {{ form_row(petitionForm.description, {
+        label : false,
+        attr: { 
+            placeholder: 'Description',
+            class: 'bg-dark text-white',
+            rows: '7'
+        },
+    }) }}
+
+    {{ form_row(petitionForm.attachmentFile, {
+        label : 'Add attachment: ',
+        attr: {
+            'placeholder': 'Select file to upload',
+        }
+    }) }}
+
+    <button class="btn btn-lg btn-primary text-uppercase" type="submit">{{ button_text }}</button>
+    
+{{ form_end(petitionForm) }}
+
+{% endblock %}

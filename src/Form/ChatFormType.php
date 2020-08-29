@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use Symfony\Component\Form\Extension\Core\Type\{TextType, HiddenType, FileType, CheckboxType, ChoiceType};
+use Symfony\Component\Form\Extension\Core\Type\{TextType, HiddenType, FileType};
 use Symfony\Component\Form\{AbstractType, FormBuilderInterface};
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
