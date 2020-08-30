@@ -1,19 +1,34 @@
 {% block per_page %} 
     <div class="text-center">
         <nav aria-label="Items per page">
-            <span class="{% if span_color is defined %} {{ span_color }} {% endif %}">Per page:</span>
+            <span class="{% if span_color is defined %} {{ span_color }} {% endif %}">
+                Per page:
+            </span>
             {% if per_page is not defined %}
                 {% set per_page = [5, 10, 15] %}
             {% endif %}
+            {% set params = '?' %}
+            {% for paramName, paramValue in app.request.query.all %}
+                {% if paramName not in ["perPage", "page"] %}
+                    {% set params = params ~ paramName ~ '=' ~ paramValue ~ '&' %}
+                {% endif %}
+            {% endfor %}
+            
             <ul class="pagination justify-content-center">
                 <li {% if app.request.query.get('perPage') in ['', per_page.0] %} class="page-item active" {% else %} class="page-item" {% endif %}>
-                    <a class="page-link" href="?perPage={{ per_page.0 }}">{{ per_page.0 }}</a>
+                    <a class="page-link" href="{{ params }}perPage={{ per_page.0 }}">
+                        {{ per_page.0 }}
+                    </a>
                 </li>
                 <li {% if app.request.query.get('perPage') == per_page.1 %} class="page-item active" {% else %} class="page-item" {% endif %}>
-                    <a class="page-link" href="?perPage={{ per_page.1 }}">{{ per_page.1 }}</a>
+                    <a class="page-link" href="{{ params }}perPage={{ per_page.1 }}">
+                        {{ per_page.1 }}
+                    </a>
                 </li>
                 <li {% if app.request.query.get('perPage') == per_page.2 %} class="page-item active" {% else %} class="page-item" {% endif %}>
-                    <a class="page-link" href="?perPage={{ per_page.2 }}">{{ per_page.2 }}</a>
+                    <a class="page-link" href="{{ params }}perPage={{ per_page.2 }}">
+                        {{ per_page.2 }}
+                    </a>
                 </li>
             </ul>
         </nav>

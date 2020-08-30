@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Model\Petition\PetitionConstants;
 use App\Repository\PetitionRepository;
 use App\Entity\Petition;
 
@@ -35,7 +36,8 @@ class AdminPetitionController extends AbstractController
         );
         
         return $this->render('admin_petition/list.html.twig', [
-            'pagination' => $pagination
+            'pagination' => $pagination,
+            'petitionTypes' => PetitionConstants::VALID_TYPES
         ]);
     }
 

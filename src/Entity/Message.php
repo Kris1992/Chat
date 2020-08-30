@@ -23,32 +23,32 @@ class Message
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    protected $id;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"chat:message", "chat:list"})
      */
-    private $owner;
+    protected $owner;
 
     /**
      * @ORM\Column(type="text")
      * @Groups({"chat:message", "chat:list"})
      */
-    private $content;
+    protected $content;
 
     /**
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
      * @Groups({"chat:message", "chat:list"})
      */
-    private $createdAt;
+    protected $createdAt;
 
     /**
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="message", orphanRemoval=true, cascade={"persist", "refresh", "remove"})
      */
-    private $attachments;
+    protected $attachments;
 
     public function __construct()
     {

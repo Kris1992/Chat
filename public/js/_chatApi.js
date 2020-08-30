@@ -142,6 +142,12 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
         handleSendMessage(event) {
             event.preventDefault();
+            
+            if (!this.chatId) {
+                this.showErrorMessage('Please choose chat before you send message.');
+                return;
+            }
+
             let $textareaInput = $(ChatApi._selectors.textareaInput);
             var emojioneArea = $textareaInput.emojioneArea();
             

@@ -14,7 +14,15 @@
         <div class="col-sm-12 col-md-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}
         </div>
-                <div class="list my-3">
+        <div class="col-sm-12 text-left">
+            <a href="{{ path('admin_petition')}}" class="btn btn-primary">All</a>
+            {% for petitionType in petitionTypes %}
+                <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petitionType }) }}" class="btn btn-primary">
+                    {{ petitionType }}
+                </a>
+            {% endfor %}
+        </div>
+            <div class="list my-3">
                 {% for petition in pagination %}
                     <div class="row border-bottom chat-card border-primary position-relative">
                         <div class="col-md-1 align-self-center my-2">
@@ -71,6 +79,14 @@
         </h2>
         <div class="col-sm-12 col-md-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}
+        </div>
+        <div class="col-sm-12 text-left">
+            <a href="{{ path('admin_petition')}}" class="btn btn-primary">All</a>
+            {% for petitionType in petitionTypes %}
+                <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petitionType }) }}" class="btn btn-primary">
+                    {{ petitionType }}
+                </a>
+            {% endfor %}
         </div>
         {% include 'empty_table.html.twig' %}
     {% endif %}

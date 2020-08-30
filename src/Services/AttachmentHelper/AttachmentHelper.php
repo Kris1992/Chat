@@ -25,12 +25,18 @@ class AttachmentHelper implements AttachmentHelperInterface
     public function getAttachmentsFilenames(?string $content): ?array
     {
         if ($content) {
-            $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
+            $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)|<a class="uploaded-file"[^>]*href *= *["\']?([^"\']*)~';
+
             preg_match_all($pattern, $content, $matches);
             if ($matches[0]) {
-                $filenames = array_map(function($match) {
-                    return basename($match);
-                }, $matches[1]);
+                $filenames = array_map(function($imageMatch, $fileMatch) {
+                    if ($imageMatch) {
+                        return basename($imageMatch);
+                    } else if ($fileMatch) {
+                        return basename($fileMatch);
+                    } 
+                    return;
+                }, $matches[1], $matches[2]);
 
                 return $filenames;
             }

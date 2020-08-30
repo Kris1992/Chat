@@ -8,4 +8,5 @@ namespace App\Services\AttachmentFileUploader;
 class AttachmentsConstants
 {
     const CHATS_FILES = 'chats_files';
+    const ATTACHMENTS_FILES = 'attachments_files';
 }
