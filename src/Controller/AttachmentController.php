@@ -20,15 +20,15 @@ class AttachmentController extends AbstractController
 {
 
     /**
-     * @param   string                              $type
+     * @param   string                              $fileType
      * @param   Request                             $request
      * @param   AttachmentUploadSystemInterface     $attachmentUploadSystem
      * @param   JsonErrorResponseFactory            $jsonErrorFactory
      * @return  Response
      * @throws  ApiBadRequestHttpException
-     * @Route("/api/attachment/{type}", name="api_upload_attachment", methods={"POST"})
+     * @Route("/api/attachment/{fileType}", name="api_upload_attachment", methods={"POST"})
      */
-    public function upload(string $type, Request $request, AttachmentUploadSystemInterface $attachmentUploadSystem, JsonErrorResponseFactory $jsonErrorFactory): Response
+    public function upload(string $fileType, Request $request, AttachmentUploadSystemInterface $attachmentUploadSystem, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
 
         $submittedToken = $request->request->get('token');
@@ -38,7 +38,7 @@ class AttachmentController extends AbstractController
         }
         
         try {
-            $attachment = $attachmentUploadSystem->upload($this->getUser(), null , $request, $type);
+            $attachment = $attachmentUploadSystem->upload($this->getUser(), $request, $fileType);
         } catch (\UnexpectedValueException $e) {
             return $jsonErrorFactory->createResponse(404, JsonErrorResponseTypes::TYPE_INVALID_REQUEST_BODY_FORMAT, null, $e->getMessage());
         } catch (ApiBadRequestHttpException $e) {

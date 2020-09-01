@@ -35,7 +35,6 @@ class MessageController extends AbstractController
     public function addChatMessageAction(Chat $chat, Request $request, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageCreatorSystemInterface $messageCreatorSystem): Response
     {
 
-        //Check is user able to write messages
         $this->denyAccessUnlessGranted('CHAT_WRITE', $chat);
 
         $data = json_decode($request->getContent(), true);

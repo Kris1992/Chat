@@ -60,7 +60,8 @@ class PetitionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $petitionModel = $form->getData();
 
-            $petition = $petitionFactory->create($petitionModel, $this->getUser(), $form['attachmentFile']->getData());
+            $petition = $petitionFactory->create($petitionModel, $this->getUser(), null);
+                //$form['attachmentFiles']->getData());
 
             $entityManager->persist($petition);
             $entityManager->flush();

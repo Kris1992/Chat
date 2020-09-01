@@ -12,21 +12,25 @@ class AttachmentDeletedEvent
     private $filename;
 
     /** @var string */
-    private $type;
+    private $fileType;
+
+    /** @var string */
+    private $attachmentType;
 
     /**
      * AttachmentDeletedEvent Constructor
      * 
      * @param string $subdirectory
      * @param string $filename
-     * @param string $type
-     * 
+     * @param string $fileType
+     * @param string $attachmentType 
      */
-    public function __construct(string $subdirectory, string $filename, string $type)
+    public function __construct(string $subdirectory, string $filename, string $fileType, string $attachmentType)
     {
         $this->subdirectory = $subdirectory;
         $this->filename = $filename;
-        $this->type = $type;
+        $this->fileType = $fileType;
+        $this->attachmentType = $attachmentType;
     }
 
     public function getSubdirectory(): string
@@ -39,9 +43,14 @@ class AttachmentDeletedEvent
         return $this->filename;
     }
 
-    public function getType(): string
+    public function getFileType(): string
     {
-        return $this->type;
+        return $this->fileType;
+    }
+
+    public function getAttachmentType(): string
+    {
+        return $this->attachmentType;
     }
     
 }

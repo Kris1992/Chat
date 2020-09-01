@@ -3,15 +3,15 @@
 namespace App\Services\Factory\Attachment;
 
 use App\Model\Attachment\AttachmentModel;
-use App\Entity\Attachment;
+use App\Entity\{MessageAttachment, Attachment};
 
-class AttachmentFactory implements AttachmentFactoryInterface 
+class MessageAttachmentFactory implements AttachmentFactoryInterface 
 {
 
     public function create(AttachmentModel $attachmentModel): Attachment
     {
 
-        $attachment = new Attachment();
+        $attachment = new MessageAttachment();
         $attachment
             ->setUser($attachmentModel->getUser())
             ->setMessage($attachmentModel->getMessage())

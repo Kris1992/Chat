@@ -9,7 +9,7 @@
 ###< symfony/framework-bundle ###
 
 /public/uploads/users_images/*
-/public/uploads/chats_images/*
-/public/uploads/chats_files/*
+/public/uploads/attachments_files/*
+/public/uploads/attachments_images/*
 /public/uploads/chat_screens/*
 /src/Migrations

@@ -13,13 +13,14 @@ interface AttachmentModelFactoryInterface
 {   
     /**
      * createFromData Create message attachment model from data
-     * @param   User            $user           User object whose is owner of message
-     * @param   Message         $message        Message object which is owner of attachment
-     * @param   File            $file           File object
-     * @param   string          $type           String with type of attachment e.g image
-     * @return  AttachmentModel                 Return attachment model object
-     * @throws  \Exception                      Throws \Exception when upload file fails 
+     * @param   User            $user               User object whose is owner of message
+     * @param   Message         $message            Message object which is owner of attachment
+     * @param   File            $file               File object
+     * @param   string          $fileType           String with type of attachment file e.g image
+     * @param   string          $attachmentType     String with type of attachment e.g petition, chat
+     * @return  AttachmentModel                     Return attachment model object
+     * @throws  \Exception                          Throws \Exception when upload file fails 
      */
-    public function createFromData(User $user, ?Message $message, File $file, string $type): AttachmentModel;
+    public function createFromData(User $user, ?Message $message, File $file, string $fileType, string $attachmentType): AttachmentModel;
 
 }

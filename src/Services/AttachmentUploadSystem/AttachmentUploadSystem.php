@@ -8,7 +8,7 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 use App\Exception\Api\ApiBadRequestHttpException;
 use App\Message\Command\CheckIsAttachmentUsed;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\{Message, User, Attachment};
+use App\Entity\{User, Attachment};
 use Doctrine\ORM\EntityManagerInterface;
 
 class AttachmentUploadSystem implements AttachmentUploadSystemInterface 
@@ -37,10 +37,9 @@ class AttachmentUploadSystem implements AttachmentUploadSystemInterface
         $this->messageBus = $messageBus;
     }
 
-    public function upload(User $user, ?Message $message, Request $request, string $type): Attachment
+    public function upload(User $user, Request $request, string $fileType): Attachment
     {
-
-        switch ($type) {
+        switch ($fileType) {
             case 'image':
                 $file = $request->files->get('uploadImage');
                 break;
@@ -51,11 +50,19 @@ class AttachmentUploadSystem implements AttachmentUploadSystemInterface
                 throw new \UnexpectedValueException('Invalid request.');
         }
         
-        if (!$file) {
+        $attachmentType = $request->request->get('attachmentType');
+
+        if (!$file || !$attachmentType) {
             throw new ApiBadRequestHttpException('Invalid JSON.');
         }
         
-        $attachment = $this->attachmentCreator->create($user, null, $file, ucfirst($type));
+        $attachment = $this->attachmentCreator->create(
+            $user, 
+            null,
+            $file,
+            ucfirst($fileType),
+            ucfirst($attachmentType)
+        );
         
         $this->entityManager->persist($attachment);
         $this->entityManager->flush();
@@ -63,11 +70,12 @@ class AttachmentUploadSystem implements AttachmentUploadSystemInterface
         //Check attachment is handled by message after 1 hour
         $attachmentUsedMessage = new CheckIsAttachmentUsed(
             $attachment->getId(),
-            $user->getLogin()
+            $user->getLogin(),
+            ucfirst($attachmentType)
         );
 
         $envelope = new Envelope($attachmentUsedMessage, [
-            new DelayStamp(3600000)//1 hour delay 
+            new DelayStamp(60000)//3600000)//1 hour delay 
         ]);
 
         $this->messageBus->dispatch($envelope);

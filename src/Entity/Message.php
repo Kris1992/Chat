@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"message" = "Message", "petitionMessage" = "PetitionMessage",  "chatMessage" = "ChatMessage"})
  */
-class Message
+abstract class Message
 {
     
     /**
@@ -46,7 +46,7 @@ class Message
     protected $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="message", orphanRemoval=true, cascade={"persist", "refresh", "remove"})
+     * @ORM\OneToMany(targetEntity=MessageAttachment::class, mappedBy="message", orphanRemoval=true, cascade={"persist", "refresh", "remove"})
      */
     protected $attachments;
 
@@ -85,18 +85,19 @@ class Message
     public function getSanitazedContent(): ?string
     {
         $content = $this->getContent();
-        
-        $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)~';
-        preg_match($pattern, $content, $matches);
-        if ($matches) {
-            $content = '<span class="fas fa-file-image"></span> Sent image.';
-        } else {
-            $pattern = '~<a class="uploaded-file"[^>]~';
-            preg_match($pattern, $content, $matches);
-            if ($matches) {
-                $content = '<span class="fas fa-file-alt"></span> Sent file.';
-            }
+
+        $pattern = '~< *img[^>]*src *= *["\']?([^"\']*)|<a class="uploaded-file"[^>]*href *= *["\']?([^"\']*)~';
+        preg_match_all($pattern, $content, $matches);
+
+        if ($matches[1] && $matches[2]) {
+            return '<span class="fas fa-file-alt"></span> Sent file and image.';
+        } else if ($matches[1]) {
+            return '<span class="fas fa-file-image"></span> Sent image.';
+        } else if ($matches[2]) {
+            return '<span class="fas fa-file-alt"></span> Sent file.';
         }
+        
+        
         return $content;
     }
 

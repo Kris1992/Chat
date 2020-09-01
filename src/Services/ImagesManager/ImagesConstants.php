@@ -9,7 +9,8 @@ class ImagesConstants
 {
     const USERS_IMAGES = 'users_images';
     const CHATS_IMAGES = 'chats_images';
-    const ATTACHMENTS_IMAGES = 'base_attachments_images';
+    const PETITIONS_IMAGES = 'petitions_images';
+    const ATTACHMENTS_IMAGES = 'attachments_images';
     const THUMB_IMAGES = 'thumb';
     const TEMP_GIF = 'gif_temp';
     const JPEG_QUALITY = 75;

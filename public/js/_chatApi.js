@@ -233,6 +233,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         handleUploadedFile($fileForm, type) {
             let url = $fileForm.attr('action');
             let formData = new FormData($fileForm.get(0));
+            formData.append('attachmentType', 'chat');
 
             this.showProgressBar($(ChatApi._selectors.textareaInput), 25, 'Loading...');
             this.uploadFile(url, formData).then((data) => {

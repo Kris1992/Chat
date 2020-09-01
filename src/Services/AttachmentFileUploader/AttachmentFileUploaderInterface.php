@@ -13,12 +13,13 @@ interface AttachmentFileUploaderInterface
     /**
      * upload Upload attachment file
      *
-     * @param   File        $file           Uploaded file 
-     * @param   string      $subdirectory   String with subdirectory
-     * @param   string      $type           String with type of attachment e.g Image, File
-     * @return  string|null                 Return new filename or null if upload fails
-     * @throws  Exception                   Throws Exception when uploaded file type is not supported
+     * @param   File        $file               Uploaded file 
+     * @param   string      $subdirectory       String with subdirectory
+     * @param   string      $fileType           String with type of attachment file e.g Image, File
+     * @param   string      $attachmentType     String with type of attachment e.g Chat, Petition
+     * @return  string|null                     Return new filename or null if upload fails
+     * @throws  \Exception                      Throws Exception when uploaded file type is not supported
      */
-    public function upload(File $file, string $subdirectory, string $type): ?string;
+    public function upload(File $file, string $subdirectory, string $fileType, string $attachmentType): ?string;
 
 }

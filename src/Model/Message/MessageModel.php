@@ -4,7 +4,7 @@ namespace App\Model\Message;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\{ArrayCollection, Collection};
-use App\Entity\{User, Chat, Attachment, Petition};
+use App\Entity\{User, Chat, MessageAttachment, Petition};
 
 class MessageModel
 {
@@ -91,14 +91,14 @@ class MessageModel
     }
 
     /**
-     * @return Collection|Attachment[]
+     * @return Collection|MessageAttachment[]
      */
     public function getAttachments(): Collection
     {
         return $this->attachments;
     }
 
-    public function addAttachment(Attachment $attachment): self
+    public function addAttachment(MessageAttachment $attachment): self
     {
         if (!$this->attachments->contains($attachment)) {
             $this->attachments[] = $attachment;
@@ -107,7 +107,7 @@ class MessageModel
         return $this;
     }
 
-    public function removeAttachment(Attachment $attachment): self
+    public function removeAttachment(MessageAttachment $attachment): self
     {
         if ($this->attachments->contains($attachment)) {
             $this->attachments->removeElement($attachment);

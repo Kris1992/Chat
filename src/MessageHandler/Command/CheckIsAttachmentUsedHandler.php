@@ -9,6 +9,7 @@ use App\Repository\AttachmentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Message\Event\AttachmentDeletedEvent;
 use Psr\Log\LoggerInterface;
+use App\Entity\{MessageAttachment, PetitionAttachment};
 
 class CheckIsAttachmentUsedHandler implements  MessageSubscriberInterface
 {
@@ -50,7 +51,8 @@ class CheckIsAttachmentUsedHandler implements  MessageSubscriberInterface
             throw new \Exception("Cannot find given attachment.");
         }
 
-        if ($attachment->getMessage()) {
+        if (($attachment instanceof MessageAttachment && $attachment->getMessage())  
+            || ($attachment instanceof PetitionAttachment && $attachment->getPetition())) {
             
             if($this->logger) {
                 $this->logger->info(sprintf('Attachment with ID: %d was used.', $attachmentId));
@@ -59,12 +61,17 @@ class CheckIsAttachmentUsedHandler implements  MessageSubscriberInterface
         } else {
             
             $filename = $attachment->getFilename();
-            $type = $attachment->getType();
+            $fileType = $attachment->getType();
 
             $this->entityManager->remove($attachment);
             $this->entityManager->flush();
 
-            $this->eventBus->dispatch(new AttachmentDeletedEvent($checkIsAttachmentUsed->getSubdirectory(), $filename, $type));
+            $this->eventBus->dispatch(new AttachmentDeletedEvent(
+                $checkIsAttachmentUsed->getSubdirectory(), 
+                $filename, 
+                $fileType,
+                $checkIsAttachmentUsed->getAttachmentType()
+            ));
         }
     }
 

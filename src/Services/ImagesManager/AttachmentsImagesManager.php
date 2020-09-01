@@ -51,7 +51,7 @@ class AttachmentsImagesManager implements ImagesManagerInterface
     {
         
         if($subdirectory) {
-            $directory =  ImagesConstants::CHATS_IMAGES.'/'.$subdirectory;
+            $directory =  ImagesConstants::ATTACHMENTS_IMAGES.'/'.$subdirectory;
             $newFilename = $this->uploadFile($file, $directory, $newWidth);
 
             if ($existingFilename && $newFilename) {
@@ -104,7 +104,7 @@ class AttachmentsImagesManager implements ImagesManagerInterface
             $path = $directory.'/'.$newFilename;
             $this->imagesResizer->compressImage($path, $file->guessExtension(), $newWidth, null);
         } catch (\Exception $e) {
-            $subdirectory = str_replace(ImagesConstants::CHATS_IMAGES.'/', '', $directory);
+            $subdirectory = str_replace(ImagesConstants::ATTACHMENTS_IMAGES.'/', '', $directory);
             /* Delete already uploaded big one image */
             $this->deleteOldImage($newFilename, $subdirectory);
             return null;    
@@ -122,8 +122,8 @@ class AttachmentsImagesManager implements ImagesManagerInterface
     private function deleteOldImage(string $existingFilename, string $subdirectory): bool
     {
 
-        $result = $this->filesManager->delete(ImagesConstants::CHATS_IMAGES.'/'.$subdirectory.'/'.$existingFilename);
-        $resultThumb = $this->filesManager->delete(ImagesConstants::CHATS_IMAGES.'/'.$subdirectory.'/'.ImagesConstants::THUMB_IMAGES.'/'.$existingFilename);
+        $result = $this->filesManager->delete(ImagesConstants::ATTACHMENTS_IMAGES.'/'.$subdirectory.'/'.$existingFilename);
+        $resultThumb = $this->filesManager->delete(ImagesConstants::ATTACHMENTS_IMAGES.'/'.$subdirectory.'/'.ImagesConstants::THUMB_IMAGES.'/'.$existingFilename);
             
         if (!$result || !$resultThumb) {
             return false;

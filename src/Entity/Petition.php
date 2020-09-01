@@ -57,9 +57,15 @@ class Petition
      */
     private $isOpened;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PetitionAttachment::class, mappedBy="petition", orphanRemoval=true)
+     */
+    private $attachments;
+
     public function __construct()
     {
         $this->petitionMessages = new ArrayCollection();
+        $this->attachments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -159,6 +165,37 @@ class Petition
     public function setIsOpened(bool $isOpened): self
     {
         $this->isOpened = $isOpened;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PetitionAttachment[]
+     */
+    public function getAttachments(): Collection
+    {
+        return $this->attachments;
+    }
+
+    public function addAttachment(PetitionAttachment $attachment): self
+    {
+        if (!$this->attachments->contains($attachment)) {
+            $this->attachments[] = $attachment;
+            $attachment->setPetition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAttachment(PetitionAttachment $attachment): self
+    {
+        if ($this->attachments->contains($attachment)) {
+            $this->attachments->removeElement($attachment);
+            // set the owning side to null (unless already changed)
+            if ($attachment->getPetition() === $this) {
+                $attachment->setPetition(null);
+            }
+        }
 
         return $this;
     }

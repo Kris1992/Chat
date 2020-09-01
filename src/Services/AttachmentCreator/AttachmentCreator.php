@@ -35,12 +35,12 @@ class AttachmentCreator implements AttachmentCreatorInterface
         $this->attachmentFactory = $attachmentFactory;
     }
 
-    public function create(User $user, ?Message $message, File $file, string $type): Attachment
+    public function create(User $user, ?Message $message, File $file, string $fileType, string $attachmentType): Attachment
     {
 
         $fileModel = new AttachmentFileModel($file);
 
-        switch ($type) {
+        switch ($fileType) {
             case 'Image':
                 $isValid = $this->modelValidator->isValid($fileModel, ['attachment:image']);
                 break;
@@ -48,14 +48,14 @@ class AttachmentCreator implements AttachmentCreatorInterface
                 $isValid = $this->modelValidator->isValid($fileModel, ['attachment:file']);
                 break;
             default:
-                throw new \Exception("Unsupported attachment type. Contact with admin.");
+                throw new \Exception("Unsupported attachment file type. Contact with admin.");
         }
         
         if (!$isValid) {
             throw new \Exception($this->modelValidator->getErrorMessage());       
         }
 
-        $attachmentModel = $this->attachmentModelFactory->createFromData($user, $message, $file, $type);
+        $attachmentModel = $this->attachmentModelFactory->createFromData($user, $message, $file, $fileType, $attachmentType);
         $isValid = $this->modelValidator->isValid($attachmentModel);
 
         if (!$isValid) {

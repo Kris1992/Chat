@@ -9,7 +9,20 @@ use App\Entity\{Petition, User};
 class PetitionFactory implements PetitionFactoryInterface 
 {
 
-     public function create(PetitionModel $petitionModel, User $petitioner, ?File $uploadedFile): Petition
+    /** @var ImagesManagerInterface */
+    //private $attachmentImagesManager;
+
+    /**
+     * ChatFactory Constructor
+     * 
+     * @param ImagesManagerInterface $attachmentImagesManager
+     */
+    //public function __construct(ImagesManagerInterface $attachmentImagesManager)  
+    //{
+    //    $this->attachmentImagesManager = $attachmentImagesManager;
+    //}
+
+    public function create(PetitionModel $petitionModel, User $petitioner, ?array $uploadedFiles): Petition
     {
 
         $petition = new Petition();
@@ -20,7 +33,11 @@ class PetitionFactory implements PetitionFactoryInterface
             ->setPetitioner($petitioner)
             ->setIsOpened(true)
             ;
+        
+        //if ($uploadedFile) {
             
+        //}
+        
         return $petition;
     }
 

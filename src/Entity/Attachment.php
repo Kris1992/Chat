@@ -3,46 +3,94 @@
 namespace App\Entity;
 
 use App\Services\AttachmentFileUploader\AttachmentsConstants;
+use Hateoas\Configuration\Annotation as Hateoas;
 use App\Services\ImagesManager\ImagesConstants;
 use App\Repository\AttachmentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=AttachmentRepository::class)
+ * @Hateoas\Relation("imagePath", 
+ *     href = "expr(object.getImagePath())",
+ *     exclusion = @Hateoas\Exclusion(groups={"attachment:show"})
+ * ) 
+ * @Hateoas\Relation("thumbImagePath", 
+ *     href = "expr(object.getThumbImagePath())",
+ *     exclusion = @Hateoas\Exclusion(groups={"attachment:show"})
+ * ) 
+ * @Hateoas\Relation("filePath", 
+ *     href = "expr(object.getFilePath())",
+ *     exclusion = @Hateoas\Exclusion(groups={"attachment:show"})
+ * )
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"attachment" = "Attachment", "messageAttachment" = "MessageAttachment", "petitionAttachment" = "PetitionAttachment"})
  */
-class Attachment extends BaseAttachment
+class Attachment
 {
+    /**
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
+     */
+    protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Message::class, inversedBy="attachments")
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $message;
+    protected $user;
 
-    public function getMessage(): ?Message
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $filename;
+
+    /**
+     * @ORM\Column(type="string", length=25)
+     */
+    protected $type;
+
+    public function getId(): ?int
     {
-        return $this->message;
+        return $this->id;
     }
 
-    public function setMessage(?Message $message): self
+    public function getUser(): ?User
     {
-        $this->message = $message;
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getImagePath(): ?string
+    public function getFilename(): ?string
     {
-        return ImagesConstants::CHATS_IMAGES.'/'.$this->user->getLogin().'/'.$this->getFilename();
+        return $this->filename;
     }
 
-    public function getThumbImagePath(): ?string
+    public function setFilename(string $filename): self
     {
-        return ImagesConstants::CHATS_IMAGES.'/'.$this->user->getLogin().'/'.ImagesConstants::THUMB_IMAGES.'/'.$this->getFilename();
+        $this->filename = $filename;
+
+        return $this;
     }
 
-    public function getFilePath(): ?string
+    public function getType(): ?string
     {
-        return AttachmentsConstants::CHATS_FILES.'/'.$this->user->getLogin().'/'.$this->getFilename();
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
 }

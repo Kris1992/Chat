@@ -6,14 +6,14 @@ use App\Services\AttachmentFileDeleter\AttachmentFileDeleterInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use App\Message\Event\AttachmentDeletedEvent;
 
-class RemoveAttachmentWhenAttachemtIsDeleted implements MessageHandlerInterface
+class RemoveAttachmentFileWhenAttachmentIsDeleted implements MessageHandlerInterface
 {
 
     /** @var AttachmentFileDeleterInterface */
     private $attachmentFileDeleter;
 
     /**
-     * RemoveAttachmentWhenAttachemtIsDeleted Constructor 
+     * RemoveAttachmentFileWhenAttachmentIsDeleted Constructor 
      * @param AttachmentFileDeleterInterface       $attachmentFileDeleter
      */
     public function __construct(AttachmentFileDeleterInterface $attachmentFileDeleter)
@@ -26,7 +26,8 @@ class RemoveAttachmentWhenAttachemtIsDeleted implements MessageHandlerInterface
         $isRemoved = $this->attachmentFileDeleter->delete(
             $event->getSubdirectory(),
             $event->getFilename(),
-            $event->getType()
+            $event->getFileType(),
+            $event->getAttachmentType()
         );
 
         if (!$isRemoved) {

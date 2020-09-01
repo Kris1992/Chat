@@ -34,8 +34,8 @@ class UploadedFilesRemoveCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         
-        if($this->publicFilesystem->deleteDir(AttachmentsConstants::CHATS_FILES)) {
-            $io->success('Chat files were removed.');
+        if($this->publicFilesystem->deleteDir(AttachmentsConstants::ATTACHMENTS_FILES)) {
+            $io->success('Attachments files were removed.');
         }
 
         $io->success('All uploaded files were removed successfully.');

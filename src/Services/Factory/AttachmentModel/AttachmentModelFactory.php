@@ -23,10 +23,10 @@ class AttachmentModelFactory implements AttachmentModelFactoryInterface
         $this->attachmentFileUploader = $attachmentFileUploader;
     }
 
-    public function createFromData(User $user, ?Message $message, File $file, string $type): AttachmentModel
+    public function createFromData(User $user, ?Message $message, File $file, string $fileType, string $attachmentType): AttachmentModel
     {
 
-        $filename = $this->attachmentFileUploader->upload($file, $user->getLogin(), $type);
+        $filename = $this->attachmentFileUploader->upload($file, $user->getLogin(), $fileType, $attachmentType);
 
         if (!$filename) {
             throw new \Exception("Cannot upload that file.");
@@ -37,7 +37,7 @@ class AttachmentModelFactory implements AttachmentModelFactoryInterface
             ->setUser($user)
             ->setMessage($message)
             ->setFilename($filename)
-            ->setType($type)
+            ->setType($fileType)
             ;
 
         return $attachmentModel;
