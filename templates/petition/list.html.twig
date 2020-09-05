@@ -5,6 +5,7 @@
 {% block section_class %}petitions{% endblock %} 
 {% block content_class %}{% endblock %}
 {% block content %}
+{% do pagination.setSortableTemplate('paginator/sortable_button.html.twig') %}
 
 <div class="col-sm-12 text-center mt-5">
     {% if pagination.getTotalItemCount > 0 %}
@@ -21,25 +22,58 @@
             <div class="list my-3">
                 <div class="row">
                     <div class="col-sm-12 text-left">
-                        <span>Sort by:</span>
-                        <span {% if pagination.isSorted('p.type') %} class="sorted" {% endif %}>
-                            {{ knp_pagination_sortable(pagination, 'Reason', 'p.type') }}
-                        </span>
-                        <span class="text-muted">||</span>
-                        <span {% if pagination.isSorted('p.createdAt') %} class="sorted" {% endif %}>
-                            {{ knp_pagination_sortable(pagination, 'Date', 'p.createdAt') }}
-                        </span>
-                        <span class="text-muted">||</span>
-                        <span {% if pagination.isSorted('p.isOpened') %} class="sorted" {% endif %}>
-                            {{ knp_pagination_sortable(pagination, 'Closed', 'p.isOpened') }}
-                        </span>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="text-purple text-uppercase d-inline-block">Filter</h5>
+                                        <a href="{{ path('support_petition')}}" class="btn btn-primary d-inline-block">All</a>
+                                        {% for key, petitionType in petitionTypes %}
+                                            <a href="{{ path('support_petition', { 'filterField': 'p.type', 'filterValue': petitionType }) }}" class="btn btn-primary d-inline-block">
+                                                {{ key }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <h5 class="text-purple text-uppercase d-inline-block">Sort</h5>
+                                        {{ knp_pagination_sortable(pagination, 'Reason', 'p.type', { 'class': 'text-decoration-none' }) }}
+                                        {{ knp_pagination_sortable(pagination, 'Date', 'p.createdAt', { 'class': 'text-decoration-none' }) }}
+                                        {{ knp_pagination_sortable(pagination, 'Status', 'p.status', { 'class': 'text-decoration-none' }) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {% for petition in pagination %}
                         <div class="col-md-4 my-3">
-                            <div class="card text-center {{ petition.isOpened ? '' : 'text-white bg-dark' }}">
-                                <h5 class="card-header text-orange">
-                                    {{ petition.type }}
-                                </h5>
+                            <div class="card text-center">  
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-12 text-right text-primary">
+                                            {% if petition.status is same as('Pending') %}
+                                                <span class="fa-stack" data-toggle="tooltip" data-placement="top" title="Sended">
+                                                    <span class="fas fa-arrow-down fa-xs" style="vertical-align:top;"></span>
+                                                    <span class="fas fa-user fa-sm"></span>
+                                                </span>
+                                            {% elseif petition.status is same as('Opened') %}
+                                                <span class="fa-stack" data-toggle="tooltip" data-placement="top" title="Readed">
+                                                    <span class="fas fa-eye fa-xs" style="vertical-align:top;"></span>
+                                                    <span class="fas fa-user fa-sm"></span>
+                                                </span>
+                                            {% elseif petition.status is same as('Answered') %}
+                                                <span class="fa-stack" data-toggle="tooltip" data-placement="top" title="Answered">
+                                                    <span class="fas fa-envelope fa-xs" style="vertical-align:top;"></span>
+                                                    <span class="fas fa-user fa-sm"></span>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-12">
+                                            <h5 class="text-orange">
+                                                {{ petition.typeDescription }}
+                                            </h5>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="card-body">
                                     <h5 class="card-title text-purple">
                                         {{ petition.title | u.truncate(40, '...') }}
@@ -47,7 +81,7 @@
                                     <p class="card-text text-muted">
                                         {{ petition.description | u.truncate(40, '...') }}
                                     </p>
-                                    <a href="#" class="btn btn-primary">View</a>
+                                    <a href="{{ path('support_petition_show', {id: petition.id}) }}" class="btn btn-primary">View</a>
                                 </div>
                                 <div class="card-footer text-muted">
                                     {{ time_diff(petition.createdAt) }}

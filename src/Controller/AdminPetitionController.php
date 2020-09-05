@@ -37,7 +37,7 @@ class AdminPetitionController extends AbstractController
         
         return $this->render('admin_petition/list.html.twig', [
             'pagination' => $pagination,
-            'petitionTypes' => PetitionConstants::VALID_TYPES
+            'petitionTypes' => PetitionConstants::TYPES_DESC
         ]);
     }
 

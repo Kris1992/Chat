@@ -32,6 +32,8 @@ class PetitionModel
 
     private $petitioner;
 
+    private $attachementsFilenames;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -81,6 +83,18 @@ class PetitionModel
     public function setPetitioner(?User $petitioner): self
     {
         $this->petitioner = $petitioner;
+
+        return $this;
+    }
+
+    public function getAttachementsFilenames(): ?array
+    {
+        return $this->attachementsFilenames;
+    }
+
+    public function setAttachementsFilenames(?array $attachementsFilenames): self
+    {
+        $this->attachementsFilenames = $attachementsFilenames;
 
         return $this;
     }

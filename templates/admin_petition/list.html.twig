@@ -7,6 +7,7 @@
 {% block content %}
 
 {% do pagination.setFiltrationTemplate('paginator/advanced_filter.html.twig') %}
+{% do pagination.setSortableTemplate('paginator/sortable_button.html.twig') %}
 
 <div class="col-sm-12 text-center mt-5">
     {% if pagination.getTotalItemCount > 0 %}
@@ -15,12 +16,27 @@
             {{ knp_pagination_filter(pagination, {}) }}
         </div>
         <div class="col-sm-12 text-left">
-            <a href="{{ path('admin_petition')}}" class="btn btn-primary">All</a>
-            {% for petitionType in petitionTypes %}
-                <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petitionType }) }}" class="btn btn-primary">
-                    {{ petitionType }}
-                </a>
-            {% endfor %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="text-purple text-uppercase d-inline-block">Filter</h5>
+                            <a href="{{ path('admin_petition')}}" class="btn btn-primary d-inline-block">All</a>
+                            {% for key, petitionType in petitionTypes %}
+                                <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petitionType }) }}" class="btn btn-primary d-inline-block">
+                                    {{ key }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h5 class="text-purple text-uppercase d-inline-block">Sort</h5>
+                            {{ knp_pagination_sortable(pagination, 'Reason', 'p.type', { 'class': 'text-decoration-none' }) }}
+                            {{ knp_pagination_sortable(pagination, 'Date', 'p.createdAt', { 'class': 'text-decoration-none' }) }}
+                            {{ knp_pagination_sortable(pagination, 'Status', 'p.status', { 'class': 'text-decoration-none' }) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
             <div class="list my-3">
                 {% for petition in pagination %}

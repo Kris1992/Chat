@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Services\AttachmentFileUploader\AttachmentsConstants;
+use App\Services\ImagesManager\ImagesConstants;
 use App\Repository\PetitionAttachmentRepository;
 use Doctrine\ORM\Mapping as ORM;
 

@@ -1,0 +1,12 @@
+<a {% for attr, value in options %} {{ attr }}="{{ value }}"{% endfor %}>
+    <span class="btn btn-primary {% if sorted %} active {% endif %}">
+        {{ title }}
+        {% if sorted %}
+            {% if direction == 'desc' %}
+                <span class="fa fa-sort-down"></span>
+            {% else %}
+                <span class="fa fa-sort-up"></span>
+            {% endif %}
+        {% endif %}
+    </span>
+</a>

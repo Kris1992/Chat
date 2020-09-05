@@ -20,7 +20,7 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"chat:message", "chat:participants", "chat:friends"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends", "petition:message"})
      */
     private $id;
 
@@ -37,7 +37,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=50, unique=true)
-     * @Groups({"chat:message", "chat:participants", "chat:friends", "user:typing"})
+     * @Groups({"chat:message", "chat:participants", "chat:friends", "user:typing", "petition:message"})
      */
     private $login;
 
@@ -78,7 +78,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"chat:message", "chat:participants", "chat:friends", "user:typing"})
+     * @Groups({"chat:message", "petition:message", "chat:participants", "chat:friends", "user:typing"})
      */
     private $imageFilename;
 
@@ -332,13 +332,16 @@ class User implements UserInterface
         return $this;
     }
     
+    /**
+     * @Groups({"petition:message"})
+     */
     public function getImagePath()
     {
         return ImagesConstants::USERS_IMAGES.'/'.$this->getLogin().'/'.$this->getImageFilename();
     }
 
     /**
-     * @Groups({"chat:message", "chat:participants", "chat:friends", "user:typing"})
+     * @Groups({"chat:message", "petition:message", "chat:participants", "chat:friends", "user:typing"})
      */
     public function getThumbImagePath()
     {

@@ -1,3 +1,5 @@
+import { addNewFieldWithData } from './helpers/_formHelper.js';
+
 'use strict';
 
 Dropzone.autoDiscover = false;
@@ -35,11 +37,8 @@ function initializeDropzone() {
     });
 
     dropzone.on('success', (data) => {
-        const result = JSON.parse(data.xhr.response);
-        console.log(result);
-                //if (result) {
-                //    showReport(result);
-                //}
+        const result = JSON.parse(JSON.parse(data.xhr.response));
+        addNewFieldWithData($('#js-attachments-sets'), $('.js-attachments-filenames'), result.filename);
     });
             
 }

@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace App\Services\MessageCreatorSystem;
+namespace App\Services\MessageCreator;
 
 use App\Entity\{User, Chat, Message, Petition};
 
 /**
  *  Take care about all process of create and add message to chat
  */
-interface MessageCreatorSystemInterface
+interface MessageCreatorInterface
 {   
     /**
-     * create Create, validate, save and add message to chat object
+     * create Create, validate and add message to chat or petition object
      * @param   ?string          $messageContent     String with content of message or null
      * @param   ?User            $user               User object whose is owner of message or null
      * @param   ?Chat            $chat               Chat object to save message in or null

@@ -44,6 +44,7 @@ class Attachment
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"attachment:show"})
      */
     protected $filename;
 

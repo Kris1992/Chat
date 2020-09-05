@@ -2,6 +2,7 @@
 
 namespace App\Services\Factory\Petition;
 
+use App\Services\AttachmentHelper\AttachmentHelperInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Model\Petition\PetitionModel;
 use App\Entity\{Petition, User};
@@ -9,20 +10,20 @@ use App\Entity\{Petition, User};
 class PetitionFactory implements PetitionFactoryInterface 
 {
 
-    /** @var ImagesManagerInterface */
-    //private $attachmentImagesManager;
+    /** @var AttachmentHelperInterface */
+    private $attachmentHelper;
 
     /**
-     * ChatFactory Constructor
+     * PetitionFactory Constructor
      * 
-     * @param ImagesManagerInterface $attachmentImagesManager
+     * @param AttachmentHelperInterface $attachmentHelper
      */
-    //public function __construct(ImagesManagerInterface $attachmentImagesManager)  
-    //{
-    //    $this->attachmentImagesManager = $attachmentImagesManager;
-    //}
+    public function __construct(AttachmentHelperInterface $attachmentHelper)  
+    {
+        $this->attachmentHelper = $attachmentHelper;
+    }
 
-    public function create(PetitionModel $petitionModel, User $petitioner, ?array $uploadedFiles): Petition
+    public function create(PetitionModel $petitionModel, User $petitioner): Petition
     {
 
         $petition = new Petition();
@@ -31,12 +32,19 @@ class PetitionFactory implements PetitionFactoryInterface
             ->setDescription($petitionModel->getDescription())
             ->setType($petitionModel->getType())
             ->setPetitioner($petitioner)
-            ->setIsOpened(true)
+            ->setStatus('Pending')
             ;
         
-        //if ($uploadedFile) {
-            
-        //}
+        $attachments = $this->attachmentHelper->getAttachments(
+            $petitionModel->getAttachementsFilenames(),
+            $petitioner
+        );
+        
+        if ($attachments) {
+            foreach ($attachments as $attachment) {
+                $petition->addAttachment($attachment);  
+            }
+        }
         
         return $petition;
     }

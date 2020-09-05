@@ -28,20 +28,20 @@ abstract class Message
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"chat:message", "chat:list"})
+     * @Groups({"chat:message", "chat:list", "petition:message"})
      */
     protected $owner;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"chat:message", "chat:list"})
+     * @Groups({"chat:message", "chat:list", "petition:message"})
      */
     protected $content;
 
     /**
      * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
-     * @Groups({"chat:message", "chat:list"})
+     * @Groups({"chat:message", "chat:list", "petition:message"})
      */
     protected $createdAt;
 

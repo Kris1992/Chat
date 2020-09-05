@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PetitionMessageRepository;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -14,11 +15,13 @@ class PetitionMessage extends Message
     /**
      * @ORM\ManyToOne(targetEntity=Petition::class, inversedBy="petitionMessages")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"petition:message"})
      */
     private $petition;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"petition:message"})
      */
     private $readedAt;
 
@@ -45,4 +48,12 @@ class PetitionMessage extends Message
 
         return $this;
     }
+
+    public function setReaded(): self
+    {
+        $this->readedAt = new \DateTime();
+
+        return $this;
+    }
+
 }

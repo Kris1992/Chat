@@ -15,6 +15,8 @@ class MessageFactory
         switch($factoryName) {
             case self::CHAT_MESSAGE_FACTORY:
                 return new ChatMessageFactory();
+            case self::PETITION_MESSAGE_FACTORY:
+                return new PetitionMessageFactory();
             default:
                 throw new \Exception("Unsupported type of message factory");
         }

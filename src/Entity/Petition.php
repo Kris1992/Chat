@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PetitionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Model\Petition\PetitionConstants;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -48,14 +49,14 @@ class Petition
     private $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity=PetitionMessage::class, mappedBy="petition", orphanRemoval=true)
+     * @ORM\Column(type="string", length=50)
      */
-    private $petitionMessages;
+    private $status;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\OneToMany(targetEntity=PetitionMessage::class, mappedBy="petition", orphanRemoval=true, cascade={"persist", "remove"})
      */
-    private $isOpened;
+    private $petitionMessages;
 
     /**
      * @ORM\OneToMany(targetEntity=PetitionAttachment::class, mappedBy="petition", orphanRemoval=true)
@@ -88,6 +89,15 @@ class Petition
     public function getType(): ?string
     {
         return $this->type;
+    }
+
+    /**
+     * getTypeDescription Get full description of given type
+     * @return string
+     */
+    public function getTypeDescription(): ?string
+    {
+        return array_keys(PetitionConstants::TYPES_DESC, $this->type, true)[0];
     }
 
     public function setType(string $type): self
@@ -126,6 +136,18 @@ class Petition
         return $this->createdAt;
     }
 
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
     /**
      * @return Collection|PetitionMessage[]
      */
@@ -153,18 +175,6 @@ class Petition
                 $petitionMessage->setPetition(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getIsOpened(): ?bool
-    {
-        return $this->isOpened;
-    }
-
-    public function setIsOpened(bool $isOpened): self
-    {
-        $this->isOpened = $isOpened;
 
         return $this;
     }

@@ -1,0 +1,24 @@
+<script type="text/template" id="js-message-template">
+    <div class="card my-3">
+        <div class="card-header">
+            <% if (owner.imageFilename !== null) { %>
+                <a href="<%= baseAsset %><%= owner.imagePath %>" target="_blank">
+                    <img class="img-fluid image-circle image-border" width="25" height="25" src="<%= baseAsset %><%= owner.thumbImagePath %>">
+                </a>
+            <% } else { %>
+                <a href="<%= defaultUserImage %>" target="_blank">
+                    <img class="img-fluid image-circle image-border" width="25" height="25" src="<%= defaultUserImage %>">
+                </a>
+            <% } %>  
+            <b class="text-purple"><%= owner.login %></b>
+            <span class="float-right text-muted"><%= createdAtModified %></span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <%= content %>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

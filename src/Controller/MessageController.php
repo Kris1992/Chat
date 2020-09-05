@@ -3,20 +3,19 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use App\Services\JsonErrorResponse\{JsonErrorResponseFactory, JsonErrorResponseTypes};
-use App\Services\MessageCreatorSystem\MessageCreatorSystemInterface;
-use App\Exception\Api\ApiBadRequestHttpException;
+use App\Services\MessageCreator\MessageCreatorInterface;
+use App\Services\PetitionMessageSystem\PetitionMessageSystemInterface;
+use App\Repository\{ParticipantRepository, ChatMessageRepository};
 use Symfony\Component\Mercure\{PublisherInterface, Update};
 use Symfony\Component\Serializer\SerializerInterface;
-use App\Repository\{ParticipantRepository, ChatMessageRepository};
-use App\Entity\Chat;
+use App\Exception\Api\ApiBadRequestHttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\{Chat, Petition};
 
-/**
-* @IsGranted("ENTER_SITE")
-**/
 class MessageController extends AbstractController
 {
 
@@ -27,12 +26,14 @@ class MessageController extends AbstractController
      * @param   SerializerInterface             $serializer
      * @param   ParticipantRepository           $participantRepository
      * @param   JsonErrorResponseFactory        $jsonErrorFactory
-     * @param   MessageCreatorSystemInterface   $messageCreatorSystem
+     * @param   MessageCreatorInterface         $messageCreator
+     * @param   EntityManagerInterface          $entityManager
      * @return  Response
      * @throws  ApiBadRequestHttpException
      * @Route("/api/chat/{id}/message", name="api_chat_message", methods={"POST"})
+     * @IsGranted("ENTER_SITE")
      */
-    public function addChatMessageAction(Chat $chat, Request $request, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageCreatorSystemInterface $messageCreatorSystem): Response
+    public function addChatMessageAction(Chat $chat, Request $request, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory, MessageCreatorInterface $messageCreator, EntityManagerInterface $entityManager): Response
     {
 
         $this->denyAccessUnlessGranted('CHAT_WRITE', $chat);
@@ -47,7 +48,8 @@ class MessageController extends AbstractController
         $user = $this->getUser();
         
         try {
-            $message = $messageCreatorSystem->create($data['content'], $user, $chat, null);
+            $message = $messageCreator->create($data['content'], $user, $chat, null);
+            $entityManager->flush();
             $serializedMessage = $serializer->serialize(
                 $message,
                 'json', ['groups' => 'chat:message']
@@ -89,6 +91,7 @@ class MessageController extends AbstractController
      * @param   JsonErrorResponseFactory    $jsonErrorFactory
      * @return  Response
      * @Route("/api/chat/{id}/message/typing", name="api_chat_message_typing", methods={"GET"})
+     * @IsGranted("ENTER_SITE")
      */
     public function typingMessage(Chat $chat, PublisherInterface $publisher, SerializerInterface $serializer, ParticipantRepository $participantRepository, JsonErrorResponseFactory $jsonErrorFactory): Response
     {
@@ -135,6 +138,7 @@ class MessageController extends AbstractController
      * @return  Response
      * @throws  ApiBadRequestHttpException
      * @Route("/api/chat/{id}/get_messages", name="api_chat_get_messages", methods={"POST"})
+     * @IsGranted("ENTER_SITE")
      */
     public function getChatMessagesAction(Request $request, Chat $chat, ChatMessageRepository $chatMessageRepository, ParticipantRepository $participantRepository): Response
     {   
@@ -184,6 +188,47 @@ class MessageController extends AbstractController
         
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
 
+    }
+
+    /**
+     * @param   Petition                            $petition
+     * @param   Request                             $request
+     * @param   JsonErrorResponseFactory            $jsonErrorFactory
+     * @param   PetitionMessageSystemInterface      $petitionMessageSystem
+     * @param   EntityManagerInterface              $entityManager
+     * @param   SerializerInterface                 $serializer
+     * @return  Response
+     * @throws  ApiBadRequestHttpException
+     * @Route("/api/petition/{id}/message", name="api_petition_message", methods={"POST"})
+     */
+    public function addPetitionMessageAction(Petition $petition, Request $request, JsonErrorResponseFactory $jsonErrorFactory, PetitionMessageSystemInterface $petitionMessageSystem, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    {
+
+        $this->denyAccessUnlessGranted('PETITION_WRITE', $petition);
+
+        $data = json_decode($request->getContent(), true);
+        
+        if ($data === null) {
+            throw new ApiBadRequestHttpException('Invalid JSON.');    
+        }
+        
+        try {
+            $message = $petitionMessageSystem->create(
+                $data['content'],
+                $this->getUser(),
+                $petition
+            );
+            $entityManager->flush();
+            $serializedMessage = $serializer->serialize(
+                $message,
+                'json', ['groups' => 'petition:message']
+            );
+            
+        } catch (\Exception $e) {
+            return $jsonErrorFactory->createResponse(400, JsonErrorResponseTypes::TYPE_MODEL_VALIDATION_ERROR, null, $e->getMessage());
+        }
+        
+        return new JsonResponse($serializedMessage, Response::HTTP_CREATED);
     }
 
 }

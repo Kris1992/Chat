@@ -35,7 +35,6 @@ class AttachmentModelFactory implements AttachmentModelFactoryInterface
         $attachmentModel = new AttachmentModel();
         $attachmentModel
             ->setUser($user)
-            ->setMessage($message)
             ->setFilename($filename)
             ->setType($fileType)
             ;

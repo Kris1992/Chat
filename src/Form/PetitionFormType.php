@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use Symfony\Component\Form\Extension\Core\Type\{TextType, ChoiceType, TextareaType};
+use Symfony\Component\Form\Extension\Core\Type\{TextType, ChoiceType, TextareaType, HiddenType, CollectionType};
 use Symfony\Component\Form\{AbstractType, FormBuilderInterface};
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Model\Petition\{PetitionModel, PetitionConstants};
@@ -20,7 +20,16 @@ class PetitionFormType extends AbstractType
             ])
             ->add('description', TextareaType::class, [
                 'help' => 'Add description of problem'
-
+            ])
+            ->add('attachementsFilenames', CollectionType::class, [
+                'entry_type' => HiddenType::class,
+                'attr' => [
+                    'class' => 'js-attachments-filenames'
+                ],
+                'label' => false,
+                'allow_add' => true,
+                'by_reference' => false,
+                'required' => false
             ])
             ;
     }

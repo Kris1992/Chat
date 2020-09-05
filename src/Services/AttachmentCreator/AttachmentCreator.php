@@ -3,7 +3,7 @@
 namespace App\Services\AttachmentCreator;
 
 use App\Services\Factory\AttachmentModel\AttachmentModelFactoryInterface;
-use App\Services\Factory\Attachment\AttachmentFactoryInterface;
+use App\Services\Factory\Attachment\AttachmentFactory;
 use App\Model\Attachment\AttachmentFileModel;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -18,21 +18,16 @@ class AttachmentCreator implements AttachmentCreatorInterface
     /** @var AttachmentModelFactoryInterface */
     private $attachmentModelFactory;
 
-    /** @var AttachmentFactoryInterface */
-    private $attachmentFactory;
-
     /**
      * AttachmentCreator Constructor
      * 
      * @param ModelValidatorInterface $modelValidator
      * @param AttachmentModelFactoryInterface $attachmentModelFactory
-     * @param AttachmentFactoryInterface $attachmentFactory
      */
-    public function __construct(ModelValidatorInterface $modelValidator, AttachmentModelFactoryInterface $attachmentModelFactory, AttachmentFactoryInterface $attachmentFactory)  
+    public function __construct(ModelValidatorInterface $modelValidator, AttachmentModelFactoryInterface $attachmentModelFactory)  
     {
         $this->modelValidator = $modelValidator;
         $this->attachmentModelFactory = $attachmentModelFactory;
-        $this->attachmentFactory = $attachmentFactory;
     }
 
     public function create(User $user, ?Message $message, File $file, string $fileType, string $attachmentType): Attachment
@@ -62,7 +57,9 @@ class AttachmentCreator implements AttachmentCreatorInterface
             throw new \Exception($this->modelValidator->getErrorMessage());
         }
 
-        return $this->attachmentFactory->create($attachmentModel);
+        $attachmentFactory = AttachmentFactory::chooseFactory($attachmentType);
+        
+        return $attachmentFactory->create($attachmentModel);
 
     }
 

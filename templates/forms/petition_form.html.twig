@@ -23,6 +23,12 @@
             rows: '7'
         },
     }) }}
+
+    <div id="js-attachments-sets" 
+        data-prototype="{{ form_widget(petitionForm.attachementsFilenames.vars.prototype)|e }}"
+        data-counter="{{ petitionForm.attachementsFilenames|length }}"
+    >
+    
     <div class="row">
         <div class="col-sm-12 text-left mb-3">
             <button class="btn btn-info text-uppercase" type="button" data-toggle="modal" data-target="#js-add-attachments-modal">Add Attachments</button>

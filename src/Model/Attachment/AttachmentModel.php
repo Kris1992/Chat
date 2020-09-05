@@ -4,7 +4,7 @@ namespace App\Model\Attachment;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\UniqueProperties;
-use App\Entity\{Message, User};
+use App\Entity\{Message, Petition, User};
 
 /**
  * @UniqueProperties(
@@ -21,6 +21,8 @@ class AttachmentModel
     private $id;
 
     private $message;
+
+    private $petition;
 
     /**
      * @Assert\NotBlank(message="Owner cannot be blank.") 
@@ -57,6 +59,18 @@ class AttachmentModel
     public function setMessage(?Message $message): self
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function getPetition(): ?Petition
+    {
+        return $this->petition;
+    }
+    
+    public function setPetition(?Petition $petition): self
+    {
+        $this->petition = $petition;
 
         return $this;
     }

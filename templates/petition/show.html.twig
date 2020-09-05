@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Chat - Petition{% endblock %}
+{% block title %}Chat - Show Petition{% endblock %}
 
 {% block section_class %}petitionShow{% endblock %} 
 {% block content_class %}justify-content-center align-items-center{% endblock %}
@@ -69,7 +69,7 @@
                             <div class="col-12 text-right text-muted">
                                 Readed {{ time_diff(message.readedAt) }}
                             </div>
-                        {% endif %}                    
+                        {% endif %}
                     </div>
                 </div>
             </div>
