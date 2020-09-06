@@ -9,6 +9,11 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/_forms.css') }}">
 {% endblock %}
 {% block content %}
+<div class="col-12 text-center">
+    <a href="{{ path('admin_chat')}}" class="btn btn-info float-left">
+        <span class="far fa-list-alt"></span>
+    </a>
+</div>
 <div class="col-sm-6 text-center my-3">
     {{ include('forms/chat_form.html.twig', {
         header_text: 'Edit chat room',

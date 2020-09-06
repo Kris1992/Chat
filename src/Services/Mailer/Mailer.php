@@ -5,7 +5,7 @@ namespace App\Services\Mailer;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use App\Entity\User;
+use App\Entity\{User, Petition};
 
 /**
  * Service responsible for sending emails
@@ -35,6 +35,24 @@ class Mailer implements MailingSystemInterface
             ->htmlTemplate('emails/reset_password_email.inky.twig')
             ->context([
                 'user' => $user,
+            ]);
+        $this->mailer->send($message);
+
+        return $message;
+    }
+
+    public function sendAnsweredPetitionMessage(Petition $petition): TemplatedEmail
+    {
+        $message = (new TemplatedEmail())
+            ->from(new Address('krakowdev01@gmail.com', 'Chat'))
+            ->to(new Address(
+                $petition->getPetitioner()->getEmail(), 
+                $petition->getPetitioner()->getLogin())
+            )
+            ->subject('Your petition has new answer!')
+            ->htmlTemplate('emails/answered_petition.inky.twig')
+            ->context([
+                'petition' => $petition,
             ]);
         $this->mailer->send($message);
 

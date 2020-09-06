@@ -50,8 +50,10 @@
                                         <img class="img-fluid" src="//placehold.it/75" width="75" height="75" alt="Chat image">
                                     {% endif %}   
                                 </td>
-                                <td>{{ room.title }}</td>
-                                <td>{{ room.description |u.truncate(20, '...') }}</td>
+                                <td><b>{{ room.title |u.truncate(40, '...') }}</b></td>
+                                <td class="text-muted">
+                                    {{ room.description |u.truncate(25, '...') }}
+                                </td>
                                 <td>
                                     <span class="fa fa-{{ room.isPublic ? 'check text-success' : 'times text-danger' }}"></span>
                                 </td>

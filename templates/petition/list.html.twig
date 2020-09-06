@@ -65,6 +65,9 @@
                                                     <span class="fas fa-envelope fa-xs" style="vertical-align:top;"></span>
                                                     <span class="fas fa-user fa-sm"></span>
                                                 </span>
+                                            {% elseif petition.status is same as('Closed') %}
+                                                <span class="fas fa-lock text-success" data-toggle="tooltip" data-placement="top" title="Closed">
+                                                </span>
                                             {% endif %}
                                         </div>
                                         <div class="col-12">

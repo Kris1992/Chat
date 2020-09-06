@@ -15,74 +15,97 @@
         <div class="col-sm-12 col-md-4 mx-auto mb-2">
             {{ knp_pagination_filter(pagination, {}) }}
         </div>
-        <div class="col-sm-12 text-left">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12">
-                            <h5 class="text-purple text-uppercase d-inline-block">Filter</h5>
-                            <a href="{{ path('admin_petition')}}" class="btn btn-primary d-inline-block">All</a>
-                            {% for key, petitionType in petitionTypes %}
-                                <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petitionType }) }}" class="btn btn-primary d-inline-block">
-                                    {{ key }}
-                                </a>
-                            {% endfor %}
-                        </div>
-                        <div class="col-12 mt-2">
-                            <h5 class="text-purple text-uppercase d-inline-block">Sort</h5>
-                            {{ knp_pagination_sortable(pagination, 'Reason', 'p.type', { 'class': 'text-decoration-none' }) }}
-                            {{ knp_pagination_sortable(pagination, 'Date', 'p.createdAt', { 'class': 'text-decoration-none' }) }}
-                            {{ knp_pagination_sortable(pagination, 'Status', 'p.status', { 'class': 'text-decoration-none' }) }}
+        <div class="row">
+            <div class="col-sm-12 text-left">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="text-purple text-uppercase d-inline-block">Filter</h5>
+                                <a href="{{ path('admin_petition')}}" class="btn btn-primary d-inline-block">All</a>
+                                {% for key, petitionType in petitionTypes %}
+                                    <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petitionType }) }}" class="btn btn-primary d-inline-block">
+                                        {{ key }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <div class="col-12 mt-2">
+                                <h5 class="text-purple text-uppercase d-inline-block">Sort</h5>
+                                {{ knp_pagination_sortable(pagination, 'Reason', 'p.type', { 'class': 'text-decoration-none' }) }}
+                                {{ knp_pagination_sortable(pagination, 'Date', 'p.createdAt', { 'class': 'text-decoration-none' }) }}
+                                {{ knp_pagination_sortable(pagination, 'Status', 'p.status', { 'class': 'text-decoration-none' }) }}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-            <div class="list my-3">
-                {% for petition in pagination %}
-                    <div class="row border-bottom chat-card border-primary position-relative">
-                        <div class="col-md-1 align-self-center my-2">
-                            {{ petition.id }}
+        <div class="list my-3">
+            {% for petition in pagination %}
+                <div class="row border-bottom chat-card border-primary position-relative">
+                    <div class="col-md-1 align-self-center my-2">
+                        {{ petition.id }}
+                    </div>
+                    <div class="col-md-1 align-self-center my-2">
+                        <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petition.type }) }}">
+                            {{ petition.type }}        
+                        </a>
+                    </div>
+                    <div class="col-md-3 text-left align-self-center">
+                        <a href="{{ path('account_profile', { id: petition.petitioner.id }) }}">
+                            {{ petition.petitioner.login }}
+                        </a>
+                    </div>
+                    <div class="col-md-3 text-left align-self-center">
+                        <div class="col-sm-12">
+                            <span>{{ petition.title | u.truncate(40, '...') }}</span>
                         </div>
-                        <div class="col-md-1 align-self-center my-2">
-                            <a href="{{ path('admin_petition', { 'filterField': 'p.type', 'filterValue': petition.type }) }}">
-                                {{ petition.type }}        
-                            </a>
-                        </div>
-                        <div class="col-md-3 text-left align-self-center">
-                            <a href="{{ path('account_profile', { id: petition.petitioner.id }) }}">
-                                {{ petition.petitioner.login }}
-                            </a>
-                        </div>
-                        <div class="col-md-4 text-left align-self-center">
-                            <div class="col-sm-12">
-                                <span>{{ petition.title }}</span>
-                            </div>
-                            <div class="col-sm-12">
-                                <span>
-                                    <small class="text-muted">
-                                        last message
-                                    </small>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="col-md-2 align-self-center">
-                            <span class="text-uppercase">
+                        <div class="col-sm-12">
+                            <span>
                                 <small class="text-muted">
-                                    {{ time_diff(petition.createdAt) }}
+                                    {{ petition.description | u.truncate(40, '...') }}
                                 </small>
                             </span>
                         </div>
-                        <div class="col-md-1 align-self-center">
-                            <div class="link-wrapper">
-                                <a href="{{path('admin_petition_show', { id: petition.id })}}" data-toggle="tooltip" data-placement="top" title="Show">
-                                    <span class="fas fa-eye"></span>
-                                </a>
-                            </div>
+                    </div>
+                    <div class="col-md-2 align-self-center">
+                        <span class="text-uppercase">
+                            <small class="text-muted">
+                                {{ time_diff(petition.createdAt) }}
+                            </small>
+                        </span>
+                    </div>
+                    <div class="col-md-1 align-self-center">
+                        {% if petition.status is same as('Pending') %}
+                            <span class="fa-stack text-danger" data-toggle="tooltip" data-placement="top" title="Pending to response">
+                                <span class="fas fa-arrow-down fa-xs" style="vertical-align:top;"></span>
+                                <span class="fas fa-user fa-sm"></span>
+                            </span>
+                        {% elseif petition.status is same as('Opened') %}
+                            <span class="fa-stack text-warning" data-toggle="tooltip" data-placement="top" title="Opened without response">
+                                <span class="fas fa-eye fa-xs" style="vertical-align:top;"></span>
+                                <span class="fas fa-user fa-sm"></span>
+                            </span>
+                        {% elseif petition.status is same as('Answered') %}
+                            <span class="fa-stack text-info" data-toggle="tooltip" data-placement="top" title="Answered">
+                                <span class="fas fa-envelope fa-xs" style="vertical-align:top;"></span>
+                                <span class="fas fa-user fa-sm"></span>
+                            </span>
+                        {% elseif petition.status is same as('Closed') %}
+                            <span class="fas fa-lock text-success" data-toggle="tooltip" data-placement="top" title="Closed">
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-1 align-self-center">
+                        <div class="link-wrapper">
+                            <a href="{{path('admin_petition_show', { id: petition.id })}}" data-toggle="tooltip" data-placement="top" title="Show">
+                                <span class="fas fa-eye"></span>
+                            </a>
                         </div>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
+        </div>
         <div class="navigation">
             {{ knp_pagination_render(pagination, null, {}, {
                 'align': 'center'

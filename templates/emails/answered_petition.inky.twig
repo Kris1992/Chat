@@ -1,0 +1,39 @@
+{% extends 'emails/base_email.inky.twig' %}
+
+{% block content %}
+        <row>
+            <columns>
+                <spacer size="16"></spacer>
+                <h3>
+                    <center>
+                        Hi {{ petition.petitioner.login }}!!
+                    </center>
+                </h3>
+            </columns>
+        </row>
+        <row>
+            <columns>
+                <p>
+                    Thanks for contacting with Chat Team!
+                    This automatic reply is just to let you know that we received your message: 
+                    <blockquote class="blockquote">
+                        <p class="text-muted">
+                            "{{ petition.description }}"
+                        </p>
+                        <footer class="blockquote-footer">{{ petition.petitioner.login }}</footer>
+                    </blockquote>
+
+                    Our response to it is waiting for you, visit our site and check it now. Please remember to close petition if your problem was solved.
+                </p>
+            </columns>
+        </row>
+        <row>
+            <columns>
+                <center>
+                    <button class="button large rounded text-uppercase" href="{{ url('app_homepage') }}">
+                        Chat
+                    </button>
+                </center>
+            </columns>
+        </row>
+{% endblock %}

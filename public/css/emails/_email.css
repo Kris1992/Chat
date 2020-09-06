@@ -12,6 +12,9 @@ body {
     color: #ffffff;
     font-size: 1.25em;
 }
+.text-muted {
+    opacity: 0.8;
+}
 .text-uppercase {
     text-transform: uppercase;
 }
@@ -23,4 +26,15 @@ body {
 .invert-color {
     filter: invert(100%);
     -webkit-filter: invert(100%);
+}
+.blockquote {
+    font-style: italic;
+}
+.blockquote-footer {
+    display: block;
+    font-size: 80%;
+    opacity: 0.5;
+}
+.blockquote-footer::before {
+    content: "\2014 \00A0";
 }

@@ -18,8 +18,8 @@ class PetitionMessageSystem implements PetitionMessageSystemInterface
     /**
      * PetitionMessageSystem Constructor
      * 
-     * @param MessageCreatorInterface $messageCreator
-     * @param PetitionStatusChangerInterface $petitionStatusChanger
+     * @param MessageCreatorInterface           $messageCreator
+     * @param PetitionStatusChangerInterface    $petitionStatusChanger
      */
     public function __construct(MessageCreatorInterface $messageCreator, PetitionStatusChangerInterface $petitionStatusChanger)  
     {

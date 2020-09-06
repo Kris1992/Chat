@@ -31,7 +31,7 @@ class PetitionStatusChanger implements PetitionStatusChangerInterface
         //just admins can change status to opened or answered and do not change to opened if user is admin and actual status is answered
         if ((in_array($newStatus, PetitionConstants::ADMIN_STATUSES, true) && !$user->isAdmin()) ||
             (in_array($newStatus, PetitionConstants::ADMIN_STATUSES, true) && $user->isAdmin()
-            && $petition->getStatus() === 'Answered')
+            && $petition->getStatus() === 'Answered') || ($petition->getStatus() === 'Closed')
         ) {
             
         } else {

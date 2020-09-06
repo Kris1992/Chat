@@ -11,6 +11,14 @@
 {% endblock %}
 
 {% block content %}
+<div class="col-12 text-center">
+    {% if petition.status is same as('Closed') %}
+        <b class="text-uppercase text-danger">This petition is closed</b>
+    {% endif %}
+    <a href="{{ path('admin_petition')}}" class="btn btn-info float-left">
+        <span class="far fa-list-alt"></span>
+    </a>
+</div>
 <div class="col-md-10 text-center my-3">
     <div class="card">
         <div class="card-header text-purple">
@@ -76,21 +84,22 @@
         {% endfor %}
     {% endif %}
 </div>
-
-<div class="col-md-10">
-    <div class="card text-white bg-dark">
-        <div class="card-header p-0">
-            <b>Add message</b>
-        </div>
-        <div class="card-body p-0">
-            <textarea class="bg-dark text-left text-white w-100" id="js-message-text" rows="4" style="resize: none"></textarea>
-            <button class="btn btn-primary float-right" role="button" id="js-send-message">
-                <span class="fas fa-paper-plane"></span>
-                Send
-            </button>
+{% if petition.status is not same as('Closed') %}
+    <div class="col-md-10">
+        <div class="card text-white bg-dark">
+            <div class="card-header p-0">
+                <b>Add message</b>
+            </div>
+            <div class="card-body p-0">
+                <textarea class="bg-dark text-left text-white w-100" id="js-message-text" rows="4" style="resize: none"></textarea>
+                <button class="btn btn-primary float-right" role="button" id="js-send-message">
+                    <span class="fas fa-paper-plane"></span>
+                    Send
+                </button>
+            </div>
         </div>
     </div>
-</div>
+{% endif %}
 {{ include('js_templates/petition_messages.html.twig') }}
 <script>
     let defaultUserImage = "{{ asset('img/users/default.png') }}";

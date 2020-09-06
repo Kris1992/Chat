@@ -10,7 +10,7 @@ use App\Entity\{User, Message, Petition};
 interface PetitionMessageSystemInterface
 {   
     /**
-     * create Create, validate and add message to petition object with setting proper petition status
+     * create Create, validate and add message to petition object with setting proper petition status (and send email message if petition change status to answered)
      * @param   ?string          $messageContent     String with content of message or null
      * @param   ?User            $user               User object whose is owner of message or null
      * @param   ?Petition        $petition           Petition object to save message in or null

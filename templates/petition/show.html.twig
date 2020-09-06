@@ -11,6 +11,21 @@
 {% endblock %}
 
 {% block content %}
+<div class="col-12 text-center">
+    {% if petition.status is not same as('Closed') %}
+        <a href="{{ path('support_petition')}}" class="btn btn-info float-left">
+            <span class="far fa-list-alt"></span>
+        </a>
+        <button class="btn btn-danger float-right" role="button" id="js-close-petition">
+            <span class="fas fa-lock"></span>
+        </button>
+    {% else %}
+        <a href="{{ path('support_petition')}}" class="btn btn-info float-left">
+            <span class="far fa-list-alt"></span>
+        </a>
+        <b class="text-danger text-uppercase">This petition is closed</b>
+    {% endif %}
+</div>
 <div class="col-md-10 text-center my-3">
     <div class="card">
         <div class="card-header text-purple">
@@ -77,20 +92,23 @@
     {% endif %}
 </div>
 
-<div class="col-md-10">
-    <div class="card text-white bg-dark">
-        <div class="card-header p-0">
-            <b>Add message</b>
-        </div>
-        <div class="card-body p-0">
-            <textarea class="bg-dark text-left text-white w-100" id="js-message-text" rows="4" style="resize: none"></textarea>
-            <button class="btn btn-primary float-right" role="button" id="js-send-message">
-                <span class="fas fa-paper-plane"></span>
-                Send
-            </button>
+{% if petition.status is not same as('Closed') %}
+    <div class="col-md-10">
+        <div class="card text-white bg-dark">
+            <div class="card-header p-0">
+                <b>Add message</b>
+            </div>
+            <div class="card-body p-0">
+                <textarea class="bg-dark text-left text-white w-100" id="js-message-text" rows="4" style="resize: none"></textarea>
+                <button class="btn btn-primary float-right" role="button" id="js-send-message">
+                    <span class="fas fa-paper-plane"></span>
+                    Send
+                </button>
+            </div>
         </div>
     </div>
-</div>
+{% endif %}
+
 {{ include('js_templates/petition_messages.html.twig') }}
 <script>
     let defaultUserImage = "{{ asset('img/users/default.png') }}";

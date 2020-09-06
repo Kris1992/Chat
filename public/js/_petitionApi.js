@@ -24,11 +24,17 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 PetitionApi._selectors.sendButton,
                 this.handleSendMessage.bind(this)
             );
+            this.$wrapper.on(
+                'click', 
+                PetitionApi._selectors.closeButton,
+                this.handleClosePetition.bind(this)
+            );
         }
             
         static get _selectors() {
             return {
                 sendButton: '#js-send-message',
+                closeButton: '#js-close-petition',
                 textareaInput: '#js-message-text',
                 messagesContainer: '#js-messages-wrapper',
                 messageTemplate: '#js-message-template',
@@ -37,7 +43,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
         handleDocumentLoaded() {
             this.sendStatus({status: 'Opened'}).then(() => {
-                console.log('OK');
             }).catch((errorData) => {
                 //this.showErrorMessage(errorData.title);
             });
@@ -45,7 +50,6 @@ import { isEmptyField } from './helpers/_validationHelper.js';
 
         handleSendMessage(event) {
             event.preventDefault();
-            console.log('tutaj');
 
             let $textareaInput = $(PetitionApi._selectors.textareaInput);
             let message = $textareaInput.val();
@@ -62,6 +66,28 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 this.showMessage(message, $(PetitionApi._selectors.messagesContainer));
             }).catch((errorData) => {
                 this.showErrorMessage(errorData.title);
+            });
+        }
+
+        handleClosePetition() {
+             Swal.fire({
+                title: 'Are you sure?',
+                text:  'Do you want close this petition?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'Cancel!',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    this.sendStatus({status: 'Closed'}).then(() => {
+                        this.showSuccessMessage('Petition was closed.').then(() => {
+                            window.location.reload(true);
+                        });
+                    }).catch((errorData) => {
+                        this.showErrorMessage('Something goes wrong try again later...');
+                    });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
             });
         }
 
@@ -133,6 +159,15 @@ import { isEmptyField } from './helpers/_validationHelper.js';
                 icon: 'error',
                 title: 'Oops...',
                 text: `${errorMessage}`,
+            });
+        }
+
+        showSuccessMessage(message) {
+            return Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: `${message}`,
+                confirmButtonText: 'Ok',
             });
         }
 

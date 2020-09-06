@@ -14,6 +14,6 @@ class PetitionConstants
         'Other problems' => 'Other',
     ];
 
-    const VALID_STATUSES = ['Pending', 'Opened', 'Answered'];
+    const VALID_STATUSES = ['Pending', 'Opened', 'Answered', 'Closed'];
     const ADMIN_STATUSES = ['Opened', 'Answered'];
 }

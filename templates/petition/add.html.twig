@@ -11,6 +11,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="col-12">
+    <a href="{{ path('support_petition')}}" class="btn btn-info float-left">
+        <span class="far fa-list-alt"></span>
+    </a>
+</div>
 <div class="col-sm-6 text-center my-3">
     {{ include('forms/petition_form.html.twig', {
         header_text: 'New petition',

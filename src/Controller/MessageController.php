@@ -13,6 +13,7 @@ use Symfony\Component\Mercure\{PublisherInterface, Update};
 use Symfony\Component\Serializer\SerializerInterface;
 use App\Exception\Api\ApiBadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Services\Mailer\MailingSystemInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Chat, Petition};
 
@@ -196,12 +197,13 @@ class MessageController extends AbstractController
      * @param   JsonErrorResponseFactory            $jsonErrorFactory
      * @param   PetitionMessageSystemInterface      $petitionMessageSystem
      * @param   EntityManagerInterface              $entityManager
+     * @param   MailingSystemInterface              $mailingSystem
      * @param   SerializerInterface                 $serializer
      * @return  Response
      * @throws  ApiBadRequestHttpException
      * @Route("/api/petition/{id}/message", name="api_petition_message", methods={"POST"})
      */
-    public function addPetitionMessageAction(Petition $petition, Request $request, JsonErrorResponseFactory $jsonErrorFactory, PetitionMessageSystemInterface $petitionMessageSystem, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    public function addPetitionMessageAction(Petition $petition, Request $request, JsonErrorResponseFactory $jsonErrorFactory, PetitionMessageSystemInterface $petitionMessageSystem, EntityManagerInterface $entityManager, MailingSystemInterface $mailingSystem, SerializerInterface $serializer): Response
     {
 
         $this->denyAccessUnlessGranted('PETITION_WRITE', $petition);
@@ -219,6 +221,10 @@ class MessageController extends AbstractController
                 $petition
             );
             $entityManager->flush();
+            if ($petition->getStatus() === 'Answered') {
+                $mailingSystem->sendAnsweredPetitionMessage($petition);
+            }
+
             $serializedMessage = $serializer->serialize(
                 $message,
                 'json', ['groups' => 'petition:message']
