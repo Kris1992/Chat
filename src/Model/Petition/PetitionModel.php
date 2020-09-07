@@ -4,6 +4,7 @@ namespace App\Model\Petition;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\{ArrayCollection, Collection};
+use App\Entity\User;
 
 class PetitionModel
 {

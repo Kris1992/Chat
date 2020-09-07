@@ -3,7 +3,7 @@
 namespace App\Services\ChatPrinter;
 
 /**
- * Handler of all constants with directories for ChatPrinter
+ * Handler of all constants for ChatPrinter
  */
 class ChatPrinterConstants
 {

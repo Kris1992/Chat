@@ -45,7 +45,7 @@ class AttachmentHelper implements AttachmentHelperInterface
         return null;
     }
     
-    public function getAttachments(array $filenames, User $user): array
+    public function getAttachments(?array $filenames, User $user): array
     {
         $attachments = [];
 

@@ -35,7 +35,8 @@ class ChatUpdater implements ChatUpdaterInterface
             $newFilename = $this->attachmentImagesManager->uploadImage(
                 $uploadedImage, 
                 $chat->getImageFilename(), 
-                $chat->getOwner()->getLogin());
+                $chat->getOwner()->getLogin()
+            );
             
             if ($newFilename) {
                 $chat->setImageFilename($newFilename);

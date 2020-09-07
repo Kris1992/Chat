@@ -58,7 +58,6 @@ class AttachmentUploadSystem implements AttachmentUploadSystemInterface
         
         $attachment = $this->attachmentCreator->create(
             $user, 
-            null,
             $file,
             ucfirst($fileType),
             ucfirst($attachmentType)

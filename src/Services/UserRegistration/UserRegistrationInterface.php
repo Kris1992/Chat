@@ -15,7 +15,7 @@ interface UserRegistrationInterface
      * register Take care about user registration process and return user 
      * @param  Request                   $request
      * @param  UserModel                 $userModel     Validated user model
-     * @throws Exception                                Throw Exception when captcha isn't correct
+     * @throws \Exception                               Throws an \Exception when captcha isn't correct
      * @return User
      */
     public function register(Request $request, UserModel $userModel): User;

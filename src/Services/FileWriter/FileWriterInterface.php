@@ -11,7 +11,7 @@ interface FileWriterInterface
     /**
      * open Open file to write (if file doesn't exist create new one)
      * @param   string       $absoluteFilePath      String with absolute path to file
-     * @throws  Exception                           Throw exception when open/create file fails
+     * @throws  Exception                           Throws an \Exception when open/create file fails
      * @return  void
      */
     public function open(string $absoluteFilePath): void;

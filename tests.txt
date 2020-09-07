@@ -6,3 +6,11 @@ php bin/console messenger:consume async_priority_high async
 java -jar selenium-server-standalone-3.0.0.jar
 ./vendor/bin/behat --tags=new
 
+
+
+//commands
+./bin/mercure --j-key='Kris1992' --addr='localhost:3000' --debug --cors-allowed-origins='http://localhost:8000'
+
+symfony serve --no-tls
+
+ ./vendor/bin/phpspec run

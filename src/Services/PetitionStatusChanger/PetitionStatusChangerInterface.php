@@ -15,7 +15,7 @@ interface PetitionStatusChangerInterface
      * @param   Petition            $petition           Petition object to update
      * @param   string|null         $newStatus          String with new status
      * @param   bool                $updateMessages     Update messages readedAt or not
-     * @throws  \Exception                              Throws \Exception update petition fails
+     * @throws  \Exception                              Throws an \Exception update petition fails
      * @return  Petition                                Return petition object
      */
     public function change(User $user, Petition $petition, ?string $newStatus, bool $updateMessages): Petition;

@@ -11,12 +11,12 @@ use App\Entity\{User, Attachment};
 interface AttachmentUploadSystemInterface
 {   
     /**
-     * upload Upload, validate and save message attachment object
+     * upload Upload, validate and save message or petition attachment object
      * @param   User            $user               User object whose is owner of attachment
      * @param   Request         $request            Request with file object
      * @param   string          $fileType           String with type of attachment file e.g image
-     * @return  Attachment                          Return attachment object
-     * @throws  \Exception                          Throws \Exception when upload attachment fails 
+     * @return  Attachment                          Return an attachment object
+     * @throws  \Exception                          Throws an \Exception when upload attachment fails 
      */
     public function upload(User $user, Request $request, string $fileType): Attachment;
 

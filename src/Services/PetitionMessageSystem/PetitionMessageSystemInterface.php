@@ -14,7 +14,7 @@ interface PetitionMessageSystemInterface
      * @param   ?string          $messageContent     String with content of message or null
      * @param   ?User            $user               User object whose is owner of message or null
      * @param   ?Petition        $petition           Petition object to save message in or null
-     * @throws  \Exception                           Throws \Exception when create message fails
+     * @throws  \Exception                           Throws an \Exception when create message fails
      * @return  Message                              Return message object
      */
     public function create(?string $messageContent, ?User $user, ?Petition $petition): Message;

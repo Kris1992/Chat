@@ -8,7 +8,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use App\Entity\User;
+use App\Entity\{User, Petition};
 
 class MailerSpec extends ObjectBehavior
 {
@@ -47,6 +47,37 @@ class MailerSpec extends ObjectBehavior
         $addresses[0]->shouldBeAnInstanceOf(Address::class);
         $addresses[0]->getName()->shouldBe('exampleUser');
         $addresses[0]->getAddress()->shouldBe('exampleuser@example.com');
+    }
+    
+    function it_should_be_able_to_send_answered_petition_message($mailer)
+    {   
+        $user = new User();
+        $user
+            ->setEmail('exampleuser@example.com')
+            ->setLogin('exampleUser')
+            ;
+
+        $petition = new Petition();
+        $petition
+            ->setTitle('Petition title')
+            ->setType('Ban')
+            ->setDescription('Petition description')
+            ->setPetitioner($user)
+            ->setStatus('Answered')
+            ;
+
+        $message = $this->sendAnsweredPetitionMessage($petition);
+        $mailer->send(Argument::any())->shouldBeCalledTimes(1);
+        $message->shouldBeAnInstanceOf(TemplatedEmail::class);
+        $message->getSubject()->shouldReturn('Your petition has new answer!');
+        
+        /** @var Address[] $addresses */
+        $addresses = $message->getTo();
+        $addresses->shouldHaveCount(1);
+        $addresses[0]->shouldBeAnInstanceOf(Address::class);
+        $addresses[0]->getName()->shouldBe('exampleUser');
+        $addresses[0]->getAddress()->shouldBe('exampleuser@example.com');
+        
     }
     
 }

@@ -59,8 +59,8 @@ class CsvPrinter implements ChatPrinterInterface
 
     /**
      * messageToText convert message to string 
-     * @param  Message $message     Message object to convert
-     * @param  User    $currentUser User object with current logged in user
+     * @param  Message      $message        Message object to convert
+     * @param  User         $currentUser    User object with current logged in user
      * @return string
      */
     private function messageToText(Message $message, User $currentUser): string

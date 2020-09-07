@@ -13,8 +13,8 @@ interface UserModelFactoryInterface
 
     /**
      * create Create user model from user 
-     * @param User          $user   User object
-     * @return UserModel            Return filled in user model 
+     * @param   User          $user     User object
+     * @return  UserModel               Return filled in user model 
      */
     public function create(User $user): UserModel;
     

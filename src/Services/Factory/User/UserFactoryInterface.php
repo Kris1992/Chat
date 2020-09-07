@@ -17,7 +17,7 @@ interface UserFactoryInterface
      * @param UserModel     $userModel      Model with user data
      * @param Array|null    $roles          Array with role names [optional]
      * @param File|null     $uploadedImage  Uploaded image [optional]
-     * @throws Exception                    Throw Exception when user doesn't accept terms
+     * @throws Exception                    Throws an \Exception when user doesn't accept terms
      * @return User
      */
     public function create(UserModel $userModel, ?array $roles, ?File $uploadedImage): User;

@@ -35,14 +35,16 @@ class PetitionFactory implements PetitionFactoryInterface
             ->setStatus('Pending')
             ;
         
-        $attachments = $this->attachmentHelper->getAttachments(
-            $petitionModel->getAttachementsFilenames(),
-            $petitioner
-        );
+        if ($petitionModel->getAttachementsFilenames()) {
+            $attachments = $this->attachmentHelper->getAttachments(
+                $petitionModel->getAttachementsFilenames(),
+                $petitioner
+            );
         
-        if ($attachments) {
-            foreach ($attachments as $attachment) {
-                $petition->addAttachment($attachment);  
+            if ($attachments) {
+                foreach ($attachments as $attachment) {
+                    $petition->addAttachment($attachment);  
+                }
             }
         }
         

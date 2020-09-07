@@ -19,10 +19,10 @@ interface AttachmentHelperInterface
     
     /**
      * getAttachments Get array of attachment objects from filenames  
-     * @param  array        $filenames      Array with attachments filenames
+     * @param  array|null   $filenames      Array with attachments filenames or null
      * @param  User         $user           User object whose is owner of message
      * @return array                        Array with Attachment objects or empty array
      */
-    public function getAttachments(array $filenames, User $user): array;
+    public function getAttachments(?array $filenames, User $user): array;
 
 }

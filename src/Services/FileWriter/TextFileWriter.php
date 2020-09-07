@@ -12,7 +12,7 @@ class TextFileWriter implements FileWriterInterface
     {
         $this->file = fopen($absoluteFilePath, "w");
         if (!$this->file) {
-            throw new Exception('File open failed.');
+            throw new \Exception('File open failed.');
         }  
     }
 

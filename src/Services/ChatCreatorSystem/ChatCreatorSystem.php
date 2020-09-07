@@ -50,10 +50,8 @@ class ChatCreatorSystem implements ChatCreatorSystemInterface
 
         $users = $this->userRepository->findAllByIds($usersIds);
         $chatModel = $this->chatModelFactory->createFromData($owner, false, $users, null, null);
-        
-        $isValid = $this->modelValidator->isValid($chatModel, "chat:private");
 
-        if (!$isValid) {
+        if (!$this->modelValidator->isValid($chatModel, "chat:private")) {
             throw new \Exception($this->modelValidator->getErrorMessage());
         }
         

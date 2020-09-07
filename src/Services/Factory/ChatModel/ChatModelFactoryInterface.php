@@ -12,7 +12,7 @@ interface ChatModelFactoryInterface
 {   
 
     /**
-     * create Create chat room model
+     * create Create chat room model from chat object
      * @param   Chat        $chat   Chat room object
      * @return  ChatModel           Return chat model object
      */

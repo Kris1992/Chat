@@ -30,6 +30,7 @@ class PetitionMessageSystem implements PetitionMessageSystemInterface
     public function create(?string $messageContent, ?User $user, ?Petition $petition): Message
     {
         $message = $this->messageCreator->create($messageContent, $user, null, $petition, 'PetitionMessage');
+        
         if ($user->isAdmin()) {
             $this->petitionStatusChanger->change($user, $petition, 'Answered', false);
         } else {

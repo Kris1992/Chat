@@ -7,7 +7,7 @@ use App\Services\Factory\Attachment\AttachmentFactory;
 use App\Model\Attachment\AttachmentFileModel;
 use App\Services\ModelValidator\ModelValidatorInterface;
 use Symfony\Component\HttpFoundation\File\File;
-use App\Entity\{Message, User, Attachment};
+use App\Entity\{User, Attachment};
 
 class AttachmentCreator implements AttachmentCreatorInterface 
 {
@@ -30,7 +30,7 @@ class AttachmentCreator implements AttachmentCreatorInterface
         $this->attachmentModelFactory = $attachmentModelFactory;
     }
 
-    public function create(User $user, ?Message $message, File $file, string $fileType, string $attachmentType): Attachment
+    public function create(User $user, File $file, string $fileType, string $attachmentType): Attachment
     {
 
         $fileModel = new AttachmentFileModel($file);
@@ -50,10 +50,9 @@ class AttachmentCreator implements AttachmentCreatorInterface
             throw new \Exception($this->modelValidator->getErrorMessage());       
         }
 
-        $attachmentModel = $this->attachmentModelFactory->createFromData($user, $message, $file, $fileType, $attachmentType);
-        $isValid = $this->modelValidator->isValid($attachmentModel);
+        $attachmentModel = $this->attachmentModelFactory->createFromData($user, $file, $fileType, $attachmentType);
 
-        if (!$isValid) {
+        if (!$this->modelValidator->isValid($attachmentModel)) {
             throw new \Exception($this->modelValidator->getErrorMessage());
         }
 

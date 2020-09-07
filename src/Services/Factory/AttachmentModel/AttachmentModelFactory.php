@@ -23,7 +23,7 @@ class AttachmentModelFactory implements AttachmentModelFactoryInterface
         $this->attachmentFileUploader = $attachmentFileUploader;
     }
 
-    public function createFromData(User $user, ?Message $message, File $file, string $fileType, string $attachmentType): AttachmentModel
+    public function createFromData(User $user, File $file, string $fileType, string $attachmentType): AttachmentModel
     {
 
         $filename = $this->attachmentFileUploader->upload($file, $user->getLogin(), $fileType, $attachmentType);

@@ -50,9 +50,9 @@ class TxtPrinter implements ChatPrinterInterface
 
     /**
      * createHeaderText  Creates header string to file
-     * @param   User               $currentUser   User object with current logged in user
-     * @param   \DateTimeInterface $startDate     Date of start recording chat messages
-     * @param   \DateTimeInterface $stopDate      Date of end recording chat messages 
+     * @param   User                $currentUser   User object with current logged in user
+     * @param   \DateTimeInterface  $startDate     Date of start recording chat messages
+     * @param   \DateTimeInterface  $stopDate      Date of end recording chat messages 
      * @return  string
      */
     private function createHeaderText(User $currentUser, \DateTimeInterface $startDate, \DateTimeInterface $stopDate): string
@@ -64,8 +64,8 @@ class TxtPrinter implements ChatPrinterInterface
 
     /**
      * messageToText convert message to string 
-     * @param  Message $message     Message object to convert
-     * @param  User    $currentUser User object with current logged in user
+     * @param  Message  $message        Message object to convert
+     * @param  User     $currentUser    User object with current logged in user
      * @return string
      */
     private function messageToText(Message $message, User $currentUser): string

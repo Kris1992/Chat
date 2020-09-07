@@ -22,9 +22,9 @@ class FilesManager implements FilesManagerInterface
     /**
      * FilesManager Constructor
      *
-     *@param FilesystemInterface    $publicUploadsFilesystem
-     *@param LoggerInterface        $logger
-     *@param string                 $uploadsDirectory           Path to uploads directory
+     * @param FilesystemInterface    $publicUploadsFilesystem
+     * @param LoggerInterface        $logger
+     * @param string                 $uploadsDirectory           Path to uploads directory
      *
      */
     public function __construct(FilesystemInterface $publicUploadsFilesystem, LoggerInterface $logger, string $uploadsDirectory)  
@@ -85,7 +85,7 @@ class FilesManager implements FilesManagerInterface
     }
 
     /**
-     * clearFilename Clear filename form dots and generate unique name 
+     * clearFilename Clear filename from dots and generate unique name 
      * @param  string $filename Name of uploaded file
      * @return string           Return sanitazed filename
      */

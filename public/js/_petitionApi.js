@@ -42,10 +42,7 @@ import { isEmptyField } from './helpers/_validationHelper.js';
         }
 
         handleDocumentLoaded() {
-            this.sendStatus({status: 'Opened'}).then(() => {
-            }).catch((errorData) => {
-                //this.showErrorMessage(errorData.title);
-            });
+            this.sendStatus({status: 'Opened'});
         }
 
         handleSendMessage(event) {

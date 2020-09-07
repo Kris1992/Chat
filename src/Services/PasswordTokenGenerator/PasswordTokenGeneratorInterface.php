@@ -13,7 +13,7 @@ interface PasswordTokenGeneratorInterface
     /**
      * generate Generate new password token
      * @param   User                $user        User object whose is owner of new token
-     * @throws  \Exception                       Throws exception when save token fails
+     * @throws  \Exception                       Throws an \Exception when save token fails
      * @return  PasswordToken
      */
     public function generate(User $user): PasswordToken;

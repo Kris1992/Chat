@@ -2,10 +2,9 @@
 
 namespace App\Services\AttachmentFileDeleter;
 
+use App\Services\ImagesManager\{ImagesManagerInterface, ImagesConstants};
 use App\Services\AttachmentFileUploader\AttachmentsConstants;
-use App\Services\ImagesManager\ImagesManagerInterface;
 use App\Services\FilesManager\FilesManagerInterface;
-use App\Services\ImagesManager\ImagesConstants;
 
 class AttachmentFileDeleter implements AttachmentFileDeleterInterface 
 {

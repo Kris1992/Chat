@@ -4,9 +4,10 @@ namespace spec\App\Services\Factory\ChatModel;
 
 use App\Services\Factory\ChatModel\{ChatModelFactory, ChatModelFactoryInterface};
 use App\Services\Factory\Participant\ParticipantFactoryInterface;
+use App\Entity\{Chat, User, Participant};
 use App\Model\Chat\ChatModel;
-use App\Entity\{Chat, User};
 use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
 
 class ChatModelFactorySpec extends ObjectBehavior
 {
@@ -40,6 +41,7 @@ class ChatModelFactorySpec extends ObjectBehavior
             ->setTitle('Example chat title')
             ->setDescription('Example chat description')
             ->setIsPublic(true)
+            ->setImageFilename('image.jpg')
             ->setOwner($user)
             ;
 
@@ -48,6 +50,7 @@ class ChatModelFactorySpec extends ObjectBehavior
         $chatModel->getTitle()->shouldReturn('Example chat title');
         $chatModel->getDescription()->shouldReturn('Example chat description');
         $chatModel->getIsPublic()->shouldReturn(true);
+        $chatModel->getImageFilename()->shouldReturn('image.jpg');
         $chatModel->getOwner()->shouldBeAnInstanceOf(User::class);
         $chatModel->getOwner()->getEmail()->shouldReturn('exampleuser@example.com');
         $chatModel->getOwner()->getLogin()->shouldReturn('exampleUser');
@@ -71,6 +74,42 @@ class ChatModelFactorySpec extends ObjectBehavior
         $chatModel->getOwner()->shouldBeAnInstanceOf(User::class);
         $chatModel->getOwner()->getEmail()->shouldReturn('exampleuser@example.com');
         $chatModel->getOwner()->getLogin()->shouldReturn('exampleUser');
+
+    }
+
+    function it_should_be_able_to_create_private_chat_model_from_data($participantFactory)
+    {
+
+        $user = new User();
+        $user
+            ->setEmail('exampleuser@example.com')
+            ->setLogin('exampleUser')
+            ;
+
+        $participantUser = new User();
+        $participantUser
+            ->setEmail('participantUser@example.com')
+            ->setLogin('participantUser')
+            ;
+
+        $participant = new Participant();
+        $participant
+            ->setUser($participantUser)
+            ;
+
+        $participantFactory->create(Argument::any(), null)->shouldBeCalledTimes(2)->willReturn($participant);
+        $chatModel = $this->createFromData($user, false, [$participantUser], 'Example chat title', 'Example chat description');
+        $chatModel->shouldBeAnInstanceOf(ChatModel::class);
+        $chatModel->getTitle()->shouldReturn('Conversation');
+        $chatModel->getDescription()->shouldReturn('Example chat description');
+        $chatModel->getIsPublic()->shouldReturn(false);
+        $chatModel->getOwner()->shouldBeAnInstanceOf(User::class);
+        $chatModel->getOwner()->getEmail()->shouldReturn('exampleuser@example.com');
+        $chatModel->getOwner()->getLogin()->shouldReturn('exampleUser');
+        $participants = $chatModel->getParticipants();
+        $participants[0]->getUser()->shouldBeAnInstanceOf(User::class);
+        $participants[0]->getUser()->getEmail()->shouldReturn('participantUser@example.com');
+        $participants[0]->getUser()->getLogin()->shouldReturn('participantUser');
 
     }
 

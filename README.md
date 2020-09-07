@@ -73,21 +73,21 @@ Have fun!
 
 ## Tests stack
 
-Unit Tests - PHPSpec\
-Functional Tests - Behat\
-Integration Tests - PHPUnit\
+Unit Tests - PHPSpec \
+Functional Tests - Behat \
+Integration Tests - PHPUnit \
 
 ## Run Tests
 
-./vendor/bin/phpspec run\
+./vendor/bin/phpspec run \
 ./vendor/bin/behat OR ./vendor/bin/behat --tag={tagName} \
-php bin/phpunit\
+php bin/phpunit \
 
 ## Used Technologies
 
 Mercure - I use server send event to resend messages to partcicipants of chat rooms (better solution than resend ajax calls by users to check new messages). \
 
-Messenger - take controll about active partcicipants of public chat rooms. If user go out from chat room or close window in browser messenger remove him from participants of public chat room. \
+Messenger - take controll about active partcicipants of public chat rooms. If user go out from chat room or close window in browser messenger remove him from participants of public chat room. It is useful to removed uploaded and not used attachments for chat messages or petition too.  \
 
 ## Have Ideas, Feedback or an Issue?
 

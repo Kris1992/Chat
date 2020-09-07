@@ -25,9 +25,9 @@ class AttachmentHelperSpec extends ObjectBehavior
         $this->shouldImplement(AttachmentHelperInterface::class);
     }
 
-    function it_should_be_able_to_get_attachments_filenames()
+    function it_should_be_able_to_get_image_attachments_filenames()
     {
-        $content = 'test content <img src="image.jpeg"/> test'; 
+        $content = 'test content <img src="image.jpeg"/> test '; 
         $filenames = $this->getAttachmentsFilenames($content);
         $filenames->shouldBeArray();
         $filenames[0]->shouldBeString();
@@ -35,9 +35,19 @@ class AttachmentHelperSpec extends ObjectBehavior
 
     }
 
+    function it_should_be_able_to_get_file_attachments_filenames()
+    {
+        $content = 'test content <img s="image.jpeg"/>  <a class="uploaded-file" href="file.pdf">test '; 
+        $filenames = $this->getAttachmentsFilenames($content);
+        $filenames->shouldBeArray();
+        $filenames[0]->shouldBeString();
+        $filenames[0]->shouldReturn('file.pdf');
+
+    }
+
     function it_should_return_null_when_content_has_not_attachmets()
     {
-        $content = 'test content <img s="image.jpeg"/> test';
+        $content = 'test content <img s="image.jpeg"/> test <a class="uploaded-file" id="file.pdf">';
         $filenames = $this->getAttachmentsFilenames($content);
         $filenames->shouldReturn(null);
     }

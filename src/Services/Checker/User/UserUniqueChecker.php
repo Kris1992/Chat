@@ -31,7 +31,7 @@ class UserUniqueChecker implements CheckerInterface
             throw new \Exception("You cannot ask about that data!");
         }
 
-        $user = $this->userRepository->findOneBy([ $data['fieldName'] => $data['fieldValue'] ]);
+        $user = $this->userRepository->findOneBy([$data['fieldName'] => $data['fieldValue'] ]);
         
         if($user) {
             return false;

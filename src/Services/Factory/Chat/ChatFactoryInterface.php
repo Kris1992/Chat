@@ -16,7 +16,7 @@ interface ChatFactoryInterface
      * create Create chat rooms
      * @param   ChatModel       $chatModel          Model with chat room data
      * @param   User            $owner              User object whose is the owner of chat
-     * @param   File            $uploadedImage      Uploaded image [optional]
+     * @param   File|null       $uploadedImage      Uploaded image [optional]
      * @return  Chat                                Return chat object
      */
     public function create(ChatModel $chatModel, User $owner, ?File $uploadedImage): Chat;

@@ -16,7 +16,7 @@ interface MessageCreatorInterface
      * @param   ?Chat            $chat               Chat object to save message in or null
      * @param   ?Petition        $petition           Petition object to save message in or null
      * @param   string           $messageType        String with message type to create [optional]
-     * @throws  \Exception                           Throws \Exception when create message fails
+     * @throws  \Exception                           Throws an \Exception when create message fails
      * @return  Message                              Return message object
      */
     public function create(?string $messageContent, ?User $user, ?Chat $chat, ?Petition $petition, string $messageType = 'ChatMessage'): Message;

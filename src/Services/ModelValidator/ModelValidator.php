@@ -22,7 +22,7 @@ class ModelValidator implements ModelValidatorInterface
     private $isValid;
 
     /**
-     * ChatModelFactory Constructor
+     * ModelValidator Constructor
      * 
      * @param ValidatorInterface $validator
      * 
@@ -34,9 +34,9 @@ class ModelValidator implements ModelValidatorInterface
 
     /**
      * isValid Check is model data valid
-     * @param $dataModel Model data object which will be validated
-     * @param $groups Validation groups [optional] 
-     * @return bool
+     * @param   $dataModel      Model data object which will be validated
+     * @param   $groups         Validation groups [optional] 
+     * @return  bool
      */
     public function isValid($dataModel, $groups=null): bool
     {

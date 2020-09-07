@@ -41,7 +41,6 @@ class ChatModelFactory implements ChatModelFactoryInterface
         return $chatModel;
     }
 
-//test it
     public function createFromData(User $owner, bool $isPublic, ?array $users, ?string $title, ?string $description): ChatModel
     {
         $chatModel = new ChatModel();

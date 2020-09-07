@@ -11,17 +11,17 @@ interface BanManagerInterface
 {
     /**
      * ban Ban user
-     * @param  User   $user   User object which will be banned
-     * @param  int    $option Integer with ban time option
-     * @throws \Exception     Throw an exception when something goes wrong
+     * @param  User         $user       User object which will be banned
+     * @param  int          $option     Integer with ban time option
+     * @throws \Exception               Throw an \Exception when something goes wrong
      * @return User            
      */
     public function ban(User $user, int $option): User;
 
     /**
      * unBan Take off ban
-     * @param  User   $user   User object which will be unbanned
-     * @throws \Exception     Throw an exception when something goes wrong
+     * @param  User         $user   User object which will be unbanned
+     * @throws \Exception           Throw an \Exception when something goes wrong
      * @return User           
      */
     public function unBan(User $user): User;
